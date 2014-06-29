@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Game 3</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">Welcome to\nG3</string>
+    <string name="new_profile">New Profile</string>
+    <string name="new_game">New Game</string>
+    <string name="high_scores">High Scores</string>
+    <string name="credits">Credits</string>
+    <string name="help">Help</string>
+    <string name="title_profile_list">Profiles</string>
+    <string name="title_profile_detail">Profile Detail</string>
+
+</resources>
