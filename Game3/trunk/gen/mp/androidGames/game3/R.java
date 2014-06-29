@@ -27,11 +27,11 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     public static final class id {
         public static final int credits=0x7f080008;
         public static final int fullscreen_content=0x7f080000;
-        public static final int fullscreen_content_controls=0x7f080003;
+        public static final int fullscreen_content_controls=0x7f080001;
         public static final int help=0x7f080009;
         public static final int high_scores=0x7f080007;
-        public static final int new_game=0x7f080002;
-        public static final int new_profile=0x7f080001;
+        public static final int new_game=0x7f080003;
+        public static final int new_profile=0x7f080002;
         public static final int profile_detail=0x7f080006;
         public static final int profile_detail_container=0x7f080004;
         public static final int profile_list=0x7f080005;
