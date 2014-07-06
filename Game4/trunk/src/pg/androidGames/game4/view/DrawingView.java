@@ -52,7 +52,6 @@ public class DrawingView extends View implements OnTouchListener {
 		mPath = new Path();
 		paths.add(mPath);
 		
-		txtGesture = (EditText)findViewById(R.id.txtGesture);
 	}
 
 	@Override
@@ -72,6 +71,8 @@ public class DrawingView extends View implements OnTouchListener {
 	private static final float TOUCH_TOLERANCE = 40;
 
 	private void touch_start(float x, float y) {
+		txtGesture = (EditText)((android.app.Activity)getContext()).findViewById(R.id.txtGesture);
+		
 		mPath.reset();
 		mPath.moveTo(x, y);
 		mX = x;
@@ -96,32 +97,30 @@ public class DrawingView extends View implements OnTouchListener {
 		
 		if (dx >= TOUCH_TOLERANCE){
 			if (dy >= TOUCH_TOLERANCE){
-				gestureChar = 'a';
-			} else if (dy <= -1 * TOUCH_TOLERANCE){
 				gestureChar = 'g';
+			} else if (dy <= -1 * TOUCH_TOLERANCE){
+				gestureChar = 'a';
 			} else {
 				gestureChar = 'h';
 			}
 		} else if (dx <= -1 * TOUCH_TOLERANCE){
 			if (dy >= TOUCH_TOLERANCE){
-				gestureChar = 'c';
-			} else if (dy <= -1 * TOUCH_TOLERANCE){
 				gestureChar = 'e';
+			} else if (dy <= -1 * TOUCH_TOLERANCE){
+				gestureChar = 'c';
 			} else {
 				gestureChar = 'd';
 			}
 		} else {
 			if (dy >= TOUCH_TOLERANCE){
-				gestureChar = 'b';
-			} else if (dy <= -1 * TOUCH_TOLERANCE){
 				gestureChar = 'f';
+			} else if (dy <= -1 * TOUCH_TOLERANCE){
+				gestureChar = 'b';
 			}
 		}
-		try {
+		
 			txtGesture.getText().append(gestureChar);
-		} catch (Exception e){
-			Log.e("Game4", e.getMessage());
-		}
+		
 	}
 
 	private void touch_up() {
