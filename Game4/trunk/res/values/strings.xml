@@ -4,5 +4,22 @@
     <string name="app_name">Game4</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="new_game">New Game</string>
+    <string name="settings">Settings</string>
+    <string name="credits">Credits</string>
+    <string name="rate">Rate the Game:</string>
+    <string name="advertising">Advertising</string>
+    <string name="title_activity_game">GameActivity</string>
+    <string name="hint">Hint</string>
+    <string name="pen_wide">W</string>
+    <string name="pen_medium">M</string>
+    <string name="pen_thin">T</string>
+    <string name="pen_Blue">B</string>
+    <string name="pen_red">R</string>
+    <string name="pen_green">G</string>
+    <string name="pen_blue">B</string>
+    <string name="pen_yellow">Y</string>
+    <string name="pen_orange">O</string>
+    <string name="retry">Retry</string>
 
 </resources>
