@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
 
 public class GameActivity extends Activity {
@@ -26,6 +27,8 @@ public class GameActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				viewDraw.reset();
+				EditText txtGesture = (EditText)findViewById(R.id.txtGesture);
+				txtGesture.setText("");
 			}
 			
 		});

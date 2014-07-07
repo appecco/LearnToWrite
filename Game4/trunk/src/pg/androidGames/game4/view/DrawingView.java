@@ -68,7 +68,7 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	private float mX, mY;
-	private static final float TOUCH_TOLERANCE = 40;
+	private static final float TOUCH_TOLERANCE = 20;
 
 	private void touch_start(float x, float y) {
 		txtGesture = (EditText)((android.app.Activity)getContext()).findViewById(R.id.txtGesture);
@@ -87,7 +87,7 @@ public class DrawingView extends View implements OnTouchListener {
 		float dx = x - mX;
 		float dy = y - mY;
 		
-		if (idx < TOUCH_TOLERANCE && idy < TOUCH_TOLERANCE) {
+		if (idx + idy < TOUCH_TOLERANCE) {
 			return;
 		}
 		
