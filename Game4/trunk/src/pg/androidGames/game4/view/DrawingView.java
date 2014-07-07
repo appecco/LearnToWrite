@@ -8,8 +8,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Point;
-import android.text.method.Touch;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -27,7 +25,7 @@ public class DrawingView extends View implements OnTouchListener {
 	private EditText txtGesture;
 	private EditText DeltaX, DeltaY;
 	private float mX, mY, gX, gY;
-	
+		
 	private static final float DRAW_TOLERANCE = 4;
 	private static final float GESTURE_TOLERANCE = 20;
 	
@@ -90,8 +88,6 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	private void touch_start(float x, float y) {
-		txtGesture = (EditText)((android.app.Activity)getContext()).findViewById(R.id.txtGesture);
-		
 		DeltaX = (EditText)((android.app.Activity)getContext()).findViewById(R.id.DeltaX);
 		DeltaY = (EditText)((android.app.Activity)getContext()).findViewById(R.id.DeltaY);
 		
@@ -101,30 +97,36 @@ public class DrawingView extends View implements OnTouchListener {
 		mY = y;
 		gX = x;
 		gY = y;
+		
 	}
 
-	private void touch_move(float x, float y) {
+	private void touch_move(float x, float y, boolean isHistory) {
 		char gestureChar = 0;
-		
-		float idx = Math.abs(x - mX);
-		float idy = Math.abs(y - mY);
 		
 		float dx = x - gX;
 		float dy = y - gY;
 		
 		float tan;
 		
-		DeltaX.setText(Float.toString(dx));
-		DeltaY.setText(Float.toString(dy));
+		float idx, idy;
+			
+		if (!isHistory){
+			idx = Math.abs(x - mX);
+			idy = Math.abs(y - mY);
 
-		if (idx > DRAW_TOLERANCE || idy > DRAW_TOLERANCE) {
-			mPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-			mX = x;
-			mY = y;
+			if (idx > DRAW_TOLERANCE || idy > DRAW_TOLERANCE) {
+				mPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+				mX = x;
+				mY = y;
+			}
 		}
 		
-		
 		if (Math.abs(dx) + Math.abs(dy) > GESTURE_TOLERANCE) {
+			//DeltaX.setText(Float.toString(dx));
+			//DeltaY.setText(Float.toString(dy));
+			
+			txtGesture = (EditText)((android.app.Activity)getContext()).findViewById(R.id.txtGesture);
+			
 			gX = x;
 			gY = y;
 			
@@ -174,12 +176,10 @@ public class DrawingView extends View implements OnTouchListener {
 					}
 				}
 			}
-
-			txtGesture.getText().append(gestureChar);
-			
+			for (float s= GESTURE_TOLERANCE; s<=Math.abs(dx) + Math.abs(dy); s+=GESTURE_TOLERANCE){
+				//txtGesture.getText().append(gestureChar);
+			}
 		}
-		
-		
 	}
 
 	private void touch_up() {
@@ -193,6 +193,7 @@ public class DrawingView extends View implements OnTouchListener {
 
 	@Override
 	public boolean onTouch(View arg0, MotionEvent event) {
+		
 		float x = event.getX();
 		float y = event.getY();
 
@@ -202,7 +203,10 @@ public class DrawingView extends View implements OnTouchListener {
 			invalidate();
 			break;
 		case MotionEvent.ACTION_MOVE:
-			touch_move(x, y);
+			for (int i=0; i<event.getHistorySize();i++){
+				touch_move(event.getHistoricalX(i), event.getHistoricalY(i), true);
+			}
+			touch_move(x, y, false);
 			invalidate();
 			break;
 		case MotionEvent.ACTION_UP:
