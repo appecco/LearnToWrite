@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.text.method.Touch;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -21,8 +22,14 @@ public class DrawingView extends View implements OnTouchListener {
 	private Canvas mCanvas;
 	private Path mPath;
 	private Paint mPaint;
+	private Paint gridPaint;
 	private LinkedList<Path> paths = new LinkedList<Path>();
 	private EditText txtGesture;
+	private EditText DeltaX, DeltaY;
+	private float mX, mY, gX, gY;
+	
+	private static final float DRAW_TOLERANCE = 4;
+	private static final float GESTURE_TOLERANCE = 20;
 	
 	public DrawingView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -47,11 +54,17 @@ public class DrawingView extends View implements OnTouchListener {
 		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeJoin(Paint.Join.ROUND);
 		mPaint.setStrokeCap(Paint.Cap.ROUND);
-		mPaint.setStrokeWidth(8);
+		mPaint.setStrokeWidth(16);
+		
+		gridPaint = new Paint();
+		gridPaint.setColor(Color.GRAY);
+		gridPaint.setStrokeWidth(1);
+		gridPaint.setStyle(Paint.Style.STROKE);
+		
 		mCanvas = new Canvas();
 		mPath = new Path();
 		paths.add(mPath);
-		
+
 	}
 
 	@Override
@@ -62,21 +75,32 @@ public class DrawingView extends View implements OnTouchListener {
 	@Override
 	protected void onDraw(Canvas canvas) {
 
+		int height = getHeight();
+		int width = getWidth();
+		
+		for (int x=50; x<width; x+=50){
+			canvas.drawLine(x, 0, x, height, gridPaint);
+		}
+		for (int y=50; y<height; y+=50){
+			canvas.drawLine(0,y,width,y,gridPaint);
+		}
 		for (Path p : paths) {
 			canvas.drawPath(p, mPaint);
 		}
 	}
 
-	private float mX, mY;
-	private static final float TOUCH_TOLERANCE = 20;
-
 	private void touch_start(float x, float y) {
 		txtGesture = (EditText)((android.app.Activity)getContext()).findViewById(R.id.txtGesture);
+		
+		DeltaX = (EditText)((android.app.Activity)getContext()).findViewById(R.id.DeltaX);
+		DeltaY = (EditText)((android.app.Activity)getContext()).findViewById(R.id.DeltaY);
 		
 		mPath.reset();
 		mPath.moveTo(x, y);
 		mX = x;
 		mY = y;
+		gX = x;
+		gY = y;
 	}
 
 	private void touch_move(float x, float y) {
@@ -84,42 +108,77 @@ public class DrawingView extends View implements OnTouchListener {
 		
 		float idx = Math.abs(x - mX);
 		float idy = Math.abs(y - mY);
-		float dx = x - mX;
-		float dy = y - mY;
 		
-		if (idx + idy < TOUCH_TOLERANCE) {
-			return;
+		float dx = x - gX;
+		float dy = y - gY;
+		
+		float tan;
+		
+		DeltaX.setText(Float.toString(dx));
+		DeltaY.setText(Float.toString(dy));
+
+		if (idx > DRAW_TOLERANCE || idy > DRAW_TOLERANCE) {
+			mPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+			mX = x;
+			mY = y;
 		}
 		
-		mPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-		mX = x;
-		mY = y;
 		
-		if (dx >= TOUCH_TOLERANCE){
-			if (dy >= TOUCH_TOLERANCE){
-				gestureChar = 'g';
-			} else if (dy <= -1 * TOUCH_TOLERANCE){
-				gestureChar = 'a';
+		if (Math.abs(dx) + Math.abs(dy) > GESTURE_TOLERANCE) {
+			gX = x;
+			gY = y;
+			
+			if (dx == 0){ // para evitar tangentes indeterminadas
+				if (dy > 0){
+					gestureChar = 'c';
+				} else {
+					gestureChar = 'g';
+				}
 			} else {
-				gestureChar = 'h';
+				tan = dy / dx;
+				if (dx > 0) {
+					if (dy > 0){
+						if (tan < 0.41){
+							gestureChar = 'a';
+						} else if (tan >= 0.41 && tan < 2.41){
+							gestureChar = 'b';
+						} else {
+							gestureChar = 'c';
+						}
+					} else {
+						if (tan >= -0.41){
+							gestureChar = 'a';
+						} else if (tan >= -2.41 && tan < -0.41){
+							gestureChar = 'h';
+						} else {
+							gestureChar = 'g';
+						}
+					}
+				} else {
+					if (dy > 0){
+						if (tan < -2.41){
+							gestureChar = 'c';
+						} else if (tan >= -2.41 && tan < -0.41){
+							gestureChar = 'd';
+						} else {
+							gestureChar = 'e';
+						}
+					} else {
+						if (tan < 0.41){
+							gestureChar = 'e';
+						} else if (tan >= 0.41 && tan < 2.41){
+							gestureChar = 'f';
+						} else {
+							gestureChar = 'g';
+						}
+					}
+				}
 			}
-		} else if (dx <= -1 * TOUCH_TOLERANCE){
-			if (dy >= TOUCH_TOLERANCE){
-				gestureChar = 'e';
-			} else if (dy <= -1 * TOUCH_TOLERANCE){
-				gestureChar = 'c';
-			} else {
-				gestureChar = 'd';
-			}
-		} else {
-			if (dy >= TOUCH_TOLERANCE){
-				gestureChar = 'f';
-			} else if (dy <= -1 * TOUCH_TOLERANCE){
-				gestureChar = 'b';
-			}
-		}
-		
+
 			txtGesture.getText().append(gestureChar);
+			
+		}
+		
 		
 	}
 
@@ -127,7 +186,7 @@ public class DrawingView extends View implements OnTouchListener {
 		mPath.lineTo(mX, mY);
 		// commit the path to our offscreen
 		mCanvas.drawPath(mPath, mPaint);
-		// kill this so we don't double draw
+		
 		mPath = new Path();
 		paths.add(mPath);
 	}

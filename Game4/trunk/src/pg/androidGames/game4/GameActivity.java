@@ -41,15 +41,15 @@ public class GameActivity extends Activity {
 	    switch(view.getId()) {
 	        case R.id.radPenWide:
 	            if (checked)
-	                viewDraw.setPenWidth(16);
+	                viewDraw.setPenWidth(36);
 	            break;
 	        case R.id.radPenMedium:
 	            if (checked)
-	                viewDraw.setPenWidth(12);
+	                viewDraw.setPenWidth(24);
 	            break;
 	        case R.id.radPenThin:
 	            if (checked)
-	                viewDraw.setPenWidth(8);
+	                viewDraw.setPenWidth(16);
 	            break;
 	    }
 	}

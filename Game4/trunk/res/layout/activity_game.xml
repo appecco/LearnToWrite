@@ -11,6 +11,22 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
+        <EditText
+            android:id="@+id/DeltaY"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:focusable="false"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/DeltaX"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:focusable="false"
+            android:inputType="text" />
+
         <Button
             android:id="@+id/btnHint"
             style="?android:attr/buttonStyleSmall"
