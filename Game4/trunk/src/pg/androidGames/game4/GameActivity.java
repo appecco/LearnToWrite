@@ -32,6 +32,17 @@ public class GameActivity extends Activity {
 			}
 			
 		});
+		
+		Button btnHint = (Button)findViewById(R.id.btnHint);
+		btnHint.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				viewDraw.hint();
+				
+			}
+			
+		});
 	}
 
 	public void onRadPenWidthClick(View view) {

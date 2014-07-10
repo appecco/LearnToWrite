@@ -1,5 +1,12 @@
 package pg.androidGames.game4.view;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.LinkedList;
 
 import pg.androidGames.game4.R;
@@ -8,12 +15,16 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.os.Environment;
 import android.util.AttributeSet;
+import android.util.JsonWriter;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.EditText;
+
+import org.json.*;
 
 public class DrawingView extends View implements OnTouchListener {
 
@@ -25,6 +36,9 @@ public class DrawingView extends View implements OnTouchListener {
 	private EditText txtGesture;
 	private EditText DeltaX, DeltaY;
 	private float mX, mY, gX, gY;
+	private JSONObject json;
+	private JSONArray jsonPaths;
+	private JSONArray jsonPath;
 		
 	private static final float DRAW_TOLERANCE = 4;
 	private static final float GESTURE_TOLERANCE = 20;
@@ -62,6 +76,13 @@ public class DrawingView extends View implements OnTouchListener {
 		mCanvas = new Canvas();
 		mPath = new Path();
 		paths.add(mPath);
+		try {
+			jsonPaths = new JSONArray();
+			json = new JSONObject();
+			json.put("paths", jsonPaths);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -93,6 +114,13 @@ public class DrawingView extends View implements OnTouchListener {
 		
 		mPath.reset();
 		mPath.moveTo(x, y);
+		jsonPath = new JSONArray();
+		jsonPaths.put(jsonPath);
+		try {
+			jsonPath.put(new JSONObject().put("x", x).put("y", y));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 		mX = x;
 		mY = y;
 		gX = x;
@@ -116,6 +144,11 @@ public class DrawingView extends View implements OnTouchListener {
 
 			if (idx > DRAW_TOLERANCE || idy > DRAW_TOLERANCE) {
 				mPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+				try {
+					jsonPath.put(new JSONObject().put("x", x).put("y", y));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
 				mX = x;
 				mY = y;
 			}
@@ -228,9 +261,30 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	public void reset(){
+	    if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
+	    	File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Game4Paths");
+	        if (file.mkdirs()) {
+	        	try {
+	        		Writer output = null;
+	        		output = new BufferedWriter(new FileWriter(new File(file,"paths.json")));
+	        		output.write(json.toString());
+	        		output.close();
+				} catch (Exception e) {
+					Log.e("Game4-Path", e.getMessage());
+				}
+	        } else {
+	            Log.e("Game4-Path", "Directory not created");
+	        }
+	    } else {
+	    	Log.e("Game4-Path","Media not mounted");
+	    }
 		paths.clear();
 		mPath = new Path();
 		paths.add(mPath);
 		invalidate();
+	}
+	
+	public void hint(){
+		
 	}
 }
