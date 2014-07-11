@@ -43,6 +43,29 @@ public class GameActivity extends Activity {
 			}
 			
 		});
+
+		Button btnNext = (Button)findViewById(R.id.btnNext);
+		btnNext.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				viewDraw.next();
+				
+			}
+			
+		});
+
+		Button btnSave = (Button)findViewById(R.id.btnSave);
+		btnSave.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				viewDraw.save();
+				
+			}
+			
+		});
+
 	}
 
 	public void onRadPenWidthClick(View view) {

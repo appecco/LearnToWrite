@@ -20,7 +20,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PathMeasure;
+import android.graphics.Typeface;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.JsonWriter;
 import android.util.Log;
@@ -28,14 +31,22 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.*;
 
 public class DrawingView extends View implements OnTouchListener {
 
+	private static final float FONT_SIZE = 240.0f;
+	private static final float ANIMATION_FRAMES = 30.0f;
+	private static final long ANIMATION_DELAY = 30;
+	
+	private Typeface customFont;
+	private float scale;
+	
 	private Canvas mCanvas;
 	private Path mPath;
-	private Paint mPaint;
+	private Paint mPaint, fontPaint;
 	private Paint gridPaint;
 	private LinkedList<Path> paths = new LinkedList<Path>();
 	private EditText txtGesture;
@@ -45,6 +56,22 @@ public class DrawingView extends View implements OnTouchListener {
 	private JSONArray jsonPaths;
 	private JSONArray jsonPath;
 
+	private char currentChar = 'A';
+	
+	private boolean animating = false;
+	private int animationPortion;
+	private Path animationPath;
+	private Path tempPath = new Path();
+	private PathMeasure pathMeasure = null;
+	float totalLength = 0.0f;
+	private Handler animationHandler;
+	private Runnable r = new Runnable() {
+        @Override
+        public void run() {
+                invalidate();
+        }
+	};
+	
 	private static final float DRAW_TOLERANCE = 4;
 	private static final float GESTURE_TOLERANCE = 20;
 
@@ -59,11 +86,15 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	private void initView() {
+		scale = getResources().getDisplayMetrics().density;
+		
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 
 		this.setOnTouchListener(this);
 
+		customFont = Typeface.createFromAsset(getContext().getAssets(), "fonts/dnealiancursive.ttf");
+		
 		mPaint = new Paint();
 		mPaint.setAntiAlias(true);
 		mPaint.setDither(true);
@@ -72,6 +103,16 @@ public class DrawingView extends View implements OnTouchListener {
 		mPaint.setStrokeJoin(Paint.Join.ROUND);
 		mPaint.setStrokeCap(Paint.Cap.ROUND);
 		mPaint.setStrokeWidth(16);
+
+		fontPaint = new Paint();
+		fontPaint.setTextSize((int)(FONT_SIZE * scale + 0.5f));
+		fontPaint.setTypeface(customFont);
+		fontPaint.setAntiAlias(true);
+		fontPaint.setDither(true);
+		fontPaint.setStrokeJoin(Paint.Join.ROUND);
+		fontPaint.setStrokeMiter(4.0f);
+		fontPaint.setStrokeCap(Paint.Cap.ROUND);
+		fontPaint.setStrokeWidth(16);
 
 		gridPaint = new Paint();
 		gridPaint.setColor(Color.GRAY);
@@ -89,6 +130,7 @@ public class DrawingView extends View implements OnTouchListener {
 			e.printStackTrace();
 		}
 
+		animationHandler = new Handler();
 	}
 
 	@Override
@@ -98,7 +140,7 @@ public class DrawingView extends View implements OnTouchListener {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-
+		
 		int height = getHeight();
 		int width = getWidth();
 
@@ -108,9 +150,32 @@ public class DrawingView extends View implements OnTouchListener {
 		for (int y = 50; y < height; y += 50) {
 			canvas.drawLine(0, y, width, y, gridPaint);
 		}
-		for (Path p : paths) {
-			canvas.drawPath(p, mPaint);
+
+		fontPaint.setColor(Color.BLACK);
+		fontPaint.setStyle(Paint.Style.STROKE); 
+		canvas.drawText(Character.toString(currentChar), (int)(150 * scale + 0.5f) , (int)(200 * scale + 0.5f), fontPaint);
+		
+		fontPaint.setColor(Color.YELLOW);
+		fontPaint.setStyle(Paint.Style.FILL);
+		canvas.drawText(Character.toString(currentChar), (int)(150 * scale + 0.5f) , (int)(200 * scale + 0.5f), fontPaint);
+		
+		if (animating){
+			pathMeasure.getSegment(0.0f, totalLength * (float)animationPortion / ANIMATION_FRAMES, tempPath, true);
+			canvas.drawPath(tempPath, mPaint);
+			if (animationPortion <= ANIMATION_FRAMES){
+				animationPortion++;
+				animationHandler.postDelayed(r,ANIMATION_DELAY);
+				return;
+			} else {
+				animating = false;
+				animationPortion = 0;
+			}
+		} else {
+			for (Path p : paths) {
+				canvas.drawPath(p, mPaint);
+			}
 		}
+		
 	}
 
 	private void touch_start(float x, float y) {
@@ -270,31 +335,18 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	public void reset() {
-		if (Environment.MEDIA_MOUNTED.equals(Environment
-				.getExternalStorageState())) {
-			File file = new File(
-					Environment
-							.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
-					"Game4Paths");
-			if (file.mkdirs()) {
-				try {
-					Writer output = null;
-					output = new BufferedWriter(new FileWriter(new File(file,
-							"paths.json")));
-					output.write(json.toString());
-					output.close();
-				} catch (Exception e) {
-					Log.e("Game4-Path", e.getMessage());
-				}
-			} else {
-				Log.e("Game4-Path", "Directory not created");
-			}
-		} else {
-			Log.e("Game4-Path", "Media not mounted");
-		}
 		paths.clear();
 		mPath = new Path();
 		paths.add(mPath);
+		
+		try {
+			jsonPaths = new JSONArray();
+			json = new JSONObject();
+			json.put("paths", jsonPaths);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
 		invalidate();
 	}
 
@@ -309,7 +361,11 @@ public class DrawingView extends View implements OnTouchListener {
 				File file = new File(
 						Environment
 								.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
-						"Game4Paths/paths.json");
+						"Game4Paths/" + Character.toString(currentChar) + ".json");
+				if (!file.exists()){
+					Toast.makeText(getContext(), "Hint for " + Character.toString(currentChar) + " is not available.", Toast.LENGTH_SHORT).show();
+					return;
+				}
 				FileInputStream stream = new FileInputStream(file);
 				String jsonStr = null;
 				try {
@@ -331,7 +387,6 @@ public class DrawingView extends View implements OnTouchListener {
 							touch_start((float)point.getDouble("x"),(float)point.getDouble("y"));
 						} else {
 							touch_move((float)point.getDouble("x"),(float)point.getDouble("y"),false);
-							this.postInvalidateDelayed(33);
 						}
 					}
 					touch_up();
@@ -340,5 +395,50 @@ public class DrawingView extends View implements OnTouchListener {
 				e.printStackTrace();
 			}
 		}
+		animating = true;
+		animationPortion = 1;
+		
+		animationPath = new Path();
+		for (Path p : paths) {
+			animationPath.addPath(p);
+		}
+		pathMeasure = new PathMeasure(animationPath,false);
+		totalLength += pathMeasure.getLength();
+
+		invalidate();
 	}
+	
+	public void next(){
+		if (currentChar == 'Z'){
+			currentChar = 'a';
+		} else if (currentChar == 'z'){
+			currentChar = '1';
+		} else if (currentChar == '0'){
+			currentChar = 'A';
+		} else {
+			currentChar++;
+		}
+		reset();
+	}
+	
+	public void save(){
+		if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+			File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Game4Paths");
+			if (file.exists() || file.mkdirs()) {
+				try {
+					Writer output = null;
+					output = new BufferedWriter(new FileWriter(new File(file,Character.toString(currentChar) + ".json")));
+					output.write(json.toString());
+					output.close();
+				} catch (Exception e) {
+					Log.e("Game4-Path", e.getMessage());
+				}
+			} else {
+				Log.e("Game4-Path", "Directory not created");
+			}
+		} else {
+			Log.e("Game4-Path", "Media not mounted");
+		}	
+	}
+	
 }
