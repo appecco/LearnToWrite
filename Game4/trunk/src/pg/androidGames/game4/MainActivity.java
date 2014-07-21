@@ -60,6 +60,28 @@ public class MainActivity extends Activity {
                 startActivity(otherIntent);
 			}
 		});
+		
+		ImageButton btnNewGameNumbers = (ImageButton)findViewById(R.id.btnNewGameNumbers);
+		btnNewGameNumbers.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View view) {
+				mPlayerClick.start();
+				
+				Intent otherIntent = new Intent(MainActivity.this,GameActivity.class);
+                startActivity(otherIntent);
+			}
+		});
+		
+		ImageButton btnNewGameShapes = (ImageButton)findViewById(R.id.btnNewGameShapes);
+		btnNewGameShapes.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View view) {
+				mPlayerClick.start();
+				
+				Intent otherIntent = new Intent(MainActivity.this,GameActivity.class);
+                startActivity(otherIntent);
+			}
+		});
 	}
 	
 	@Override
