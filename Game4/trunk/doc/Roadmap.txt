@@ -1,0 +1,20 @@
+FASE 1
+  Que diga la letra antes y despues de dibujar
+  Que tenga una figura que inicie con la letra y este escrita la palabra utilizando la letra en otro color
+  Que diga la palabra despues de dibujar la letra y resalte la letra en la palabra
+  Que tenga niveles de dificultad que vayan incrementandola conforme el niño aprende la letra
+  Que tenga puntos a conectar en los primeros niveles
+  Colores llamativos
+  Sonidos y animacion de exito al lograr una letra
+  Español e Ingles
+  Text to speech
+  Añadir anuncios
+  Aprender las letras en grupos de 5
+  Sonidos y animacion de exito al lograr un grupo y mostrar en ese momento el anuncio
+  Mostrar anuncio al iniciar cada opcion
+  Mostrar opciones gratuitas para letras de molde Mayusculas, minusculas, Numeros y Figuras
+  In-App purchase para Remove adds
+
+FASE 2
+  Silabas
+  In-App purchase para Cursiva

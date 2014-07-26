@@ -3,26 +3,16 @@ package pg.androidGames.game4.view;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-//import java.io.FileNotFoundException;
-//import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-//import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
-
-
-
-
-
-
-//import pg.androidGames.game4.R;
 import android.content.Context;
-import android.graphics.AvoidXfermode;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -30,16 +20,13 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Typeface;
-import android.graphics.AvoidXfermode.Mode;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.AttributeSet;
-//import android.util.JsonWriter;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-//import android.widget.EditText;
 import android.widget.Toast;
 
 import org.json.*;
@@ -47,22 +34,20 @@ import org.json.*;
 public class DrawingView extends View implements OnTouchListener {
 
 	private static final float FONT_SIZE = 240.0f;
-	//private static final float ANIMATION_FRAMES = 30.0f;
-	//private static final long ANIMATION_DELAY = 30;
-	
 	private static final int GESTURE_TYPE_MOVE = 0;
 	private static final int GESTURE_TYPE_DRAW = 1;
 	
 	private Typeface customFont;
 	private float scale;
 	
-	private Canvas mCanvas;
-	private Path mPath;
+	private Bitmap transpBitmap; 
+	private Bitmap canvasBitmap; 
+	private Canvas hintCanvas, drawCanvas;
+	private Path mPath, fontPath;
 	private Paint mPaint, fontPaint, animPaint;
 	private Paint gridPaint;
 	private LinkedList<Path> paths = new LinkedList<Path>();
-	//private EditText txtGesture;
-	//private EditText DeltaX, DeltaY;
+	
 	private float mX, mY, gX = 0, gY = 0;
 	private JSONObject json;
 	private JSONArray jsonPaths;
@@ -70,9 +55,6 @@ public class DrawingView extends View implements OnTouchListener {
 	
 	private int characterOutlineColor = Color.BLACK;
 	private int characterFillColor = Color.YELLOW;
-	
-	private Bitmap animBitmap;
-	private Canvas animCanvas;
 
 	private char currentChar = 'A';
 	private String targetGesture = "X";
@@ -107,7 +89,6 @@ public class DrawingView extends View implements OnTouchListener {
 		
 		mPaint = new Paint();
 		mPaint.setAntiAlias(true);
-		mPaint.setDither(true);
 		mPaint.setColor(Color.BLUE);
 		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeJoin(Paint.Join.ROUND);
@@ -115,14 +96,20 @@ public class DrawingView extends View implements OnTouchListener {
 		mPaint.setStrokeWidth(16);
 
 		animPaint = new Paint();
-		//animPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.OVERLAY));
-		animPaint.setXfermode(new AvoidXfermode(characterFillColor, 0, AvoidXfermode.Mode.TARGET));
+		animPaint.setTextSize((int)(FONT_SIZE * scale + 0.5f));
+		animPaint.setTypeface(customFont);
+		animPaint.setAntiAlias(true);
+		animPaint.setStrokeJoin(Paint.Join.ROUND);
+		animPaint.setStrokeMiter(4.0f);
+		animPaint.setStrokeCap(Paint.Cap.ROUND);
+		animPaint.setStrokeWidth(16);
+		animPaint.setStyle(Paint.Style.FILL);
+		animPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
 		
 		fontPaint = new Paint();
 		fontPaint.setTextSize((int)(FONT_SIZE * scale + 0.5f));
 		fontPaint.setTypeface(customFont);
 		fontPaint.setAntiAlias(true);
-		fontPaint.setDither(true);
 		fontPaint.setStrokeJoin(Paint.Join.ROUND);
 		fontPaint.setStrokeMiter(4.0f);
 		fontPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -133,9 +120,14 @@ public class DrawingView extends View implements OnTouchListener {
 		gridPaint.setStrokeWidth(1);
 		gridPaint.setStyle(Paint.Style.STROKE);
 
-		mCanvas = new Canvas();
+		fontPath = new Path();
+		
+		hintCanvas = new Canvas();
+		drawCanvas = new Canvas();
+
 		mPath = new Path();
 		paths.add(mPath);
+		
 		try {
 			jsonPaths = new JSONArray();
 			json = new JSONObject();
@@ -146,56 +138,67 @@ public class DrawingView extends View implements OnTouchListener {
 		}
 
 		load();
-		//this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 	}
 
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
-		animBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
-		animCanvas = new Canvas(animBitmap);
-		
-		Paint transPainter = new Paint();
-		transPainter.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-		            
-		animCanvas.drawRect(0, 0, getWidth(), getHeight(), transPainter);
+		canvasBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+		drawCanvas = new Canvas(canvasBitmap);
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		
 		int height = getHeight();
 		int width = getWidth();
+		
 		float strokeWidth = mPaint.getStrokeWidth();
+		
+		drawCanvas.drawColor(Color.WHITE);
 
-		for (int x = 50; x < width; x += 50) {
+		fontPaint.setColor(characterFillColor);
+		fontPaint.setStyle(Paint.Style.FILL);
+		fontPaint.getTextPath(Character.toString(currentChar), 0, 1, (int)(150 * scale + 0.5f), (int)(200 * scale + 0.5f), fontPath);
+		
+		if (transpBitmap == null){
+			transpBitmap = Bitmap.createBitmap(width, height, Config.ARGB_8888);
+			hintCanvas.setBitmap(transpBitmap);
+			hintCanvas.drawColor(Color.WHITE);
+			
+			fontPaint.setColor(characterOutlineColor);
+			fontPaint.setStyle(Paint.Style.STROKE); 
+			
+		    hintCanvas.drawPath(fontPath, fontPaint);
+		    hintCanvas.drawPath(fontPath, animPaint);
+		}
+				
+		/*for (int x = 50; x < width; x += 50) {
 			canvas.drawLine(x, 0, x, height, gridPaint);
 		}
 		for (int y = 50; y < height; y += 50) {
 			canvas.drawLine(0, y, width, y, gridPaint);
-		}
+		}*/
 
 		fontPaint.setColor(characterOutlineColor);
-		fontPaint.setStyle(Paint.Style.STROKE); 
-		canvas.drawText(Character.toString(currentChar), (int)(150 * scale + 0.5f) , (int)(200 * scale + 0.5f), fontPaint);
-		
+		fontPaint.setStyle(Paint.Style.STROKE);
+	    drawCanvas.drawPath(fontPath, fontPaint);
+
 		fontPaint.setColor(characterFillColor);
 		fontPaint.setStyle(Paint.Style.FILL);
-		canvas.drawText(Character.toString(currentChar), (int)(150 * scale + 0.5f) , (int)(200 * scale + 0.5f), fontPaint);
-		
-	
+		drawCanvas.drawPath(fontPath, fontPaint);
+
 		for (Path p : paths) {
-			canvas.drawPath(p, mPaint);
-/*			if (animating){
+			if (animating){
 				mPaint.setStrokeWidth(48);
-				animCanvas.drawPath(p, mPaint);
-				canvas.drawBitmap(animBitmap, 0, 0, animPaint);
+				drawCanvas.drawPath(p, mPaint);
+				drawCanvas.drawBitmap(transpBitmap, 0, 0, null);
 				mPaint.setStrokeWidth(strokeWidth);
 			} else {
-				canvas.drawPath(p, mPaint);
+				drawCanvas.drawPath(p, mPaint);
 			}
-*/		}
-	
+		}
+		canvas.drawBitmap(canvasBitmap,0,0,null);
+
 	}
 
 	private void touch_start(float x, float y) {
@@ -276,24 +279,24 @@ public class DrawingView extends View implements OnTouchListener {
 
 	private void touch_up() {
 		int distance;
-		mPath.lineTo(mX, mY);
-		// commit the path to our offscreen
-		mCanvas.drawPath(mPath, mPaint);
-		
-		if (currentGesture.toString().equals(targetGesture)){
-			Toast.makeText(getContext(), "Perfect!!!!", Toast.LENGTH_LONG).show();
-		} else {
-			distance = editDistance(currentGesture.toString(),targetGesture);
-			if (distance < 10){
-				Toast.makeText(getContext(), "Excellent!!! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
-			} else if (distance < 20){
-				Toast.makeText(getContext(), "Very good!! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
-			} else if (distance < 30){
-				Toast.makeText(getContext(), "Good! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
-			} else if (distance < 40){
-				Toast.makeText(getContext(), "Not bad " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+		if (!animating){
+			mPath.lineTo(mX, mY);
+					
+			if (currentGesture.toString().equals(targetGesture)){
+				Toast.makeText(getContext(), "Perfect!!!!", Toast.LENGTH_LONG).show();
 			} else {
-				Toast.makeText(getContext(), "Can be better " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+				distance = editDistance(currentGesture.toString(),targetGesture);
+				if (distance < 10){
+					Toast.makeText(getContext(), "Excellent!!! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+				} else if (distance < 20){
+					Toast.makeText(getContext(), "Very good!! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+				} else if (distance < 30){
+					Toast.makeText(getContext(), "Good! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+				} else if (distance < 40){
+					Toast.makeText(getContext(), "Not bad " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+				} else {
+					Toast.makeText(getContext(), "Can be better " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+				}
 			}
 		}
 		mPath = new Path();
@@ -475,6 +478,7 @@ public class DrawingView extends View implements OnTouchListener {
 			         public void run() {
 			        	 touch_up();
 						 animating = false;
+						 reset();
 			         } 
 			    }, animDelay*25);
 			}
@@ -497,6 +501,7 @@ public class DrawingView extends View implements OnTouchListener {
 		} else {
 			currentChar++;
 		}
+		transpBitmap = null;
 		load();
 		reset();
 	}
@@ -527,10 +532,6 @@ public class DrawingView extends View implements OnTouchListener {
 				animJson = new JSONObject(jsonStr);
 				animPaths = animJson.getJSONArray("paths");
 				targetGesture = animJson.getString("gesture");
-				if (targetGesture == null){
-					targetGesture = "X"; // for older versions of stored json, remove when finished!!!
-				}
-				
 			} catch (IOException | JSONException e) {
 				e.printStackTrace();
 			}
