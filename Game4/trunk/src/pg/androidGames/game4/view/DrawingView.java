@@ -10,6 +10,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -31,11 +32,15 @@ import android.widget.Toast;
 
 import org.json.*;
 
+import pg.androidGames.game4.GameActivity;
+
 public class DrawingView extends View implements OnTouchListener {
 
 	private static final float FONT_SIZE = 240.0f;
 	private static final int GESTURE_TYPE_MOVE = 0;
 	private static final int GESTURE_TYPE_DRAW = 1;
+	
+	private GameActivity activity;
 	
 	private Typeface customFont;
 	private float scale;
@@ -56,6 +61,8 @@ public class DrawingView extends View implements OnTouchListener {
 	private int characterOutlineColor = Color.BLACK;
 	private int characterFillColor = Color.YELLOW;
 
+	private int currentCharIndex = -1;
+	private JSONArray characterGroup;
 	private char currentChar = 'A';
 	private String targetGesture = "X";
 	private StringBuilder currentGesture = new StringBuilder();
@@ -78,6 +85,8 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	private void initView() {
+		activity = (GameActivity)getContext();
+		
 		scale = getResources().getDisplayMetrics().density;
 		
 		setFocusable(true);
@@ -281,21 +290,29 @@ public class DrawingView extends View implements OnTouchListener {
 		int distance;
 		if (!animating){
 			mPath.lineTo(mX, mY);
-					
-			if (currentGesture.toString().equals(targetGesture)){
-				Toast.makeText(getContext(), "Perfect!!!!", Toast.LENGTH_LONG).show();
-			} else {
-				distance = editDistance(currentGesture.toString(),targetGesture);
-				if (distance < 10){
-					Toast.makeText(getContext(), "Excellent!!! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
-				} else if (distance < 20){
-					Toast.makeText(getContext(), "Very good!! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
-				} else if (distance < 30){
-					Toast.makeText(getContext(), "Good! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
-				} else if (distance < 40){
-					Toast.makeText(getContext(), "Not bad " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+			
+			if (animPaths != null && animPaths.length() == paths.size()){
+				if (currentGesture.toString().equals(targetGesture)){
+					Toast.makeText(getContext(), "Perfect!!!!", Toast.LENGTH_LONG).show();
 				} else {
-					Toast.makeText(getContext(), "Can be better " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+					distance = editDistance(currentGesture.toString(),targetGesture);
+					if (distance < 10){
+						Toast.makeText(getContext(), "Excellent!!! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+						next();
+						return;
+					} else if (distance < 20){
+						Toast.makeText(getContext(), "Very good!! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+						next();
+						return;
+					} else if (distance < 30){
+						Toast.makeText(getContext(), "Good! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+						next();
+						return;
+					} else if (distance < 40){
+						Toast.makeText(getContext(), "Not bad " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+					} else {
+						Toast.makeText(getContext(), "Can be better " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+					}
 				}
 			}
 		}
@@ -438,69 +455,77 @@ public class DrawingView extends View implements OnTouchListener {
 	public void hint() {
 		JSONArray storedPath;
 		JSONObject point;
-		try {
-			Handler animHandler = new Handler();
-			long animDelay = 0;
-			
-			for (int i=0;i<animPaths.length();i++){
-				storedPath = animPaths.getJSONArray(i);
+		if (animPaths != null){
+			try {
+				Handler animHandler = new Handler();
+				long animDelay = 0;
 				
-				for (int j=0;j<storedPath.length();j++){
-					point = storedPath.getJSONObject(j);
-					animDelay++;
+				for (int i=0;i<animPaths.length();i++){
+					storedPath = animPaths.getJSONArray(i);
 					
-					if (j==0){
-						final float tempX = (float)point.getDouble("x");
-						final float tempY = (float)point.getDouble("y");
+					for (int j=0;j<storedPath.length();j++){
+						point = storedPath.getJSONObject(j);
+						animDelay++;
 						
-						animHandler.postDelayed(new Runnable() { 
-					         public void run() {
-									animating = true;
-									touch_start((float)tempX,tempY);
-									invalidate();
-					         } 
-					    }, animDelay*25); 
-
-					} else {
-						
-						final float tempX = (float)point.getDouble("x");
-						final float tempY = (float)point.getDouble("y");
-						
-						animHandler.postDelayed(new Runnable() { 
-					         public void run() {
-					        	 touch_move(tempX,tempY,false);
-					        	 invalidate();
-					         } 
-					    }, animDelay*25); 
+						if (j==0){
+							final float tempX = (float)point.getDouble("x");
+							final float tempY = (float)point.getDouble("y");
+							
+							animHandler.postDelayed(new Runnable() { 
+						         public void run() {
+										animating = true;
+										touch_start((float)tempX,tempY);
+										invalidate();
+						         } 
+						    }, animDelay*25); 
+	
+						} else {
+							
+							final float tempX = (float)point.getDouble("x");
+							final float tempY = (float)point.getDouble("y");
+							
+							animHandler.postDelayed(new Runnable() { 
+						         public void run() {
+						        	 touch_move(tempX,tempY,false);
+						        	 invalidate();
+						         } 
+						    }, animDelay*25); 
+						}
 					}
+					animHandler.postDelayed(new Runnable() { 
+				         public void run() {
+				        	 touch_up();
+							 animating = false;
+							 reset();
+				         } 
+				    }, animDelay*25);
 				}
-				animHandler.postDelayed(new Runnable() { 
-			         public void run() {
-			        	 touch_up();
-						 animating = false;
-						 reset();
-			         } 
-			    }, animDelay*25);
+				
+	
+				
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
-			
-
-			
-		} catch (JSONException e) {
-			e.printStackTrace();
+		} else {
+			Toast.makeText(getContext(), "Hint for " + Character.toString(currentChar) + " is not available.", Toast.LENGTH_SHORT).show();
 		}
-
 	}
 	
 	public void next(){
-		if (currentChar == 'Z'){
-			currentChar = 'a';
-		} else if (currentChar == 'z'){
-			currentChar = '0';
-		} else if (currentChar == '9'){
-			currentChar = 'A';
+		currentCharIndex++;
+		if (currentCharIndex == characterGroup.length()){
+			activity.levelCompleted();
 		} else {
-			currentChar++;
+			try {
+				currentChar = characterGroup.getString(currentCharIndex).charAt(0);
+			} catch (ArrayIndexOutOfBoundsException e){
+				
+				return;
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
+		
 		transpBitmap = null;
 		load();
 		reset();
@@ -510,12 +535,21 @@ public class DrawingView extends View implements OnTouchListener {
 		if (Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState())) {
 			try {
-				File file = new File(
-						Environment
-								.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
-						"Game4Paths/" + Character.toString(currentChar) + ".json");
+				File file;
+				if (currentChar >= 'A' && currentChar <= 'Z' || currentChar == 'Ñ'){
+					file = new File(
+							Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+							"Game4Paths/M" + Character.toString(currentChar) + ".json");
+				} else {
+					file = new File(
+							Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+							"Game4Paths/" + Character.toString(currentChar) + ".json");
+				}
 				if (!file.exists()){
 					Toast.makeText(getContext(), "Hint for " + Character.toString(currentChar) + " is not available.", Toast.LENGTH_SHORT).show();
+					animJson = null;
+					animPaths = null;
+					targetGesture = "X";
 					return;
 				}
 				FileInputStream stream = new FileInputStream(file);
@@ -548,7 +582,11 @@ public class DrawingView extends View implements OnTouchListener {
 					animPaths = animJson.getJSONArray("paths");
 					json.put("gesture", targetGesture);
 					Writer output = null;
-					output = new BufferedWriter(new FileWriter(new File(file,Character.toString(currentChar) + ".json")));
+					if (currentChar >= 'A' && currentChar <= 'Z' || currentChar == 'Ñ'){
+						output = new BufferedWriter(new FileWriter(new File(file,"M" + Character.toString(currentChar) + ".json")));
+					} else {
+						output = new BufferedWriter(new FileWriter(new File(file,Character.toString(currentChar) + ".json")));
+					}
 					output.write(json.toString());
 					output.close();
 				} catch (Exception e) {
@@ -562,5 +600,10 @@ public class DrawingView extends View implements OnTouchListener {
 		}	
 	}
 
+	public void setCharacterGroup(JSONArray characterGroup){
+		this.characterGroup = characterGroup;
+		currentCharIndex = -1;
+		next();
+	}
 	
 }

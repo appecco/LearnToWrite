@@ -45,8 +45,11 @@ public class MainActivity extends Activity {
 				
 				mPlayerClick.start();
 				
-				Intent otherIntent = new Intent(MainActivity.this,GameActivity.class);
-                startActivity(otherIntent);
+				Intent intent = new Intent(MainActivity.this,GameActivity.class);
+				Bundle b = new Bundle();
+				b.putString("game", "Lower Case");
+				intent.putExtras(b);
+                startActivity(intent);
 			}
 		});
 
@@ -56,8 +59,11 @@ public class MainActivity extends Activity {
 			public void onClick(View view) {
 				mPlayerClick.start();
 				
-				Intent otherIntent = new Intent(MainActivity.this,GameActivity.class);
-                startActivity(otherIntent);
+				Intent intent = new Intent(MainActivity.this,GameActivity.class);
+				Bundle b = new Bundle();
+				b.putString("game", "Upper Case");
+				intent.putExtras(b);
+                startActivity(intent);
 			}
 		});
 		
@@ -67,8 +73,11 @@ public class MainActivity extends Activity {
 			public void onClick(View view) {
 				mPlayerClick.start();
 				
-				Intent otherIntent = new Intent(MainActivity.this,GameActivity.class);
-                startActivity(otherIntent);
+				Intent intent = new Intent(MainActivity.this,GameActivity.class);
+				Bundle b = new Bundle();
+				b.putString("game", "Numbers");
+				intent.putExtras(b);
+                startActivity(intent);
 			}
 		});
 		
@@ -78,8 +87,11 @@ public class MainActivity extends Activity {
 			public void onClick(View view) {
 				mPlayerClick.start();
 				
-				Intent otherIntent = new Intent(MainActivity.this,GameActivity.class);
-                startActivity(otherIntent);
+				Intent intent = new Intent(MainActivity.this,GameActivity.class);
+				Bundle b = new Bundle();
+				b.putString("game", "Shapes");
+				intent.putExtras(b);
+                startActivity(intent);
 			}
 		});
 	}
