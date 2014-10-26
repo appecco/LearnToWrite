@@ -7,10 +7,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import pg.androidGames.game4.view.DrawingView;
+import pg.androidGames.game4.dialog.LevelDialogFragment;
 import pg.androidGames.utils.StorageOperations;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -18,7 +21,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
-public class GameActivity extends Activity {
+public class GameActivity extends Activity implements LevelDialogFragment.LevelDialogListener {
 	
 	private static final String LEVEL_FILE = "level";
 	private static final String CURRENT_LEVEL_KEY = "currentLevel";
@@ -103,12 +106,9 @@ public class GameActivity extends Activity {
 		} catch (Exception e){
 			currentLevel = 1;
 		}
-		try {
-			int characterGroup = Integer.parseInt(levelDefinitions.getJSONObject(currentLevel-1).getString("characterGroup"));
-			viewDraw.setCharacterGroup(levelsJson.getJSONArray("characterGroups").getJSONArray(characterGroup));
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+
+		showLevelDialog();
+		
 	}
 
 	public void onRadPenWidthClick(View view) {
@@ -161,17 +161,36 @@ public class GameActivity extends Activity {
 	
 	public void levelCompleted(){
 		currentLevel++;
+		StorageOperations.saveDataToPreferencesFile(this, LEVEL_FILE, new String[] {CURRENT_LEVEL_KEY,Integer.toString(currentLevel)});
 		if (levelDefinitions.length()>currentLevel){
-			Toast.makeText(this, "Congratulations, you have reached level " + Integer.toString(currentLevel), Toast.LENGTH_LONG).show();
-			try {
-				int characterGroup = Integer.parseInt(levelDefinitions.getJSONObject(currentLevel-1).getString("characterGroup"));
-				viewDraw.setCharacterGroup(levelsJson.getJSONArray("characterGroups").getJSONArray(characterGroup));
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
+			showLevelDialog();
 		} else {
 			Toast.makeText(this, "Congratulations!!! , you have learnt all the " + currentGame, Toast.LENGTH_LONG).show();
 			finish();
 		}
 	}
+
+    public void showLevelDialog() {
+        FragmentManager fragmentManager;
+        LevelDialogFragment dialog = new LevelDialogFragment();
+        dialog.setMessageText("Welcome to level " + Integer.toString(currentLevel));
+        fragmentManager = getFragmentManager();
+        dialog.show(fragmentManager, "LevelDialogFragment");
+    }
+
+	@Override
+	public void onDialogPositiveClick(DialogFragment dialog) {
+		try {
+			int characterGroup = Integer.parseInt(levelDefinitions.getJSONObject(currentLevel-1).getString("characterGroup"));
+			viewDraw.setCharacterGroup(levelsJson.getJSONArray("characterGroups").getJSONArray(characterGroup));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void onDialogNegativeClick(DialogFragment dialog) {
+		finish();
+	}
+	
 }

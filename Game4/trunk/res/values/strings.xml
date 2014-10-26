@@ -21,5 +21,8 @@
     <string name="pen_yellow">Y</string>
     <string name="pen_orange">O</string>
     <string name="retry">Retry</string>
+    <string name="level_characters">Levels to be learnt in this level</string>
+    <string name="start_level">Start Level</string>
+    <string name="cancel_level">Cancel Level</string>
 
 </resources>
