@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import pg.androidGames.game4.view.DrawingView;
 import pg.androidGames.game4.dialog.LevelDialogFragment;
+import pg.androidGames.game4.dialog.LevelMenuDialogFragment;
 import pg.androidGames.utils.StorageOperations;
 import android.app.Activity;
 import android.graphics.Color;
@@ -21,7 +22,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
-public class GameActivity extends Activity implements LevelDialogFragment.LevelDialogListener {
+public class GameActivity extends Activity implements LevelDialogFragment.LevelDialogListener, LevelMenuDialogFragment.LevelMenuDialogListener {
 	
 	private static final String LEVEL_FILE = "level";
 	private static final String CURRENT_LEVEL_KEY = "currentLevel";
@@ -107,7 +108,7 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
 			currentLevel = 1;
 		}
 
-		showLevelDialog();
+		showLevelMenuDialog();
 		
 	}
 
@@ -170,6 +171,32 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
 		}
 	}
 
+	public void showLevelMenuDialog(){
+        FragmentManager fragmentManager;
+        LevelMenuDialogFragment dialog = new LevelMenuDialogFragment();
+        dialog.setMessageText("Welcome to game " + currentGame);
+        dialog.setLevels(levelDefinitions.length());
+        fragmentManager = getFragmentManager();
+        dialog.show(fragmentManager, "LevelMenuDialogFragment");
+	}
+
+	@Override
+	public void onLevelMenuDialogSelection(DialogFragment dialog, int selectedLevel) {
+		try {
+			int characterGroup = Integer.parseInt(levelDefinitions.getJSONObject(selectedLevel-1).getString("characterGroup"));
+			currentLevel = selectedLevel;
+			viewDraw.setCharacterGroup(levelsJson.getJSONArray("characterGroups").getJSONArray(characterGroup));
+			showLevelDialog();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void onLevelMenuDialogCancel(DialogFragment dialog) {
+		finish();
+	}
+		
     public void showLevelDialog() {
         FragmentManager fragmentManager;
         LevelDialogFragment dialog = new LevelDialogFragment();
@@ -179,7 +206,7 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
     }
 
 	@Override
-	public void onDialogPositiveClick(DialogFragment dialog) {
+	public void onLevelDialogStartLevel(DialogFragment dialog) {
 		try {
 			int characterGroup = Integer.parseInt(levelDefinitions.getJSONObject(currentLevel-1).getString("characterGroup"));
 			viewDraw.setCharacterGroup(levelsJson.getJSONArray("characterGroups").getJSONArray(characterGroup));
@@ -189,8 +216,8 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
 	}
 
 	@Override
-	public void onDialogNegativeClick(DialogFragment dialog) {
+	public void onLevelDialogCancel(DialogFragment dialog) {
 		finish();
 	}
-	
+
 }
