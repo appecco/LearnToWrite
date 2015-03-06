@@ -119,7 +119,43 @@
                     "characterGroup":6,
                     "hints":false,
                     "dotted":true
+                },
+                {
+                    "characterGroup":0,
+                    "hints":false,
+                    "dotted":false
+                },
+                {
+                    "characterGroup":1,
+                    "hints":false,
+                    "dotted":false
+                },
+                {
+                    "characterGroup":2,
+                    "hints":false,
+                    "dotted":false
+                },
+                {
+                    "characterGroup":3,
+                    "hints":false,
+                    "dotted":false
+                },
+                {
+                    "characterGroup":4,
+                    "hints":false,
+                    "dotted":false
+                },
+                {
+                    "characterGroup":5,
+                    "hints":false,
+                    "dotted":false
+                },
+                {
+                    "characterGroup":6,
+                    "hints":false,
+                    "dotted":false
                 }
+
             ]
         },
         {
@@ -194,7 +230,43 @@
                     "characterGroup":13,
                     "hints":false,
                     "dotted":true
+                },
+                {
+                    "characterGroup":7,
+                    "hints":false,
+                    "dotted":false
+                },
+                {
+                    "characterGroup":8,
+                    "hints":false,
+                    "dotted":false
+                },
+                {
+                    "characterGroup":9,
+                    "hints":false,
+                    "dotted":false
+                },
+                {
+                    "characterGroup":10,
+                    "hints":false,
+                    "dotted":false
+                },
+                {
+                    "characterGroup":11,
+                    "hints":false,
+                    "dotted":false
+                },
+                {
+                    "characterGroup":12,
+                    "hints":false,
+                    "dotted":false
+                },
+                {
+                    "characterGroup":13,
+                    "hints":false,
+                    "dotted":false
                 }
+
             ]
         },
         {
@@ -219,6 +291,16 @@
                     "characterGroup":15,
                     "hints":false,
                     "dotted":true
+                },
+                {
+                    "characterGroup":14,
+                    "hints":false,
+                    "dotted":false
+                },
+                {
+                    "characterGroup":15,
+                    "hints":false,
+                    "dotted":false
                 }
             ]
         },
@@ -234,6 +316,11 @@
                     "characterGroup":16,
                     "hints":false,
                     "dotted":true
+                },
+                {
+                    "characterGroup":16,
+                    "hints":false,
+                    "dotted":false
                 }
             ]
         }

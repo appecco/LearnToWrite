@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -25,7 +26,7 @@ import android.widget.Toast;
 public class GameActivity extends Activity implements LevelDialogFragment.LevelDialogListener, LevelMenuDialogFragment.LevelMenuDialogListener {
 	
 	private static final String LEVEL_FILE = "level";
-	private static final String CURRENT_LEVEL_KEY = "currentLevel";
+	private static final String CURRENT_PROGRESS_KEY = "currentProgress";
 	private static final String SETTINGS_FILE="settings";
 	
 	DrawingView viewDraw;
@@ -34,6 +35,9 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
 	private JSONObject levelsJson;
 	private JSONArray levelDefinitions;
 	private int currentLevel;
+	
+	private JSONObject progress = null;
+	private JSONArray scores;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -103,13 +107,30 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
 			Toast.makeText(this, "The levels definition file could not be loaded", Toast.LENGTH_LONG).show();
 		}
 		try {
-			currentLevel = Integer.parseInt(StorageOperations.readDataFromPreferencesFile(this, LEVEL_FILE, CURRENT_LEVEL_KEY,"1"));
+			progress = new JSONObject(StorageOperations.readDataFromPreferencesFile(this, LEVEL_FILE, CURRENT_PROGRESS_KEY, null));
 		} catch (Exception e){
-			currentLevel = 1;
+			try {
+				progress = StorageOperations.loadAssetsJson(this, "files/initialProgress.json");
+			} catch (IOException ioe){
+				Log.w("GameActivity","Could not load the initial progress file. " + e.getMessage());
+			}
 		}
-
+		try {
+			JSONArray games = progress.getJSONArray("games");
+			currentLevel = 0;
+			for (int i=0; i<games.length();i++){
+				if (games.getJSONObject(i).getString("name").equals(currentGame)){
+					scores = games.getJSONObject(i).getJSONArray("scores");
+					for (int j=0;j<scores.length();j++){
+						if (scores.getInt(j)==0){
+							currentLevel = j;
+							Log.v("GameActivity","Selected level " + j);
+						}
+					}
+				}
+			}
+		} catch (Exception e){}
 		showLevelMenuDialog();
-		
 	}
 
 	public void onRadPenWidthClick(View view) {
@@ -161,8 +182,18 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
 	}
 	
 	public void levelCompleted(){
-		currentLevel++;
-		StorageOperations.saveDataToPreferencesFile(this, LEVEL_FILE, new String[] {CURRENT_LEVEL_KEY,Integer.toString(currentLevel)});
+		try {
+			// TODO Set the score value to the number of stars earned for the level
+			scores.put(currentLevel, 2);
+			currentLevel++;
+			if (levelDefinitions.length()>currentLevel){
+				scores.put(currentLevel, 0);
+			}
+		} catch (JSONException e) {
+			Log.w("GameActivity","Error while updating the level's progress. " + e.getMessage());
+		}
+		//StorageOperations.saveDataToPreferencesFile(this, LEVEL_FILE, new String[] {CURRENT_PROGRESS_KEY,Integer.toString(currentLevel)});
+		StorageOperations.saveDataToPreferencesFile(this, LEVEL_FILE, new String[] {CURRENT_PROGRESS_KEY,progress.toString()});
 		if (levelDefinitions.length()>currentLevel){
 			showLevelDialog();
 		} else {
@@ -176,20 +207,22 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
         LevelMenuDialogFragment dialog = new LevelMenuDialogFragment();
         dialog.setMessageText("Welcome to game " + currentGame);
         dialog.setLevels(levelDefinitions.length());
+        dialog.setScores(scores);
         fragmentManager = getFragmentManager();
         dialog.show(fragmentManager, "LevelMenuDialogFragment");
 	}
 
 	@Override
 	public void onLevelMenuDialogSelection(DialogFragment dialog, int selectedLevel) {
-		try {
-			int characterGroup = Integer.parseInt(levelDefinitions.getJSONObject(selectedLevel-1).getString("characterGroup"));
+		// TODO Cleanup commented code
+		//try {
+			//int characterGroup = levelDefinitions.getJSONObject(selectedLevel).getInt("characterGroup");
 			currentLevel = selectedLevel;
-			viewDraw.setCharacterGroup(levelsJson.getJSONArray("characterGroups").getJSONArray(characterGroup));
+			//viewDraw.setCharacterGroup(levelsJson.getJSONArray("characterGroups").getJSONArray(characterGroup));
 			showLevelDialog();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		//} catch (JSONException e) {
+		//	e.printStackTrace();
+		//}
 	}
 
 	@Override
@@ -200,7 +233,7 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
     public void showLevelDialog() {
         FragmentManager fragmentManager;
         LevelDialogFragment dialog = new LevelDialogFragment();
-        dialog.setMessageText("Welcome to level " + Integer.toString(currentLevel));
+        dialog.setMessageText("Welcome to level " + Integer.toString(currentLevel+1));
         fragmentManager = getFragmentManager();
         dialog.show(fragmentManager, "LevelDialogFragment");
     }
@@ -208,7 +241,7 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
 	@Override
 	public void onLevelDialogStartLevel(DialogFragment dialog) {
 		try {
-			int characterGroup = Integer.parseInt(levelDefinitions.getJSONObject(currentLevel-1).getString("characterGroup"));
+			int characterGroup = Integer.parseInt(levelDefinitions.getJSONObject(currentLevel).getString("characterGroup"));
 			viewDraw.setCharacterGroup(levelsJson.getJSONArray("characterGroups").getJSONArray(characterGroup));
 		} catch (JSONException e) {
 			e.printStackTrace();

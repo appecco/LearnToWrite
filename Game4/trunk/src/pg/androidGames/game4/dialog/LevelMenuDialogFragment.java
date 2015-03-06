@@ -1,5 +1,8 @@
 package pg.androidGames.game4.dialog;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import pg.androidGames.game4.R;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,6 +23,7 @@ public class LevelMenuDialogFragment extends DialogFragment {
 	Activity activity;
 	String messageText;
 	int levels;
+	JSONArray scores;
 	int selectedLevel;
 	
 	public interface LevelMenuDialogListener{
@@ -64,9 +68,18 @@ public class LevelMenuDialogFragment extends DialogFragment {
 		messageView.setText(messageText);
 		LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.levelButtonsLayout);
         Button btn;
-        for( int i=1;i<=levels;i++){
+        for( int i=0;i<levels;i++){
             btn = new Button(getActivity());
-            btn.setText("Level " + i);
+            try {
+				if (scores.getInt(i) == -1){
+					btn.setText("Locked");
+					btn.setEnabled(false);
+				} else {
+					btn.setText("Level " + (i+1));
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
             btn.setTag(i);
             btn.setOnClickListener(new OnClickListener(){
 
@@ -100,6 +113,10 @@ public class LevelMenuDialogFragment extends DialogFragment {
 	
 	public void setLevels(int levels){
 		this.levels = levels;
+	}
+
+	public void setScores(JSONArray scores) {
+		this.scores = scores;
 	}
 
 }

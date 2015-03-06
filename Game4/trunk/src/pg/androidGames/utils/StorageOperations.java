@@ -2,18 +2,23 @@ package pg.androidGames.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.os.Environment;
+import android.util.Log;
 
 public class StorageOperations {
 
@@ -90,4 +95,14 @@ public class StorageOperations {
 		return json;
 	}
 	
+	public static boolean assetExists(Context context, String path) {
+	    boolean bAssetOk = false;
+	    try {
+	        InputStream stream = context.getAssets().open(path);
+	        stream.close();
+	        bAssetOk = true;
+	    } catch (IOException e) {
+	    }
+	    return bAssetOk;
+	}
 }

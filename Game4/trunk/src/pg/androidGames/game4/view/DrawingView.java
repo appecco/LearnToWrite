@@ -33,12 +33,16 @@ import android.widget.Toast;
 import org.json.*;
 
 import pg.androidGames.game4.GameActivity;
+import pg.androidGames.utils.StorageOperations;
 
 public class DrawingView extends View implements OnTouchListener {
 
 	private static final float FONT_SIZE = 240.0f;
 	private static final int GESTURE_TYPE_MOVE = 0;
 	private static final int GESTURE_TYPE_DRAW = 1;
+	
+	private static final double REFERENCE_WIDTH = 1092d;
+	private static final double REFERENCE_HEIGHT = 550d;
 	
 	private GameActivity activity;
 	
@@ -54,6 +58,7 @@ public class DrawingView extends View implements OnTouchListener {
 	private LinkedList<Path> paths = new LinkedList<Path>();
 	
 	private float mX, mY, gX = 0, gY = 0;
+	private float scaledGestureTolerance;
 	private JSONObject json;
 	private JSONArray jsonPaths;
 	private JSONArray jsonPath;
@@ -153,6 +158,7 @@ public class DrawingView extends View implements OnTouchListener {
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
 		canvasBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+		scaledGestureTolerance = (float)(GESTURE_TOLERANCE * getWidth() / REFERENCE_WIDTH);
 		drawCanvas = new Canvas(canvasBitmap);
 	}
 
@@ -213,8 +219,8 @@ public class DrawingView extends View implements OnTouchListener {
 	private void touch_start(float x, float y) {
 		char gestureChar = 0;
 
-		float dx = x - gX;
-		float dy = y - gY;
+		float dx = (float)((double)(x - gX) * (double)getWidth() / REFERENCE_WIDTH);
+		float dy = (float)((double)(y - gY) * (double)getHeight() / REFERENCE_HEIGHT);
 
 		mPath.reset();
 		mPath.moveTo(x, y);
@@ -225,13 +231,13 @@ public class DrawingView extends View implements OnTouchListener {
 
 		if (!animating){
 			
-			if (Math.abs(dx) + Math.abs(dy) > GESTURE_TOLERANCE) {
+			if (Math.abs(dx) + Math.abs(dy) > scaledGestureTolerance) {
 
 				gX = x;
 				gY = y;
 
 				gestureChar = getGestureChar(dx, dy, GESTURE_TYPE_MOVE);
-				for (float s = GESTURE_TOLERANCE; s <= Math.abs(dx) + Math.abs(dy); s += GESTURE_TOLERANCE) {
+				for (float s = scaledGestureTolerance; s <= Math.abs(dx) + Math.abs(dy); s += scaledGestureTolerance) {
 					currentGesture.append(gestureChar);
 				}
 			}
@@ -249,8 +255,8 @@ public class DrawingView extends View implements OnTouchListener {
 	private void touch_move(float x, float y, boolean isHistory) {
 		char gestureChar = 0;
 
-		float dx = x - gX;
-		float dy = y - gY;
+		float dx = (float)((double)(x - gX) * (double)getWidth() / REFERENCE_WIDTH);
+		float dy = (float)((double)(y - gY) * (double)getHeight() / REFERENCE_HEIGHT);
 
 		float idx, idy;
 
@@ -274,13 +280,13 @@ public class DrawingView extends View implements OnTouchListener {
 			}
 		}
 
-		if (!animating && Math.abs(dx) + Math.abs(dy) > GESTURE_TOLERANCE) {
+		if (!animating && Math.abs(dx) + Math.abs(dy) > scaledGestureTolerance) {
 
 			gX = x;
 			gY = y;
 
 			gestureChar = getGestureChar(dx, dy, GESTURE_TYPE_DRAW);
-			for (float s = GESTURE_TOLERANCE; s <= Math.abs(dx) + Math.abs(dy); s += GESTURE_TOLERANCE) {
+			for (float s = scaledGestureTolerance; s <= Math.abs(dx) + Math.abs(dy); s += scaledGestureTolerance) {
 				currentGesture.append(gestureChar);
 			}
 		}
@@ -468,8 +474,8 @@ public class DrawingView extends View implements OnTouchListener {
 						animDelay++;
 						
 						if (j==0){
-							final float tempX = (float)point.getDouble("x");
-							final float tempY = (float)point.getDouble("y");
+							final float tempX = (float)(point.getDouble("x") * (double)getWidth() / REFERENCE_WIDTH);
+							final float tempY = (float)(point.getDouble("y") * (double)getHeight() / REFERENCE_HEIGHT);
 							
 							animHandler.postDelayed(new Runnable() { 
 						         public void run() {
@@ -481,8 +487,8 @@ public class DrawingView extends View implements OnTouchListener {
 	
 						} else {
 							
-							final float tempX = (float)point.getDouble("x");
-							final float tempY = (float)point.getDouble("y");
+							final float tempX = (float)(point.getDouble("x") * (double)getWidth() / REFERENCE_WIDTH);
+							final float tempY = (float)(point.getDouble("y") * (double)getHeight() / REFERENCE_HEIGHT);
 							
 							animHandler.postDelayed(new Runnable() { 
 						         public void run() {
@@ -532,44 +538,28 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 	
 	private void load(){
-		if (Environment.MEDIA_MOUNTED.equals(Environment
-				.getExternalStorageState())) {
-			try {
-				File file;
-				if (currentChar >= 'A' && currentChar <= 'Z' || currentChar == 'Ñ'){
-					file = new File(
-							Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
-							"Game4Paths/M" + Character.toString(currentChar) + ".json");
-				} else {
-					file = new File(
-							Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
-							"Game4Paths/" + Character.toString(currentChar) + ".json");
-				}
-				if (!file.exists()){
-					Toast.makeText(getContext(), "Hint for " + Character.toString(currentChar) + " is not available.", Toast.LENGTH_SHORT).show();
-					animJson = null;
-					animPaths = null;
-					targetGesture = "X";
-					return;
-				}
-				FileInputStream stream = new FileInputStream(file);
-				String jsonStr = null;
-				try {
-					FileChannel fc = stream.getChannel();
-					MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0,
-							fc.size());
-
-					jsonStr = Charset.defaultCharset().decode(bb).toString();
-				} finally {
-					stream.close();
-				}
-				animJson = new JSONObject(jsonStr);
+		try {
+			String filePath;
+			if (currentChar >= 'A' && currentChar <= 'Z' || currentChar == 'Ñ'){
+				filePath = "files/M" + Character.toString(currentChar) + ".json";
+			} else {
+				filePath = "files/" + Character.toString(currentChar) + ".json";
+			}
+			if (StorageOperations.assetExists(getContext(), filePath)){
+				animJson = StorageOperations.loadAssetsJson(getContext(), filePath);
 				animPaths = animJson.getJSONArray("paths");
 				targetGesture = animJson.getString("gesture");
-			} catch (IOException | JSONException e) {
-				e.printStackTrace();
+			} else {
+				Toast.makeText(getContext(), "Hint for " + Character.toString(currentChar) + " is not available.", Toast.LENGTH_SHORT).show();
+				animJson = null;
+				animPaths = null;
+				targetGesture = "X";
+				return;
 			}
-		}		
+		} catch (IOException | JSONException e) {
+			e.printStackTrace();
+		}
+
 	}
 	
 	public void save(){
