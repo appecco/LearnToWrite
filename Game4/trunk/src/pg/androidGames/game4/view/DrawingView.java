@@ -18,6 +18,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PathMeasure;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Typeface;
@@ -58,7 +59,6 @@ public class DrawingView extends View implements OnTouchListener {
 	private LinkedList<Path> paths = new LinkedList<Path>();
 	
 	private float mX, mY, gX = 0, gY = 0;
-	private float scaledGestureTolerance;
 	private JSONObject json;
 	private JSONArray jsonPaths;
 	private JSONArray jsonPath;
@@ -158,7 +158,6 @@ public class DrawingView extends View implements OnTouchListener {
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
 		canvasBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
-		scaledGestureTolerance = (float)(GESTURE_TOLERANCE * getWidth() / REFERENCE_WIDTH);
 		drawCanvas = new Canvas(canvasBitmap);
 	}
 
@@ -219,8 +218,8 @@ public class DrawingView extends View implements OnTouchListener {
 	private void touch_start(float x, float y) {
 		char gestureChar = 0;
 
-		float dx = (float)((double)(x - gX) * (double)getWidth() / REFERENCE_WIDTH);
-		float dy = (float)((double)(y - gY) * (double)getHeight() / REFERENCE_HEIGHT);
+		float dx = (float)((double)(x - gX) * REFERENCE_WIDTH / (double)getWidth());
+		float dy = (float)((double)(y - gY) * REFERENCE_HEIGHT / (double)getHeight());
 
 		mPath.reset();
 		mPath.moveTo(x, y);
@@ -231,13 +230,13 @@ public class DrawingView extends View implements OnTouchListener {
 
 		if (!animating){
 			
-			if (Math.abs(dx) + Math.abs(dy) > scaledGestureTolerance) {
+			if (Math.abs(dx) + Math.abs(dy) > GESTURE_TOLERANCE) {
 
 				gX = x;
 				gY = y;
 
 				gestureChar = getGestureChar(dx, dy, GESTURE_TYPE_MOVE);
-				for (float s = scaledGestureTolerance; s <= Math.abs(dx) + Math.abs(dy); s += scaledGestureTolerance) {
+				for (float s = GESTURE_TOLERANCE; s <= Math.abs(dx) + Math.abs(dy); s += GESTURE_TOLERANCE) {
 					currentGesture.append(gestureChar);
 				}
 			}
@@ -255,8 +254,8 @@ public class DrawingView extends View implements OnTouchListener {
 	private void touch_move(float x, float y, boolean isHistory) {
 		char gestureChar = 0;
 
-		float dx = (float)((double)(x - gX) * (double)getWidth() / REFERENCE_WIDTH);
-		float dy = (float)((double)(y - gY) * (double)getHeight() / REFERENCE_HEIGHT);
+		float dx = (float)((double)(x - gX) * REFERENCE_WIDTH / (double)getWidth());
+		float dy = (float)((double)(y - gY) * REFERENCE_HEIGHT / (double)getHeight());
 
 		float idx, idy;
 
@@ -280,13 +279,13 @@ public class DrawingView extends View implements OnTouchListener {
 			}
 		}
 
-		if (!animating && Math.abs(dx) + Math.abs(dy) > scaledGestureTolerance) {
+		if (!animating && Math.abs(dx) + Math.abs(dy) > GESTURE_TOLERANCE) {
 
 			gX = x;
 			gY = y;
 
 			gestureChar = getGestureChar(dx, dy, GESTURE_TYPE_DRAW);
-			for (float s = scaledGestureTolerance; s <= Math.abs(dx) + Math.abs(dy); s += scaledGestureTolerance) {
+			for (float s = GESTURE_TOLERANCE; s <= Math.abs(dx) + Math.abs(dy); s += GESTURE_TOLERANCE) {
 				currentGesture.append(gestureChar);
 			}
 		}
@@ -298,6 +297,7 @@ public class DrawingView extends View implements OnTouchListener {
 			mPath.lineTo(mX, mY);
 			
 			if (animPaths != null && animPaths.length() == paths.size()){
+//				Toast.makeText(getContext(), currentGesture.toString(), Toast.LENGTH_LONG).show();
 				if (currentGesture.toString().equals(targetGesture)){
 					Toast.makeText(getContext(), "Perfect!!!!", Toast.LENGTH_LONG).show();
 				} else {
@@ -474,8 +474,8 @@ public class DrawingView extends View implements OnTouchListener {
 						animDelay++;
 						
 						if (j==0){
-							final float tempX = (float)(point.getDouble("x") * (double)getWidth() / REFERENCE_WIDTH);
-							final float tempY = (float)(point.getDouble("y") * (double)getHeight() / REFERENCE_HEIGHT);
+							final float tempX = (float)((int)point.getDouble("x") * getWidth() / REFERENCE_WIDTH);
+							final float tempY = (float)((int)point.getDouble("y") * getHeight() / REFERENCE_HEIGHT);
 							
 							animHandler.postDelayed(new Runnable() { 
 						         public void run() {
@@ -487,8 +487,8 @@ public class DrawingView extends View implements OnTouchListener {
 	
 						} else {
 							
-							final float tempX = (float)(point.getDouble("x") * (double)getWidth() / REFERENCE_WIDTH);
-							final float tempY = (float)(point.getDouble("y") * (double)getHeight() / REFERENCE_HEIGHT);
+							final float tempX = (float)((int)point.getDouble("x") * getWidth() / REFERENCE_WIDTH);
+							final float tempY = (float)((int)point.getDouble("y") * getHeight() / REFERENCE_HEIGHT);
 							
 							animHandler.postDelayed(new Runnable() { 
 						         public void run() {
@@ -517,6 +517,7 @@ public class DrawingView extends View implements OnTouchListener {
 		}
 	}
 	
+
 	public void next(){
 		currentCharIndex++;
 		if (currentCharIndex == characterGroup.length()){
@@ -524,6 +525,7 @@ public class DrawingView extends View implements OnTouchListener {
 		} else {
 			try {
 				currentChar = characterGroup.getString(currentCharIndex).charAt(0);
+				fontPaint.getTextPath(Character.toString(currentChar), 0, 1, (int)(150 * scale + 0.5f), (int)(200 * scale + 0.5f), fontPath);
 			} catch (ArrayIndexOutOfBoundsException e){
 				
 				return;
