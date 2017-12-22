@@ -63,7 +63,7 @@ public class DrawingView extends View implements OnTouchListener {
 	private JSONArray jsonPaths;
 	private JSONArray jsonPath;
 	
-	private int characterOutlineColor = Color.BLACK;
+	private int characterOutlineColor = Color.BLUE;
 	private int characterFillColor = Color.YELLOW;
 
 	private int currentCharIndex = -1;
@@ -216,7 +216,7 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	private void touch_start(float x, float y) {
-		char gestureChar = 0;
+		char gestureChar;
 
 		float dx = (float)((double)(x - gX) * REFERENCE_WIDTH / (double)getWidth());
 		float dy = (float)((double)(y - gY) * REFERENCE_HEIGHT / (double)getHeight());
@@ -252,7 +252,7 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	private void touch_move(float x, float y, boolean isHistory) {
-		char gestureChar = 0;
+		char gestureChar;
 
 		float dx = (float)((double)(x - gX) * REFERENCE_WIDTH / (double)getWidth());
 		float dy = (float)((double)(y - gY) * REFERENCE_HEIGHT / (double)getHeight());
@@ -480,7 +480,7 @@ public class DrawingView extends View implements OnTouchListener {
 							animHandler.postDelayed(new Runnable() { 
 						         public void run() {
 										animating = true;
-										touch_start((float)tempX,tempY);
+										touch_start(tempX,tempY);
 										invalidate();
 						         } 
 						    }, animDelay*25); 
@@ -556,7 +556,6 @@ public class DrawingView extends View implements OnTouchListener {
 				animJson = null;
 				animPaths = null;
 				targetGesture = "X";
-				return;
 			}
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
@@ -566,14 +565,14 @@ public class DrawingView extends View implements OnTouchListener {
 	
 	public void save(){
 		if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-			File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Game4Paths");
+			File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "learntowrite");
 			if (file.exists() || file.mkdirs()) {
 				try {
 					targetGesture = currentGesture.toString();
 					animJson = json;
 					animPaths = animJson.getJSONArray("paths");
 					json.put("gesture", targetGesture);
-					Writer output = null;
+					Writer output;
 					if (currentChar >= 'A' && currentChar <= 'Z' || currentChar == '�'){
 						output = new BufferedWriter(new FileWriter(new File(file,"M" + Character.toString(currentChar) + ".json")));
 					} else {
@@ -582,13 +581,13 @@ public class DrawingView extends View implements OnTouchListener {
 					output.write(json.toString());
 					output.close();
 				} catch (Exception e) {
-					Log.e("Game4-Path", e.getMessage());
+					Log.e("LearnToWrite", e.getMessage());
 				}
 			} else {
-				Log.e("Game4-Path", "Directory not created");
+				Log.e("LearnToWrite", "Directory not created");
 			}
 		} else {
-			Log.e("Game4-Path", "Media not mounted");
+			Log.e("LearnToWrite", "Media not mounted");
 		}	
 	}
 
