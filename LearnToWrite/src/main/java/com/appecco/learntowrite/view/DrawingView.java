@@ -107,7 +107,7 @@ public class DrawingView extends View implements OnTouchListener {
 		mPaint.setStyle(Paint.Style.STROKE);
 		mPaint.setStrokeJoin(Paint.Join.ROUND);
 		mPaint.setStrokeCap(Paint.Cap.ROUND);
-		mPaint.setStrokeWidth(16);
+		mPaint.setStrokeWidth(36);
 
 		animPaint = new Paint();
 		animPaint.setTextSize((int)(FONT_SIZE * scale + 0.5f));

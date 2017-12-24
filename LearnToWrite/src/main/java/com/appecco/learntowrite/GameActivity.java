@@ -20,7 +20,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 public class GameActivity extends Activity implements LevelDialogFragment.LevelDialogListener, LevelMenuDialogFragment.LevelMenuDialogListener {
@@ -50,7 +50,7 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
         Bundle b = getIntent().getExtras();
         currentGame = b.getString("game");
 
-        Button btnRetry = (Button)findViewById(R.id.btnRetry);
+        ImageButton btnRetry = (ImageButton)findViewById(R.id.btnRetry);
         btnRetry.setOnClickListener(new OnClickListener(){
 
             @Override
@@ -62,7 +62,7 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
 
         });
 
-        Button btnHint = (Button)findViewById(R.id.btnHint);
+        ImageButton btnHint = (ImageButton)findViewById(R.id.btnHint);
         btnHint.setOnClickListener(new OnClickListener(){
 
             @Override
@@ -72,6 +72,40 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
             }
 
         });
+
+        ImageButton btnRed = (ImageButton)findViewById(R.id.btnRed);
+        btnRed.setOnClickListener(new OnClickListener(){
+
+            @Override
+            public void onClick(View arg0) {
+                viewDraw.setPenColor(Color.RED);
+
+            }
+
+        });
+
+        ImageButton btnBlue = (ImageButton)findViewById(R.id.btnBlue);
+        btnBlue.setOnClickListener(new OnClickListener(){
+
+            @Override
+            public void onClick(View arg0) {
+                viewDraw.setPenColor(Color.BLUE);
+
+            }
+
+        });
+
+        ImageButton btnGreen = (ImageButton)findViewById(R.id.btnGreen);
+        btnGreen.setOnClickListener(new OnClickListener(){
+
+            @Override
+            public void onClick(View arg0) {
+                viewDraw.setPenColor(Color.GREEN);
+
+            }
+
+        });
+
 
         Button btnNext = (Button)findViewById(R.id.btnNext);
         btnNext.setOnClickListener(new OnClickListener(){
@@ -94,6 +128,8 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
             }
 
         });
+
+
 
         try {
             levelsJson = StorageOperations.loadAssetsJson(this, "files/levels.json");
@@ -133,53 +169,53 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
         showLevelMenuDialog();
     }
 
-    public void onRadPenWidthClick(View view) {
+//    public void onRadPenWidthClick(View view) {
+//
+//        boolean checked = ((RadioButton) view).isChecked();
+//
+//        switch(view.getId()) {
+//            case R.id.radPenWide:
+//                if (checked)
+//                    viewDraw.setPenWidth(36);
+//                break;
+//            case R.id.radPenMedium:
+//                if (checked)
+//                    viewDraw.setPenWidth(24);
+//                break;
+//            case R.id.radPenThin:
+//                if (checked)
+//                    viewDraw.setPenWidth(16);
+//                break;
+//        }
+//    }
 
-        boolean checked = ((RadioButton) view).isChecked();
-
-        switch(view.getId()) {
-            case R.id.radPenWide:
-                if (checked)
-                    viewDraw.setPenWidth(36);
-                break;
-            case R.id.radPenMedium:
-                if (checked)
-                    viewDraw.setPenWidth(24);
-                break;
-            case R.id.radPenThin:
-                if (checked)
-                    viewDraw.setPenWidth(16);
-                break;
-        }
-    }
-
-    public void onRadPenColorClick(View view){
-
-        boolean checked = ((RadioButton) view).isChecked();
-
-        switch(view.getId()) {
-            case R.id.radColorBlue:
-                if (checked)
-                    viewDraw.setPenColor(Color.BLUE);
-                break;
-            case R.id.radColorRed:
-                if (checked)
-                    viewDraw.setPenColor(Color.RED);
-                break;
-            case R.id.radColorGreen:
-                if (checked)
-                    viewDraw.setPenColor(Color.GREEN);
-                break;
-            case R.id.radColorYellow:
-                if (checked)
-                    viewDraw.setPenColor(Color.YELLOW);
-                break;
-            case R.id.radColorOrange:
-                if (checked)
-                    viewDraw.setPenColor(Color.rgb(255, 140, 0));
-                break;
-        }
-    }
+//    public void onRadPenColorClick(View view){
+//
+//        boolean checked = ((RadioButton) view).isChecked();
+//
+//        switch(view.getId()) {
+//            case R.id.radColorBlue:
+//                if (checked)
+//                    viewDraw.setPenColor(Color.BLUE);
+//                break;
+//            case R.id.radColorRed:
+//                if (checked)
+//                    viewDraw.setPenColor(Color.RED);
+//                break;
+//            case R.id.radColorGreen:
+//                if (checked)
+//                    viewDraw.setPenColor(Color.GREEN);
+//                break;
+//            case R.id.radColorYellow:
+//                if (checked)
+//                    viewDraw.setPenColor(Color.YELLOW);
+//                break;
+//            case R.id.radColorOrange:
+//                if (checked)
+//                    viewDraw.setPenColor(Color.rgb(255, 140, 0));
+//                break;
+//        }
+//    }
 
     public void levelCompleted(){
         try {
