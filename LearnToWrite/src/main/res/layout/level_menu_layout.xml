@@ -11,7 +11,7 @@
         android:layout_weight="0.33"
         android:gravity="center_vertical|center_horizontal"
         android:text="@string/welcome_to_game"
-        android:textSize="@dimen/dialog_message_text_size" />
+        android:textSize="32sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,17 +27,26 @@
             android:orientation="horizontal" >
         </LinearLayout>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LinearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="32sp"
+        android:gravity="center"
+        android:orientation="vertical" >
+
         <Button
             android:id="@+id/btnLevelMenuCancel"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.33"
+            android:layout_height="0sp"
+            android:layout_weight="0.1"
             android:text="@string/cancel_level" />
-
     </LinearLayout>
 
     <ImageView
         android:id="@+id/imageView2"
+        android:contentDescription="Advertising"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.25"

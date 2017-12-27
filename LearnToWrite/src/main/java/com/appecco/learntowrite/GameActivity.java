@@ -56,8 +56,8 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
             @Override
             public void onClick(View arg0) {
                 viewDraw.reset();
-                EditText txtGesture = (EditText)findViewById(R.id.txtGesture);
-                txtGesture.setText("");
+                //EditText txtGesture = (EditText)findViewById(R.id.txtGesture);
+                //txtGesture.setText("");
             }
 
         });
