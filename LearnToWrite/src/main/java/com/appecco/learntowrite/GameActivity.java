@@ -107,27 +107,27 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
         });
 
 
-        Button btnNext = (Button)findViewById(R.id.btnNext);
-        btnNext.setOnClickListener(new OnClickListener(){
-
-            @Override
-            public void onClick(View arg0) {
-                viewDraw.next();
-
-            }
-
-        });
-
-        Button btnSave = (Button)findViewById(R.id.btnSave);
-        btnSave.setOnClickListener(new OnClickListener(){
-
-            @Override
-            public void onClick(View arg0) {
-                viewDraw.save();
-
-            }
-
-        });
+//        Button btnNext = (Button)findViewById(R.id.btnNext);
+//        btnNext.setOnClickListener(new OnClickListener(){
+//
+//            @Override
+//            public void onClick(View arg0) {
+//                viewDraw.next();
+//
+//            }
+//
+//        });
+//
+//        Button btnSave = (Button)findViewById(R.id.btnSave);
+//        btnSave.setOnClickListener(new OnClickListener(){
+//
+//            @Override
+//            public void onClick(View arg0) {
+//                viewDraw.save();
+//
+//            }
+//
+//        });
 
 
 
