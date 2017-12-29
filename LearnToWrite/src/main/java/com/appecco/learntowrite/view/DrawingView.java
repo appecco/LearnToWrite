@@ -576,7 +576,7 @@ public class DrawingView extends View implements OnTouchListener {
 	private void load(){
 		try {
 			String filePath;
-			if (currentChar >= 'A' && currentChar <= 'Z' || currentChar == '�'){
+			if (currentChar >= 'A' && currentChar <= 'Z' || currentChar == 'Ñ'){
 				filePath = "files/M" + Character.toString(currentChar) + ".json";
 			} else {
 				filePath = "files/" + Character.toString(currentChar) + ".json";

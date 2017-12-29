@@ -43,25 +43,10 @@
             android:scaleType="fitCenter"
             android:src="@drawable/restart" />
 
-        <!--<Button
-            android:id="@+id/btnHint"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/hint" />-->
-
-   <!--     <Button
-            android:id="@+id/btnRetry"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/retry" />-->
-
         <Space
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1" />
-
 
         <ImageButton
             android:id="@+id/btnRed"
