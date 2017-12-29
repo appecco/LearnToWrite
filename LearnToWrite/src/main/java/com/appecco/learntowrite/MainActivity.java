@@ -83,19 +83,6 @@ public class MainActivity extends Activity {
             }
         });
 
-        ImageButton btnNewGameShapes = (ImageButton)findViewById(R.id.btnNewGameShapes);
-        btnNewGameShapes.setOnClickListener(new OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                mPlayerClick.start();
-
-                Intent intent = new Intent(MainActivity.this,GameActivity.class);
-                Bundle b = new Bundle();
-                b.putString("game", "Shapes");
-                intent.putExtras(b);
-                startActivity(intent);
-            }
-        });
     }
 
     @Override
