@@ -8,8 +8,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,32 +66,43 @@ public class LevelMenuDialogFragment extends DialogFragment {
 		messageView.setText(messageText);
 		LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.levelButtonsLayout);
         Button btn;
-        for( int i=0;i<levels;i++){
-            btn = new Button(getActivity());
-            try {
-				if (scores.getInt(i) == -1){
-					btn.setText("Locked");
-					btn.setEnabled(false);
-				} else {
-					btn.setText("Level " + (i+1));
-				}
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-            btn.setTag(i);
-            btn.setOnClickListener(new OnClickListener(){
 
-				@Override
-				public void onClick(View view) {
-					int level;
-					level = (int)((Button)view).getTag();
-					listener.onLevelMenuDialogSelection(LevelMenuDialogFragment.this, level);
-					getDialog().dismiss();
-				}
-            	
-            });
-            linearLayout.addView(btn);
-        }
+		for (int i = 0; i < Math.ceil((double)levels/(double)4); i++) {
+			LinearLayout layout_row = new LinearLayout(view.getContext());
+			layout_row.setLayoutParams(new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT));
+
+			for (int j = 0; j < 4; j++) {
+			    if ((i*4) + j < levels){
+                    btn = new Button(getActivity());
+                    btn.setLayoutParams(new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    try {
+                        if (scores.getInt((i*4) + j) == -1){
+                            btn.setText("Locked");
+                            btn.setEnabled(false);
+                        } else {
+                            btn.setText("Level " + ((i*4) + j +1));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    btn.setTag((i*4) + j);
+                    btn.setOnClickListener(new OnClickListener(){
+
+                        @Override
+                        public void onClick(View view) {
+                            int level;
+                            level = (int)((Button)view).getTag();
+                            listener.onLevelMenuDialogSelection(LevelMenuDialogFragment.this, level);
+                            getDialog().dismiss();
+                        }
+
+                    });
+                    layout_row.addView(btn);
+                }
+			}
+			linearLayout.addView(layout_row);
+		}
+
         btn = (Button)view.findViewById(R.id.btnLevelMenuCancel);
         btn.setOnClickListener(new OnClickListener(){
 

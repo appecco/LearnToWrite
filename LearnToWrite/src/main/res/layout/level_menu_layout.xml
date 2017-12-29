@@ -8,40 +8,35 @@
         android:id="@+id/levelDialogText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.33"
         android:gravity="center_vertical|center_horizontal"
+        android:layout_weight="0.25"
         android:text="@string/welcome_to_game"
         android:textSize="32sp" />
 
     <LinearLayout
+        android:id="@+id/levelButtonsLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.33"
-        android:orientation="horizontal" >
-
-        <LinearLayout
-            android:id="@+id/levelButtonsLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.33"
-            android:orientation="horizontal" >
-        </LinearLayout>
+        android:layout_weight="0.5"
+        android:orientation="vertical" >
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/LinearLayout1"
         android:layout_width="match_parent"
-        android:layout_height="32sp"
+        android:layout_height="35sp"
         android:gravity="center"
         android:orientation="vertical" >
 
         <Button
             android:id="@+id/btnLevelMenuCancel"
             android:layout_width="wrap_content"
-            android:layout_height="0sp"
-            android:layout_weight="0.1"
+            android:layout_height="0dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_weight="1"
             android:text="@string/cancel_level" />
+
     </LinearLayout>
 
     <ImageView
