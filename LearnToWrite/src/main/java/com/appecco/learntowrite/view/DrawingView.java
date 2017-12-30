@@ -86,7 +86,7 @@ public class DrawingView extends View implements OnTouchListener {
 
 	private int currentCharIndex = -1;
 	private JSONArray characterGroup;
-	private char currentChar = 'A';
+	private char currentChar = ' ';
 	private String targetGesture = "X";
 	private StringBuilder currentGesture = new StringBuilder();
 	
@@ -246,6 +246,8 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	private void touch_start(float x, float y) {
+        //TODO Verificar que no este animating
+
 		char gestureChar;
 
 		float dx = (float)((double)(x - gX) * PROP_WIDTH);
@@ -282,6 +284,8 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	private void touch_move(float x, float y, boolean isHistory) {
+        //TODO Verificar que no este animating
+
 		char gestureChar;
 
 		float dx = (float)((double)(x - gX) * PROP_WIDTH);
@@ -322,6 +326,8 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	private void touch_up() {
+	    //TODO Verificar que no este animating
+
 		int distance;
 		if (!animating){
 			mPath.lineTo(mX, mY);
@@ -332,19 +338,19 @@ public class DrawingView extends View implements OnTouchListener {
 					Toast.makeText(getContext(), "Perfect!!!!", Toast.LENGTH_LONG).show();
 				} else {
 					distance = editDistance(currentGesture.toString(),targetGesture);
-					if (distance < 10){
+					if ((int)((double)distance / (double)targetGesture.length() * 100) < 10){
 						Toast.makeText(getContext(), "Excellent!!! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
 						next();
 						return;
-					} else if (distance < 20){
+					} else if ((int)((double)distance / (double)targetGesture.length() * 100) < 15){
 						Toast.makeText(getContext(), "Very good!! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
 						next();
 						return;
-					} else if (distance < 30){
+					} else if ((int)((double)distance / (double)targetGesture.length() * 100) < 20){
 						Toast.makeText(getContext(), "Good! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
 						next();
 						return;
-					} else if (distance < 40){
+					} else if ((int)((double)distance / (double)targetGesture.length() * 100) < 25){
 						Toast.makeText(getContext(), "Not bad " + Integer.toString(distance), Toast.LENGTH_LONG).show();
 					} else {
 						Toast.makeText(getContext(), "Can be better " + Integer.toString(distance), Toast.LENGTH_LONG).show();
@@ -433,6 +439,7 @@ public class DrawingView extends View implements OnTouchListener {
 	
 	@Override
 	public boolean onTouch(View arg0, MotionEvent event) {
+        //TODO Verificar que no este animating
 
 		float x = event.getX();
 		float y = event.getY();
@@ -469,6 +476,8 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	public void reset() {
+        //TODO Verificar que no este animating
+
 		paths.clear();
 		mPath = new Path();
 		paths.add(mPath);
@@ -489,6 +498,8 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	public void hint() {
+        //TODO Hacer reset primero
+
 		JSONArray storedPath;
 		JSONObject point;
 		if (animPaths != null){
@@ -575,22 +586,24 @@ public class DrawingView extends View implements OnTouchListener {
 	
 	private void load(){
 		try {
-			String filePath;
-			if (currentChar >= 'A' && currentChar <= 'Z' || currentChar == 'Ñ'){
-				filePath = "files/M" + Character.toString(currentChar) + ".json";
-			} else {
-				filePath = "files/" + Character.toString(currentChar) + ".json";
-			}
-			if (StorageOperations.assetExists(getContext(), filePath)){
-				animJson = StorageOperations.loadAssetsJson(getContext(), filePath);
-				animPaths = animJson.getJSONArray("paths");
-				targetGesture = animJson.getString("gesture");
-			} else {
-				Toast.makeText(getContext(), "Hint for " + Character.toString(currentChar) + " is not available.", Toast.LENGTH_SHORT).show();
-				animJson = null;
-				animPaths = null;
-				targetGesture = "X";
-			}
+		    if (currentChar != ' '){
+                String filePath;
+                if (currentChar >= 'A' && currentChar <= 'Z' || currentChar == 'Ñ'){
+                    filePath = "files/M" + Character.toString(currentChar) + ".json";
+                } else {
+                    filePath = "files/" + Character.toString(currentChar) + ".json";
+                }
+                if (StorageOperations.assetExists(getContext(), filePath)){
+                    animJson = StorageOperations.loadAssetsJson(getContext(), filePath);
+                    animPaths = animJson.getJSONArray("paths");
+                    targetGesture = animJson.getString("gesture");
+                } else {
+                    Toast.makeText(getContext(), "Hint for " + Character.toString(currentChar) + " is not available.", Toast.LENGTH_SHORT).show();
+                    animJson = null;
+                    animPaths = null;
+                    targetGesture = "X";
+                }
+            }
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		}
