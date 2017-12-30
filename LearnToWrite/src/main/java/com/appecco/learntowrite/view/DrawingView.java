@@ -66,8 +66,7 @@ public class DrawingView extends View implements OnTouchListener {
 	private GameActivity activity;
 	
 	private Typeface customFont;
-	//private float scale;
-	
+
 	private Bitmap transpBitmap; 
 	private Bitmap canvasBitmap; 
 	private Canvas hintCanvas, drawCanvas;
@@ -107,8 +106,6 @@ public class DrawingView extends View implements OnTouchListener {
 	private void initView() {
 		activity = (GameActivity)getContext();
 		
-		//scale = getResources().getDisplayMetrics().density;
-
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 
@@ -125,7 +122,6 @@ public class DrawingView extends View implements OnTouchListener {
 		mPaint.setStrokeWidth(STROKE_WIDTH_ANIM);
 
 		animPaint = new Paint();
-		//animPaint.setTextSize((int)(FONT_SIZE * scale + 0.5f));
         animPaint.setTextSize((int)(FONT_SIZE));
 		animPaint.setTypeface(customFont);
 		animPaint.setAntiAlias(true);
@@ -137,7 +133,6 @@ public class DrawingView extends View implements OnTouchListener {
 		animPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
 		
 		fontPaint = new Paint();
-		//fontPaint.setTextSize((int)(FONT_SIZE * scale + 0.5f));
         fontPaint.setTextSize((int)(FONT_SIZE));
 		fontPaint.setTypeface(customFont);
 		fontPaint.setAntiAlias(true);
@@ -333,7 +328,6 @@ public class DrawingView extends View implements OnTouchListener {
 			mPath.lineTo(mX, mY);
 			
 			if (animPaths != null && animPaths.length() == paths.size()){
-//				Toast.makeText(getContext(), currentGesture.toString(), Toast.LENGTH_LONG).show();
 				if (currentGesture.toString().equals(targetGesture)){
 					Toast.makeText(getContext(), "Perfect!!!!", Toast.LENGTH_LONG).show();
 				} else {
@@ -569,7 +563,6 @@ public class DrawingView extends View implements OnTouchListener {
 		} else {
 			try {
 				currentChar = characterGroup.getString(currentCharIndex).charAt(0);
-				//fontPaint.getTextPath(Character.toString(currentChar), 0, 1, (int)(150 * scale + 0.5f), (int)(200 * scale + 0.5f), fontPath);
                 fontPaint.getTextPath(Character.toString(currentChar), 0, 1, (int)((width / 2) - CENTER_WIDTH), (int)((height / 2) + CENTER_HEIGHT), fontPath);
 			} catch (ArrayIndexOutOfBoundsException e){
 				
