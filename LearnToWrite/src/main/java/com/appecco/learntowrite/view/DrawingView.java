@@ -324,34 +324,50 @@ public class DrawingView extends View implements OnTouchListener {
 	    //TODO Verificar que no este animating
 
 		int distance;
+		int percentDev;
+
 		if (!animating){
 			mPath.lineTo(mX, mY);
 			
 			if (animPaths != null && animPaths.length() == paths.size()){
 				if (currentGesture.toString().equals(targetGesture)){
 					Toast.makeText(getContext(), "Perfect!!!!", Toast.LENGTH_LONG).show();
+                    //TODO Mostrar animacion de exito (Perfect!!!!)
+                    next();
+                    return;
 				} else {
 					distance = editDistance(currentGesture.toString(),targetGesture);
-					if ((int)((double)distance / (double)targetGesture.length() * 100) < 10){
-						Toast.makeText(getContext(), "Excellent!!! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+					percentDev = (int)((double)distance / (double)targetGesture.length() * 100);
+					if (percentDev < 15){
+						Toast.makeText(getContext(), "Excellent!!! " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
+                        //TODO Mostrar animacion de exito (3 Estrellas)
 						next();
 						return;
-					} else if ((int)((double)distance / (double)targetGesture.length() * 100) < 15){
-						Toast.makeText(getContext(), "Very good!! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+					} else if (percentDev < 20){
+						Toast.makeText(getContext(), "Very good!! " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
+                        //TODO Mostrar animacion de exito (2 Estrellas)
 						next();
 						return;
-					} else if ((int)((double)distance / (double)targetGesture.length() * 100) < 20){
-						Toast.makeText(getContext(), "Good! " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+					} else if (percentDev < 25){
+						Toast.makeText(getContext(), "Good! " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
+						//TODO Mostrar animacion de exito (1 Estrella)
 						next();
 						return;
-					} else if ((int)((double)distance / (double)targetGesture.length() * 100) < 25){
-						Toast.makeText(getContext(), "Not bad " + Integer.toString(distance), Toast.LENGTH_LONG).show();
+					} else if (percentDev < 30){
+						Toast.makeText(getContext(), "Not bad " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
+						//TODO Mostrar animacion de reintentar
+						reset();
+						return;
 					} else {
-						Toast.makeText(getContext(), "Can be better " + Integer.toString(distance), Toast.LENGTH_LONG).show();
-					}
+						Toast.makeText(getContext(), "Can be better " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
+                        //TODO Mostrar animacion de reintentar
+                        reset();
+                        return;
+                    }
 				}
 			}
 		}
+        //TODO Proposito de este codigo? Se puede llegar a el si arriba hay return en todos los casos?
 		mPath = new Path();
 		paths.add(mPath);
 	}
