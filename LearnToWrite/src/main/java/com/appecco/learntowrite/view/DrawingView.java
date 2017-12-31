@@ -241,8 +241,6 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	private void touch_start(float x, float y) {
-        //TODO Verificar que no este animating
-
 		char gestureChar;
 
 		float dx = (float)((double)(x - gX) * PROP_WIDTH);
@@ -279,8 +277,6 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	private void touch_move(float x, float y, boolean isHistory) {
-        //TODO Verificar que no este animating
-
 		char gestureChar;
 
 		float dx = (float)((double)(x - gX) * PROP_WIDTH);
@@ -295,7 +291,7 @@ public class DrawingView extends View implements OnTouchListener {
 			if (idx > DRAW_TOLERANCE || idy > DRAW_TOLERANCE) {
 				mPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
 				
-				if (!animating){
+				if (!animating & jsonPath != null){
 					try {
 						jsonPath.put(new JSONObject().put("x", x).put("y", y));
 					} catch (JSONException e) {
@@ -321,8 +317,6 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	private void touch_up() {
-	    //TODO Verificar que no este animating
-
 		int distance;
 		int percentDev;
 
@@ -367,7 +361,7 @@ public class DrawingView extends View implements OnTouchListener {
 				}
 			}
 		}
-        //TODO Proposito de este codigo? Se puede llegar a el si arriba hay return en todos los casos?
+
 		mPath = new Path();
 		paths.add(mPath);
 	}
@@ -449,29 +443,29 @@ public class DrawingView extends View implements OnTouchListener {
 	
 	@Override
 	public boolean onTouch(View arg0, MotionEvent event) {
-        //TODO Verificar que no este animating
+        if (!animating) {
+            float x = event.getX();
+            float y = event.getY();
 
-		float x = event.getX();
-		float y = event.getY();
-
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			touch_start(x, y);
-			invalidate();
-			break;
-		case MotionEvent.ACTION_MOVE:
-			for (int i = 0; i < event.getHistorySize(); i++) {
-				touch_move(event.getHistoricalX(i), event.getHistoricalY(i),
-						true);
-			}
-			touch_move(x, y, false);
-			invalidate();
-			break;
-		case MotionEvent.ACTION_UP:
-			touch_up();
-			invalidate();
-			break;
-		}
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    touch_start(x, y);
+                    invalidate();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    for (int i = 0; i < event.getHistorySize(); i++) {
+                        touch_move(event.getHistoricalX(i), event.getHistoricalY(i),
+                                true);
+                    }
+                    touch_move(x, y, false);
+                    invalidate();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    touch_up();
+                    invalidate();
+                    break;
+            }
+        }
 		return true;
 	}
 
@@ -486,86 +480,92 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	public void reset() {
-        //TODO Verificar que no este animating
+	    //veamos que no estemos animando
+        if (!animating) {
+            paths.clear();
+            mPath = new Path();
+            paths.add(mPath);
 
-		paths.clear();
-		mPath = new Path();
-		paths.add(mPath);
-		
-		currentGesture = new StringBuilder();
-		gX = 0;
-		gY = 0;
-		
-		try {
-			jsonPaths = new JSONArray();
-			json = new JSONObject();
-			json.put("paths", jsonPaths);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
-		invalidate();
+            currentGesture = new StringBuilder();
+            gX = 0;
+            gY = 0;
+
+            try {
+                jsonPaths = new JSONArray();
+                json = new JSONObject();
+                json.put("paths", jsonPaths);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            invalidate();
+        }
 	}
 
 	public void hint() {
-        //TODO Hacer reset primero
+        //Verifiquemos que no estemo ya animando
+        if (!animating){
 
-		JSONArray storedPath;
-		JSONObject point;
-		if (animPaths != null){
-			try {
-				Handler animHandler = new Handler();
-				long animDelay = 0;
-				
-				for (int i=0;i<animPaths.length();i++){
-					storedPath = animPaths.getJSONArray(i);
-					
-					for (int j=0;j<storedPath.length();j++){
-						point = storedPath.getJSONObject(j);
-						animDelay++;
-						
-						if (j==0){
-							final float tempX = (float)((int)(point.getDouble("x") / PROP_WIDTH));
-							final float tempY = (float)((int)(point.getDouble("y") / PROP_HEIGHT));
-							
-							animHandler.postDelayed(new Runnable() { 
-						         public void run() {
-										animating = true;
-										touch_start(tempX,tempY);
-										invalidate();
-						         } 
-						    }, animDelay*25); 
-	
-						} else {
-							
-							final float tempX = (float)((int)(point.getDouble("x") / PROP_WIDTH));
-							final float tempY = (float)(((int)point.getDouble("y") / PROP_HEIGHT));
-							
-							animHandler.postDelayed(new Runnable() { 
-						         public void run() {
-						        	 touch_move(tempX,tempY,false);
-						        	 invalidate();
-						         } 
-						    }, animDelay*25); 
-						}
-					}
-					animHandler.postDelayed(new Runnable() { 
-				         public void run() {
-				        	 touch_up();
-							 animating = false;
-							 reset();
-				         } 
-				    }, animDelay*25);
-				}
-				
-	
-				
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		} else {
-			Toast.makeText(getContext(), "Hint for " + Character.toString(currentChar) + " is not available.", Toast.LENGTH_SHORT).show();
-		}
+            //Hacemos reset para evitar que hayan trazos previos en letras de multiple trazo
+            reset();
+
+            JSONArray storedPath;
+            JSONObject point;
+            if (animPaths != null){
+                try {
+                    Handler animHandler = new Handler();
+                    long animDelay = 0;
+
+                    for (int i=0;i<animPaths.length();i++){
+                        storedPath = animPaths.getJSONArray(i);
+
+                        for (int j=0;j<storedPath.length();j++){
+                            point = storedPath.getJSONObject(j);
+                            animDelay++;
+
+                            if (j==0){
+                                final float tempX = (float)((int)(point.getDouble("x") / PROP_WIDTH));
+                                final float tempY = (float)((int)(point.getDouble("y") / PROP_HEIGHT));
+
+                                animHandler.postDelayed(new Runnable() {
+                                    public void run() {
+                                        animating = true;
+                                        touch_start(tempX,tempY);
+                                        invalidate();
+                                    }
+                                }, animDelay*25);
+
+                            } else {
+
+                                final float tempX = (float)((int)(point.getDouble("x") / PROP_WIDTH));
+                                final float tempY = (float)(((int)point.getDouble("y") / PROP_HEIGHT));
+
+                                animHandler.postDelayed(new Runnable() {
+                                    public void run() {
+                                        touch_move(tempX,tempY,false);
+                                        invalidate();
+                                    }
+                                }, animDelay*25);
+                            }
+                        }
+                        animHandler.postDelayed(new Runnable() {
+                            public void run() {
+                                touch_up();
+                                animating = false;
+                                reset();
+                            }
+                        }, animDelay*25);
+                    }
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(getContext(), "Hint for " + Character.toString(currentChar) + " is not available.", Toast.LENGTH_SHORT).show();
+            }
+        }
 	}
 	
 
