@@ -18,6 +18,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -30,6 +32,7 @@ import android.widget.Toast;
 import org.json.*;
 
 import com.appecco.learntowrite.GameActivity;
+import com.appecco.learntowrite.R;
 import com.appecco.utils.StorageOperations;
 
 public class DrawingView extends View implements OnTouchListener {
@@ -93,6 +96,8 @@ public class DrawingView extends View implements OnTouchListener {
 	private JSONObject animJson;
 	private JSONArray animPaths;
 
+	private int level_score;
+
 	public DrawingView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		initView();
@@ -153,7 +158,9 @@ public class DrawingView extends View implements OnTouchListener {
 
 		mPath = new Path();
 		paths.add(mPath);
-		
+
+		level_score = 0;
+
 		try {
 			jsonPaths = new JSONArray();
 			json = new JSONObject();
@@ -237,7 +244,19 @@ public class DrawingView extends View implements OnTouchListener {
 				drawCanvas.drawPath(p, mPaint);
 			}
 		}
+
 		canvas.drawBitmap(canvasBitmap,0,0,null);
+
+        //Agreguemos las estrellas segun el score del nivel
+        if (level_score > 0){
+            Drawable star = getResources().getDrawable(R.drawable.sss);
+            for (int i=1;i<=level_score;i++){
+                star.setBounds((10 + ((i-1) * 100)) / (int)((PROP_WIDTH + PROP_HEIGHT) / 2), 10 / (int)((PROP_WIDTH + PROP_HEIGHT) / 2), (80 + ((i-1) * 100)) / (int)((PROP_WIDTH + PROP_HEIGHT) / 2), 80 / (int)((PROP_WIDTH + PROP_HEIGHT) / 2));
+                star.draw(canvas);
+            }
+        }
+
+        //TODO Dependiendo del nivel hay que hacer que se dibujen puntos a lo largo del Path como guia para el dibujo
 	}
 
 	private void touch_start(float x, float y) {
@@ -327,6 +346,11 @@ public class DrawingView extends View implements OnTouchListener {
 				if (currentGesture.toString().equals(targetGesture)){
 					Toast.makeText(getContext(), "Perfect!!!!", Toast.LENGTH_LONG).show();
                     //TODO Mostrar animacion de exito (Perfect!!!!)
+                    level_score = level_score + 1;
+
+                    final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.good);
+                    mp.start();
+
                     next();
                     return;
 				} else {
@@ -335,26 +359,42 @@ public class DrawingView extends View implements OnTouchListener {
 					if (percentDev < 15){
 						Toast.makeText(getContext(), "Excellent!!! " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
                         //TODO Mostrar animacion de exito (3 Estrellas)
+                        level_score = level_score + 1;
+
+                        final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.good);
+                        mp.start();
 						next();
 						return;
 					} else if (percentDev < 20){
 						Toast.makeText(getContext(), "Very good!! " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
                         //TODO Mostrar animacion de exito (2 Estrellas)
+                        level_score = level_score + 1;
+
+                        final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.good);
+                        mp.start();
 						next();
 						return;
 					} else if (percentDev < 25){
 						Toast.makeText(getContext(), "Good! " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
 						//TODO Mostrar animacion de exito (1 Estrella)
+                        level_score = level_score + 1;
+
+                        final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.good);
+                        mp.start();
 						next();
 						return;
 					} else if (percentDev < 30){
 						Toast.makeText(getContext(), "Not bad " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
 						//TODO Mostrar animacion de reintentar
+                        final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.bad);
+                        mp.start();
 						reset();
 						return;
 					} else {
 						Toast.makeText(getContext(), "Can be better " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
                         //TODO Mostrar animacion de reintentar
+                        final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.bad);
+                        mp.start();
                         reset();
                         return;
                     }
@@ -576,6 +616,9 @@ public class DrawingView extends View implements OnTouchListener {
 		currentCharIndex++;
 		if (currentCharIndex == characterGroup.length()){
 			activity.levelCompleted();
+			level_score = 0;
+            final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.end_level);
+            mp.start();
 		} else {
 			try {
 				currentChar = characterGroup.getString(currentCharIndex).charAt(0);
@@ -591,6 +634,9 @@ public class DrawingView extends View implements OnTouchListener {
 		transpBitmap = null;
 		load();
 		reset();
+
+		//TODO Hacer que el Hint solo se de si no hay estrellas
+		hint();
 	}
 	
 	private void load(){
