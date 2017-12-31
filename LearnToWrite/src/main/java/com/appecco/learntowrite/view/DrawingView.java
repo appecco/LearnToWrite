@@ -251,7 +251,7 @@ public class DrawingView extends View implements OnTouchListener {
         if (level_score > 0){
             Drawable star = getResources().getDrawable(R.drawable.star);
             for (int i=1;i<=level_score;i++){
-                star.setBounds((10 + ((i-1) * 100)) / (int)((PROP_WIDTH + PROP_HEIGHT) / 2), 10 / (int)((PROP_WIDTH + PROP_HEIGHT) / 2), (80 + ((i-1) * 100)) / (int)((PROP_WIDTH + PROP_HEIGHT) / 2), 80 / (int)((PROP_WIDTH + PROP_HEIGHT) / 2));
+                star.setBounds((int)((10 + ((i-1) * 100)) / ((PROP_WIDTH + PROP_HEIGHT) / 2)), (int)(10 / ((PROP_WIDTH + PROP_HEIGHT) / 2)), (int)((80 + ((i-1) * 100)) / ((PROP_WIDTH + PROP_HEIGHT) / 2)), (int)(80 / ((PROP_WIDTH + PROP_HEIGHT) / 2)));
                 star.draw(canvas);
             }
         }
