@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
+import java.io.IOException;
+
 public class MainActivity extends Activity {
 
     public class BackgroundSound extends AsyncTask<Void, Void, Void> {
@@ -35,6 +37,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Play Intro Video
+        Intent intent = new Intent(MainActivity.this,VideoActivity.class);
+        startActivity(intent);
 
         final MediaPlayer mPlayerClick = MediaPlayer.create(this, R.raw.button_click);
 
