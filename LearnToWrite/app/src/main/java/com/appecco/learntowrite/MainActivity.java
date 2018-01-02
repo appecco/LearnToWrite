@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
+import com.google.android.gms.ads.MobileAds;
+
 import java.io.IOException;
 
 public class MainActivity extends Activity {
@@ -45,6 +47,9 @@ public class MainActivity extends Activity {
         final MediaPlayer mPlayerClick = MediaPlayer.create(this, R.raw.button_click);
 
         setContentView(R.layout.activity_main);
+
+        //Inicializar ADS
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
 
         ImageButton btnNewGameCursive = (ImageButton)findViewById(R.id.btnNewGameCursive);
         btnNewGameCursive.setOnClickListener(new OnClickListener(){

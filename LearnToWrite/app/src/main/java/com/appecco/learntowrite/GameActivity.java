@@ -18,10 +18,11 @@ import android.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.AdRequest;
 
 public class GameActivity extends Activity implements LevelDialogFragment.LevelDialogListener, LevelMenuDialogFragment.LevelMenuDialogListener {
 
@@ -39,11 +40,18 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
     private JSONObject progress = null;
     private JSONArray scores;
 
+    private InterstitialAd mInterstitialAd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         JSONArray gamesJson;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        //Inicializar Ads Interstitial
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
         viewDraw = (DrawingView)findViewById(R.id.viewDraw);
 
@@ -218,6 +226,11 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
 //    }
 
     public void levelCompleted(){
+        //Caarguemos y mostremos el Ad
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        }
+
         try {
             // TODO Set the score value to the number of stars earned for the level
             scores.put(currentLevel, 2);
