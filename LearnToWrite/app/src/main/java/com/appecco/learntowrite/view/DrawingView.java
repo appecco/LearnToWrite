@@ -298,6 +298,12 @@ public class DrawingView extends View implements OnTouchListener {
 	private void touch_move(float x, float y, boolean isHistory) {
 		char gestureChar;
 
+		//Evitar que se pueda realizar un trazo erroneo al iniciar un Touch mientras esta animando, eso evita que se de Touch_Start y por tanto gX y gY son 0
+		if (gX == 0 & gY == 0){
+            touch_start(x, y);
+            invalidate();
+		}
+
 		float dx = (float)((double)(x - gX) * PROP_WIDTH);
 		float dy = (float)((double)(y - gY) * PROP_HEIGHT);
 
@@ -543,7 +549,7 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	public void hint() {
-        //Verifiquemos que no estemo ya animando
+        //Verifiquemos que no estemos ya animando
         if (!animating){
 
             //Hacemos reset para evitar que hayan trazos previos en letras de multiple trazo
@@ -591,13 +597,17 @@ public class DrawingView extends View implements OnTouchListener {
                         animHandler.postDelayed(new Runnable() {
                             public void run() {
                                 touch_up();
-                                animating = false;
-                                reset();
                             }
                         }, animDelay*25);
                     }
 
-
+                    //Hacemos el reset y animating=false tambien delayed para que evite que se cambie el flag antes de que termine de animar
+					animHandler.postDelayed(new Runnable() {
+						public void run() {
+							animating = false;
+							reset();
+						}
+					}, animDelay*25);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
