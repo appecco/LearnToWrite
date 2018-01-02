@@ -48,10 +48,8 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        //Inicializar Ads Interstitial
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        //Preparar Ad
+        PrepareInterstitialAd();
 
         viewDraw = (DrawingView)findViewById(R.id.viewDraw);
 
@@ -226,10 +224,8 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
 //    }
 
     public void levelCompleted(){
-        //Caarguemos y mostremos el Ad
-        if (mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
-        }
+        //Mostremos el Ad
+        ShowInterstitialAd();
 
         try {
             // TODO Set the score value to the number of stars earned for the level
@@ -302,4 +298,21 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
         finish();
     }
 
+    private void PrepareInterstitialAd() {
+        //Inicializar Interstitial Ads
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+
+        //Precargar un Ad
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+    }
+
+    private void ShowInterstitialAd() {
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+
+            //Una vez mostrado el Ad preparemos el siguiente
+            PrepareInterstitialAd();
+        }
+    }
 }
