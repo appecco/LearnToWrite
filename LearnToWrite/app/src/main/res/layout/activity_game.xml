@@ -1,0 +1,202 @@
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/sky1"
+    tools:context="com.appecco.learntowrite.GameActivity"
+    tools:ignore="MergeRootFrame" >
+
+    <LinearLayout
+        android:layout_width="52sp"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+       <!-- <EditText
+            android:id="@+id/DeltaY"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:focusable="false"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/DeltaX"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:focusable="false"
+            android:inputType="text" />-->
+
+        <ImageButton
+            android:id="@+id/btnHint"
+            android:layout_width="match_parent"
+            android:layout_height="46sp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/hint" />
+
+        <ImageButton
+            android:id="@+id/btnRetry"
+            android:layout_width="match_parent"
+            android:layout_height="46sp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/restart" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/btnRed"
+            android:layout_width="match_parent"
+            android:layout_height="46sp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/redbutton" />
+
+        <ImageButton
+            android:id="@+id/btnBlue"
+            android:layout_width="match_parent"
+            android:layout_height="46sp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/bluebutton" />
+
+        <ImageButton
+            android:id="@+id/btnGreen"
+            android:layout_width="match_parent"
+            android:layout_height="46sp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/greenbutton" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <!--<Button-->
+            <!--android:id="@+id/btnNext"-->
+            <!--style="?android:attr/buttonStyleSmall"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Next" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/btnSave"-->
+            <!--style="?android:attr/buttonStyleSmall"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Save" />-->
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="7"
+        android:orientation="vertical" >
+
+        <com.appecco.learntowrite.view.DrawingView
+            android:id="@+id/viewDraw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="8" />
+
+        <!--<EditText-->
+            <!--android:id="@+id/txtGesture"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:ems="10"-->
+            <!--android:focusable="false"-->
+            <!--android:visibility="invisible"-->
+            <!--android:inputType="text" >-->
+            <!--<requestFocus />-->
+        <!--</EditText>-->
+
+        <!--<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:baselineAligned="true" >
+
+            &lt;!&ndash;<RadioGroup
+                android:id="@+id/radioGroup1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/radPenWide"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:onClick="onRadPenWidthClick"
+                    android:text="@string/pen_wide" />
+
+                <RadioButton
+                    android:id="@+id/radPenMedium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadPenWidthClick"
+                    android:text="@string/pen_medium" />
+
+                <RadioButton
+                    android:id="@+id/radPenThin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:onClick="onRadPenWidthClick"
+                    android:text="@string/pen_thin" />
+
+            </RadioGroup>&ndash;&gt;
+
+           &lt;!&ndash; <RadioGroup
+                android:id="@+id/radioGroup2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:baselineAligned="true"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/radColorBlue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:onClick="onRadPenColorClick"
+                    android:text="@string/pen_blue" />
+
+                <RadioButton
+                    android:id="@+id/radColorRed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadPenColorClick"
+                    android:text="@string/pen_red" />
+
+                <RadioButton
+                    android:id="@+id/radColorGreen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadPenColorClick"
+                    android:text="@string/pen_green" />
+
+                <RadioButton
+                    android:id="@+id/radColorYellow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadPenColorClick"
+                    android:text="@string/pen_yellow" />
+
+                <RadioButton
+                    android:id="@+id/radColorOrange"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadPenColorClick"
+                    android:text="@string/pen_orange" />
+
+            </RadioGroup>&ndash;&gt;
+
+        </LinearLayout>-->
+    </LinearLayout>
+
+</LinearLayout>
