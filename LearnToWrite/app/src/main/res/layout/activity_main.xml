@@ -102,11 +102,11 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
-        <ImageButton
-            android:id="@+id/imageButton1"
-            android:layout_width="38sp"
-            android:layout_height="38sp"
-            android:background="@drawable/settings_icon" />
+       <ImageButton
+           android:id="@+id/btnSettings"
+           android:layout_width="38sp"
+           android:layout_height="38sp"
+           android:background="@drawable/settings_icon" />
 
     </LinearLayout>
 

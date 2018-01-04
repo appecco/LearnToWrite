@@ -27,7 +27,6 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
 
     private static final String LEVEL_FILE = "level";
     private static final String CURRENT_PROGRESS_KEY = "currentProgress";
-    private static final String SETTINGS_FILE="settings";
 
     DrawingView viewDraw;
 
