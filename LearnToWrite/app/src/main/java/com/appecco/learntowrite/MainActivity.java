@@ -1,6 +1,7 @@
 package com.appecco.learntowrite;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 
 import android.content.Intent;
@@ -16,6 +17,8 @@ import com.google.android.gms.ads.MobileAds;
 import java.io.IOException;
 
 public class MainActivity extends Activity {
+
+    public static Context context;
 
     public class BackgroundSound extends AsyncTask<Void, Void, Void> {
         MediaPlayer backGroudPlayer;
@@ -39,6 +42,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.context = this;
 
         //Play Intro Video
         Intent intent = new Intent(MainActivity.this,VideoActivity.class);
@@ -90,6 +95,17 @@ public class MainActivity extends Activity {
                 Bundle b = new Bundle();
                 b.putString("game", "Numbers");
                 intent.putExtras(b);
+                startActivity(intent);
+            }
+        });
+
+        ImageButton btnSettings = (ImageButton)findViewById(R.id.btnSettings);
+        btnSettings.setOnClickListener(new OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                mPlayerClick.start();
+
+                Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
                 startActivity(intent);
             }
         });
