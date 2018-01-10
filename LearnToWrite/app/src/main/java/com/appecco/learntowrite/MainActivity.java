@@ -18,8 +18,6 @@ import java.io.IOException;
 
 public class MainActivity extends Activity {
 
-    public static Context context;
-
     public class BackgroundSound extends AsyncTask<Void, Void, Void> {
         MediaPlayer backGroudPlayer;
 
@@ -43,11 +41,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.context = this;
-
         //Play Intro Video
-        Intent intent = new Intent(MainActivity.this,VideoActivity.class);
-        startActivity(intent);
+        // TODO: Activar el video de introducción cuando se vaya a liberar la app
+        // Intent intent = new Intent(MainActivity.this,VideoActivity.class);
+        // startActivity(intent);
 
         final MediaPlayer mPlayerClick = MediaPlayer.create(this, R.raw.button_click);
 

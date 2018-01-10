@@ -7,24 +7,17 @@ import com.appecco.learntowrite.MainActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by mauricio_peccorini on 04/01/2018.
- */
-
 public class Settings {
 
     public static final String CURRENT_LANGUAGE="currentLanguage";
 
-    private static final String SETTINGS_FILE="settings";
-
-    public static String get(String name, String defaultValue) {
-        String value = defaultValue;
-        value = StorageOperations.readDataFromPreferencesFile(MainActivity.context, SETTINGS_FILE, name, defaultValue);
+    public static String get(Context context, String name, String defaultValue) {
+        String value = StorageOperations.readPreferences(context, name, defaultValue);
         return value;
     }
 
-    public static void set(String name, String value){
-        StorageOperations.saveDataToPreferencesFile(MainActivity.context, SETTINGS_FILE, new String[] {name, value});
+    public static void set(Context context, String name, String value){
+        StorageOperations.storePreferences(context, name, value);
     }
 
 }

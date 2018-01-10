@@ -6,15 +6,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.appecco.learntowrite.dialog.CategoryMenuDialogFragment;
 import com.appecco.learntowrite.view.DrawingView;
 import com.appecco.learntowrite.dialog.LevelDialogFragment;
 import com.appecco.learntowrite.dialog.LevelMenuDialogFragment;
+import com.appecco.utils.JSONOperations;
+import com.appecco.utils.Settings;
 import com.appecco.utils.StorageOperations;
-import android.app.Activity;
+
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,17 +29,18 @@ import android.widget.Toast;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.AdRequest;
 
-public class GameActivity extends Activity implements LevelDialogFragment.LevelDialogListener, LevelMenuDialogFragment.LevelMenuDialogListener {
+public class GameActivity extends AppCompatActivity implements CategoryMenuDialogFragment.OnFragmentInteractionListener, LevelDialogFragment.LevelDialogListener, LevelMenuDialogFragment.LevelMenuDialogListener {
 
-    private static final String LEVEL_FILE = "level";
     private static final String CURRENT_PROGRESS_KEY = "currentProgress";
 
     DrawingView viewDraw;
 
     private String currentGame;
-    private JSONObject levelsJson;
+    private JSONObject gameStructureJson;
     private JSONArray levelDefinitions;
     private int currentLevel;
+
+    String currentLanguage;
 
     private JSONObject progress = null;
     private JSONArray scores;
@@ -45,6 +51,7 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
     protected void onCreate(Bundle savedInstanceState) {
         JSONArray gamesJson;
         super.onCreate(savedInstanceState);
+        setTheme(R.style.Theme_AppCompat_Light_NoActionBar);
         setContentView(R.layout.activity_game);
 
         //Preparar Ad
@@ -134,11 +141,34 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
 //
 //        });
 
-
+        currentLanguage = Settings.get(this, Settings.CURRENT_LANGUAGE, "es");
 
         try {
-            levelsJson = StorageOperations.loadAssetsJson(this, "files/levels.json");
-            gamesJson = levelsJson.getJSONArray("games");
+            gameStructureJson = StorageOperations.loadAssetsJson(this, String.format("files/gameStructure_%s.json",currentLanguage));
+            JSONOperations.sort(gameStructureJson.getJSONArray("games"),"order");
+            JSONOperations.sort(gameStructureJson.getJSONArray("levels"),"order");
+        } catch (IOException | JSONException ex) {
+            Toast.makeText(this, "The levels definition file could not be loaded", Toast.LENGTH_LONG).show();
+        }
+
+        try {
+            progress = new JSONObject(StorageOperations.readPreferences(this, CURRENT_PROGRESS_KEY, null));
+        } catch (Exception e){
+            try {
+                progress = StorageOperations.loadAssetsJson(this, "files/initialProgress.json");
+            } catch (IOException ioe){
+                Log.w("GameActivity","Could not load the initial progress file. " + e.getMessage());
+            }
+        }
+
+        showCategoryMenuDialog();
+/*
+ * Sustitución de estructura inicial de 'juegos' y 'niveles'
+ *
+
+        try {
+            gameStructureJson = StorageOperations.loadAssetsJson(this, "files/levels.json");
+            gamesJson = gameStructureJson.getJSONArray("games");
             for (int i=0;i<gamesJson.length();i++){
                 if (gamesJson.getJSONObject(i).getString("name").equals(currentGame)){
                     levelDefinitions = gamesJson.getJSONObject(i).getJSONArray("levels");
@@ -172,6 +202,8 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
             }
         } catch (Exception e){}
         showLevelMenuDialog();
+*/
+
     }
 
 //    public void onRadPenWidthClick(View view) {
@@ -236,8 +268,7 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
         } catch (JSONException e) {
             Log.w("GameActivity","Error while updating the level's progress. " + e.getMessage());
         }
-        //StorageOperations.saveDataToPreferencesFile(this, LEVEL_FILE, new String[] {CURRENT_PROGRESS_KEY,Integer.toString(currentLevel)});
-        StorageOperations.saveDataToPreferencesFile(this, LEVEL_FILE, new String[] {CURRENT_PROGRESS_KEY,progress.toString()});
+        StorageOperations.storePreferences(this, CURRENT_PROGRESS_KEY,progress.toString());
         if (levelDefinitions.length()>currentLevel){
             showLevelDialog();
         } else {
@@ -256,13 +287,19 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
         dialog.show(fragmentManager, "LevelMenuDialogFragment");
     }
 
+    public void showCategoryMenuDialog(){
+        CategoryMenuDialogFragment categoryFragment = CategoryMenuDialogFragment.newInstance(gameStructureJson,progress);
+        categoryFragment.setStyle(android.support.v4.app.DialogFragment.STYLE_NORMAL,0);
+        categoryFragment.show(getSupportFragmentManager(),"CategoryMenuDialogFragment");
+    }
+
     @Override
     public void onLevelMenuDialogSelection(DialogFragment dialog, int selectedLevel) {
         // TODO Cleanup commented code
         //try {
         //int characterGroup = levelDefinitions.getJSONObject(selectedLevel).getInt("characterGroup");
         currentLevel = selectedLevel;
-        //viewDraw.setCharacterGroup(levelsJson.getJSONArray("characterGroups").getJSONArray(characterGroup));
+        //viewDraw.setCharacterGroup(gameStructureJson.getJSONArray("characterGroups").getJSONArray(characterGroup));
         showLevelDialog();
         //} catch (JSONException e) {
         //	e.printStackTrace();
@@ -286,7 +323,7 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
     public void onLevelDialogStartLevel(DialogFragment dialog) {
         try {
             int characterGroup = Integer.parseInt(levelDefinitions.getJSONObject(currentLevel).getString("characterGroup"));
-            viewDraw.setCharacterGroup(levelsJson.getJSONArray("characterGroups").getJSONArray(characterGroup));
+            viewDraw.setCharacterGroup(gameStructureJson.getJSONArray("characterGroups").getJSONArray(characterGroup));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -313,5 +350,10 @@ public class GameActivity extends Activity implements LevelDialogFragment.LevelD
             //Una vez mostrado el Ad preparemos el siguiente
             PrepareInterstitialAd();
         }
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        Toast.makeText(this, "Some interaction", Toast.LENGTH_LONG).show();
     }
 }
