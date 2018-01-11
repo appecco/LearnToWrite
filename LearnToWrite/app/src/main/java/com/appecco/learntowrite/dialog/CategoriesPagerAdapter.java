@@ -6,15 +6,17 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.appecco.learntowrite.model.Progress;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class CategoriesPagerAdapter extends FragmentStatePagerAdapter {
 
     private JSONObject gameStructure;
-    private JSONObject progress;
+    private Progress progress;
 
-    public CategoriesPagerAdapter(FragmentManager fm, JSONObject gameStructure, JSONObject progress){
+    public CategoriesPagerAdapter(FragmentManager fm, JSONObject gameStructure, Progress progress){
         super(fm);
         this.gameStructure = gameStructure;
         this.progress = progress;
@@ -26,7 +28,7 @@ public class CategoriesPagerAdapter extends FragmentStatePagerAdapter {
         try {
             pageCount = gameStructure.getJSONArray("games").length() * gameStructure.getJSONArray("levels").length();
         } catch (JSONException ex){
-            Log.v("CategoriesPagerAdapter","Invalid JSON gameStructure or progress");
+            Log.v("CategoriesPagerAdapter","Invalid JSON gameStructure");
         }
         return pageCount;
     }

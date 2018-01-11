@@ -87,7 +87,18 @@ public class StorageOperations {
 		}
         return json;
 	}
-	
+
+	public static String loadAssetsString(Context context, String filePath) throws IOException{
+		String assetValue = null;
+		InputStream is = context.getAssets().open(filePath);
+		int size = is.available();
+		byte[] buffer = new byte[size];
+		is.read(buffer);
+		is.close();
+    	assetValue = new String(buffer, "UTF-8");
+		return assetValue;
+	}
+
 	private static JSONObject loadJson(File directory, String filePath) throws IOException {
 		JSONObject json = null;
 		if (Environment.MEDIA_MOUNTED.equals(Environment
