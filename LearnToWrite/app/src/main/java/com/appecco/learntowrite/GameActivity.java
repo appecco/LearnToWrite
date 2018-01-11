@@ -173,47 +173,6 @@ public class GameActivity extends AppCompatActivity implements CategoryMenuDialo
         progress = gson.fromJson(progressData,Progress.class);
 
         showCategoryMenuDialog();
-/*
- * Sustitución de estructura inicial de 'juegos' y 'niveles'
- *
-
-        try {
-            gameStructure = StorageOperations.loadAssetsJson(this, "files/levels.json");
-            gamesJson = gameStructure.getJSONArray("games");
-            for (int i=0;i<gamesJson.length();i++){
-                if (gamesJson.getJSONObject(i).getString("name").equals(currentGame)){
-                    levelDefinitions = gamesJson.getJSONObject(i).getJSONArray("levels");
-                }
-            }
-        } catch (IOException | JSONException ex) {
-            Toast.makeText(this, "The levels definition file could not be loaded", Toast.LENGTH_LONG).show();
-        }
-        try {
-            progress = new JSONObject(StorageOperations.readDataFromPreferencesFile(this, LEVEL_FILE, CURRENT_PROGRESS_KEY, null));
-        } catch (Exception e){
-            try {
-                progress = StorageOperations.loadAssetsJson(this, "files/initialProgress.json");
-            } catch (IOException ioe){
-                Log.w("GameActivity","Could not load the initial progress file. " + e.getMessage());
-            }
-        }
-        try {
-            JSONArray games = progress.getJSONArray("games");
-            currentLevel = 0;
-            for (int i=0; i<games.length();i++){
-                if (games.getJSONObject(i).getString("name").equals(currentGame)){
-                    scores = games.getJSONObject(i).getJSONArray("scores");
-                    for (int j=0;j<scores.length();j++){
-                        if (scores.getInt(j)==0){
-                            currentLevel = j;
-                            Log.v("GameActivity","Selected level " + j);
-                        }
-                    }
-                }
-            }
-        } catch (Exception e){}
-        showLevelMenuDialog();
-*/
 
     }
 
@@ -269,22 +228,39 @@ public class GameActivity extends AppCompatActivity implements CategoryMenuDialo
         //Mostremos el Ad
         ShowInterstitialAd();
 
-        /*
-            TODO: Calcular el score y almacenar el progreso
-            TODO: Mostrar el dialogo de fin de nivel con el resultado y las opciones de continuar o reintentar
+        int[] scores;
         try {
-            // TODO Set the score value to the number of stars earned for the level
-            scores.put(currentLevel, 2);
-            currentLevel++;
-            if (levelDefinitions.length()>currentLevel){
-                scores.put(currentLevel, 0);
-            }
-        } catch (JSONException e) {
-            Log.w("GameActivity","Error while updating the level's progress. " + e.getMessage());
-        }
-        StorageOperations.storePreferences(this, CURRENT_PROGRESS_KEY,progress.toString());
+            String gameTag = gameStructure.getJSONArray("games").getJSONObject(currentGameIndex).getString("tag");
+            String levelTag = gameStructure.getJSONArray("levels").getJSONObject(currentLevelIndex).getString("tag");
+            scores = progress.findByTag(gameTag).findByTag(levelTag).getScores();
+            //TODO: Obtener el score correcto desde DrawingView
+            scores[currentCharacterIndex] = 2;
+            if (scores.length - 1 > currentCharacterIndex
+                    && scores[currentCharacterIndex+1] == -1){
+                // desbloquear el siguiente caracter
+                scores[currentCharacterIndex+1] = 0;
+            } else {
+                if (progress.findByTag(gameTag).getLevels().length - 1 > currentLevelIndex
+                    && progress.findByTag(gameTag).getLevels()[currentLevelIndex+1].getScores()[0] == -1){
+                    // desbloquear el siguiente nivel de dificultad
+                    progress.findByTag(gameTag).getLevels()[currentLevelIndex+1].getScores()[0] = 0;
+                } else {
+                    if (progress.getGames().length - 1 > currentGameIndex
+                        && progress.getGames()[currentGameIndex+1].getLevels()[0].getScores()[0] == -1){
+                        // desbloquear el siguiente juego
+                        progress.getGames()[currentGameIndex+1].getLevels()[0].getScores()[0] = 0;
+                    }
 
-         */
+                }
+            }
+        } catch (JSONException ex){
+            Toast.makeText(this,"Unable set the updated progress",Toast.LENGTH_LONG).show();
+        }
+
+        String progressData;
+        Gson gson = new Gson();
+        progressData = gson.toJson(progress);
+        StorageOperations.storePreferences(this, CURRENT_PROGRESS_KEY + currentLanguage,progressData);
 
         int gameLength;
         try {
@@ -293,6 +269,7 @@ public class GameActivity extends AppCompatActivity implements CategoryMenuDialo
             gameLength = 1;
         }
 
+        //TODO: Mostrar el dialogo de resultado del caracter o fin de nivel y las opciones de continuar o reintentar
         if (gameLength > currentCharacterIndex){
             this.currentCharacterIndex++;
             setupLevel();
