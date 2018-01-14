@@ -1,43 +1,71 @@
 package com.appecco.learntowrite.dialog;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
 import com.appecco.learntowrite.R;
+import com.appecco.learntowrite.model.GameStructure;
+import com.appecco.learntowrite.model.Progress;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class LevelMenuDialogFragment extends DialogFragment {
-	
-	Activity activity;
-	String messageText;
-	int levels;
-	JSONArray scores;
-	int selectedLevel;
-	
-	public interface LevelMenuDialogListener{
-        public void onLevelMenuDialogSelection(DialogFragment dialog, int selectedLevel);
-        public void onLevelMenuDialogCancel(DialogFragment dialog);
+
+	private static final String GAME_STRUCTURE_PARAM = "gameStructureParam";
+	private static final String PROGRESS_PARAM = "progressParam";
+	private static final String GAME_ORDER_PARAM = "gameOrderParam";
+	private static final String LEVEL_ORDER_PARAM = "levelOrderParam";
+
+	LevelMenuDialogListener levelMenuDialogListener;
+
+	private GameStructure gameStructure;
+	private Progress progress;
+	private int gameOrder;
+	private int levelOrder;
+
+	public static LevelMenuDialogFragment newInstance(GameStructure gameStructure, Progress progress, int gameOrder, int levelOrder){
+		LevelMenuDialogFragment fragment = new LevelMenuDialogFragment();
+
+		Bundle args = new Bundle();
+		args.putSerializable(GAME_STRUCTURE_PARAM, gameStructure);
+		args.putSerializable(PROGRESS_PARAM, progress);
+		args.putInt(GAME_ORDER_PARAM, gameOrder);
+		args.putInt(LEVEL_ORDER_PARAM, levelOrder);
+		fragment.setArguments(args);
+
+		return fragment;
 	}
-	
-	LevelMenuDialogListener listener;
-	
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if (getArguments() != null) {
+			gameStructure = (GameStructure)(getArguments().getSerializable(GAME_STRUCTURE_PARAM));
+			progress = (Progress)(getArguments().getSerializable(PROGRESS_PARAM));
+			gameOrder = getArguments().getInt(GAME_ORDER_PARAM);
+			levelOrder = getArguments().getInt(LEVEL_ORDER_PARAM);
+		}
+	}
+
 	@Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        this.activity = activity;
 
         try {
-            listener = (LevelMenuDialogListener) activity;
+            levelMenuDialogListener = (LevelMenuDialogListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()+ " must implement LevelMenuDialogListener");
         }
@@ -56,76 +84,134 @@ public class LevelMenuDialogFragment extends DialogFragment {
 	}
 
 	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-	    LayoutInflater inflater = getActivity().getLayoutInflater();
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.level_menu_layout, container, false);
 
-	    View view = inflater.inflate(R.layout.level_menu_layout, null);
-	    builder.setView(view);
-	    TextView messageView = (TextView)view.findViewById(R.id.levelDialogText);
-		messageView.setText(messageText);
+		TextView titleText = (TextView) view.findViewById(R.id.levelDialogText);
+		String gameName = gameStructure.findGameByOrder(gameOrder).getName();
+		String levelName = gameStructure.findLevelByOrder(levelOrder).getName();
+		titleText.setText(String.format("%s ( %s )",gameName,levelName));
+
 		LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.levelButtonsLayout);
-        Button btn;
+		String[] characters = null;
+		characters = gameStructure.findGameByOrder(gameOrder).getCharacters();
 
-		for (int i = 0; i < Math.ceil((double)levels/(double)4); i++) {
+		Button btn;
+
+		for (int i = 0; i < Math.ceil((double)characters.length/(double)6); i++) {
 			LinearLayout layout_row = new LinearLayout(view.getContext());
 			layout_row.setLayoutParams(new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT));
 
-			for (int j = 0; j < 4; j++) {
-			    if ((i*4) + j < levels){
-                    btn = new Button(getActivity());
-                    btn.setLayoutParams(new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                    try {
-                        if (scores.getInt((i*4) + j) == -1){
-                            btn.setText("Locked");
-                            btn.setEnabled(false);
-                        } else {
-                            btn.setText("Level " + ((i*4) + j +1));
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    btn.setTag((i*4) + j);
-                    btn.setOnClickListener(new OnClickListener(){
+			for (int j = 0; j < 6; j++) {
+				if ((i*6) + j < characters.length){
+					btn = new Button(getActivity());
+					btn.setLayoutParams(new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+					btn.setAllCaps(false);
+					btn.setText(characters[(i * 6) + j]);
 
-                        @Override
-                        public void onClick(View view) {
-                            int level;
-                            level = (int)((Button)view).getTag();
-                            listener.onLevelMenuDialogSelection(LevelMenuDialogFragment.this, level);
-                            getDialog().dismiss();
-                        }
+					String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
+					String levelTag = gameStructure.findLevelByOrder(levelOrder).getLevelTag();
+					if (progress.findGameByTag(gameTag).findLevelByTag(levelTag).getScores()[i*6+j] == -1){
+						btn.setEnabled(false);
+						btn.setAlpha(0.5f);
+					}
 
-                    });
-                    layout_row.addView(btn);
-                }
+					btn.setTag((i*6) + j);
+					btn.setOnClickListener(new OnClickListener(){
+
+						@Override
+						public void onClick(View view) {
+							int characterIndex;
+							characterIndex = (int)((Button)view).getTag();
+
+							levelMenuDialogListener.onLevelMenuDialogSelection(gameOrder, levelOrder, characterIndex);
+
+							FragmentManager fragmentManager;
+							fragmentManager = getFragmentManager();
+							FragmentTransaction transaction = fragmentManager.beginTransaction();
+							transaction.remove(LevelMenuDialogFragment.this);
+							transaction.commit();
+
+						}
+
+					});
+					layout_row.addView(btn);
+				}
 			}
 			linearLayout.addView(layout_row);
 		}
 
-        btn = (Button)view.findViewById(R.id.btnLevelMenuCancel);
-        btn.setOnClickListener(new OnClickListener(){
+		btn = (Button)view.findViewById(R.id.btnLevelMenuCancel);
+		btn.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
-				listener.onLevelMenuDialogCancel(LevelMenuDialogFragment.this);
-				getDialog().dismiss();
+				onCancelButtonPressed();
 			}
-        	
-        });
-	    return builder.create();
+
+		});
+
+		return view;
 	}
 
-	public void setMessageText(String messageText){
-		this.messageText = messageText;
-	}
-	
-	public void setLevels(int levels){
-		this.levels = levels;
+
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		Dialog dialog = super.onCreateDialog(savedInstanceState);
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	    return dialog;
 	}
 
-	public void setScores(JSONArray scores) {
-		this.scores = scores;
+	private void dismissFragment(){
+		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+		FragmentTransaction transaction = fragmentManager.beginTransaction();
+		transaction.remove(this);
+		transaction.commit();
+	}
+
+	void onCancelButtonPressed(){
+		dismissFragment();
+		if (levelMenuDialogListener != null) {
+			levelMenuDialogListener.onLevelMenuDialogCancel(LevelMenuDialogFragment.this);
+		}
+	}
+
+	public GameStructure getGameStructure() {
+		return gameStructure;
+	}
+
+	public void setGameStructure(GameStructure gameStructure) {
+		this.gameStructure = gameStructure;
+	}
+
+	public Progress getProgress() {
+		return progress;
+	}
+
+	public void setProgress(Progress progress) {
+		this.progress = progress;
+	}
+
+	public int getGameOrder() {
+		return gameOrder;
+	}
+
+	public void setGameOrder(int gameOrder) {
+		this.gameOrder = gameOrder;
+	}
+
+	public int getLevelOrder() {
+		return levelOrder;
+	}
+
+	public void setLevelOrder(int levelOrder) {
+		this.levelOrder = levelOrder;
+	}
+
+	public interface LevelMenuDialogListener{
+		void onLevelMenuDialogSelection(int gameIndex, int levelIndex, int characterIndex);
+		void onLevelMenuDialogCancel(DialogFragment dialog);
 	}
 
 }
