@@ -55,16 +55,16 @@ public class DrawingView extends View implements OnTouchListener {
 	//Tolerancia base para los gestos (Que tanto se debe mover para tomar un nuevo punto incluyendo proporcionalidad)
 	private static final float GESTURE_TOLERANCE = 20;
 
-	//Proporcionalidad en cada eje
-    private double PROP_WIDTH;
-    private double PROP_HEIGHT;
+	//Proporcionalidad
+    private double PROP_TOTAL;
 
     //Ajuste de centrado en cada eje
-    private static final boolean USE_CENTERING = true;
+    private static final boolean SAVE_ENABLED = true;
     private double CENTER_WIDTH;
     private double CENTER_HEIGHT;
 
     private Rect bounds = new Rect();
+    private Rect anim_bounds = new Rect();
 
 	private GameActivity activity;
 	
@@ -182,38 +182,14 @@ public class DrawingView extends View implements OnTouchListener {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		int height = getHeight();
-		int width = getWidth();
-
-        //Calcular la Proporcionalidad en cada eje
-        PROP_WIDTH =  REFERENCE_WIDTH / width;
-        PROP_HEIGHT = REFERENCE_HEIGHT / height;
-
-        //Calculemos el Tamaño apropiado del font/stroke y asignemoslos
-        animPaint.setTextSize((int)(FONT_SIZE / ((PROP_WIDTH + PROP_HEIGHT) / 2)));
-        animPaint.setStrokeWidth((float)(STROKE_WIDTH / ((PROP_WIDTH + PROP_HEIGHT) / 2)));
-        fontPaint.setTextSize((int)(FONT_SIZE / ((PROP_WIDTH + PROP_HEIGHT) / 2)));
-        fontPaint.setStrokeWidth((float)(STROKE_WIDTH / ((PROP_WIDTH + PROP_HEIGHT) / 2)));
-        mPaint.setStrokeWidth((float)(STROKE_WIDTH_ANIM / ((PROP_WIDTH + PROP_HEIGHT) / 2)));
-
-        //Calcular el tamaño del font ya pintado para obtener los valores de centrado
-        animPaint.getTextBounds(Character.toString(currentChar),0,1, bounds);
-
-        //Calcular los valores de centrado en cada eje
-        if (USE_CENTERING){
-            CENTER_HEIGHT = Math.abs(((bounds.top - bounds.bottom)/2)) - bounds.bottom;
-            CENTER_WIDTH = Math.abs(((bounds.left - bounds.right)/2));
-        } else
-        {
-            CENTER_HEIGHT = 0;
-            CENTER_WIDTH = 0;
-        }
+        int height = getHeight();
+        int width = getWidth();
 
 		drawCanvas.drawColor(Color.WHITE);
 
 		fontPaint.setColor(characterFillColor);
 		fontPaint.setStyle(Paint.Style.FILL);
-        fontPaint.getTextPath(Character.toString(currentChar), 0, 1, (int)((width / 2) - CENTER_WIDTH), (int)((height / 2) + CENTER_HEIGHT), fontPath);
+        fontPaint.getTextPath(Character.toString(currentChar), 0, 1, (int)CENTER_WIDTH, (int)CENTER_HEIGHT, fontPath);
 
 		if (transpBitmap == null){
 			transpBitmap = Bitmap.createBitmap(width, height, Config.ARGB_8888);
@@ -237,7 +213,7 @@ public class DrawingView extends View implements OnTouchListener {
 
         for (Path p : paths) {
 			if (animating){
-				mPaint.setStrokeWidth((float)(STROKE_WIDTH_ANIM / ((PROP_WIDTH + PROP_HEIGHT) / 2)));
+				mPaint.setStrokeWidth((float)(STROKE_WIDTH_ANIM / PROP_TOTAL));
 				drawCanvas.drawPath(p, mPaint);
 				drawCanvas.drawBitmap(transpBitmap, 0, 0, null);
 			} else {
@@ -251,7 +227,7 @@ public class DrawingView extends View implements OnTouchListener {
         if (level_score > 0){
             Drawable star = getResources().getDrawable(R.drawable.star);
             for (int i=1;i<=level_score;i++){
-                star.setBounds((int)((10 + ((i-1) * 100)) / ((PROP_WIDTH + PROP_HEIGHT) / 2)), (int)(10 / ((PROP_WIDTH + PROP_HEIGHT) / 2)), (int)((80 + ((i-1) * 100)) / ((PROP_WIDTH + PROP_HEIGHT) / 2)), (int)(80 / ((PROP_WIDTH + PROP_HEIGHT) / 2)));
+                star.setBounds((int)((10 + ((i-1) * 100)) / PROP_TOTAL), (int)(10 / PROP_TOTAL), (int)((80 + ((i-1) * 100)) / PROP_TOTAL), (int)(80 / PROP_TOTAL));
                 star.draw(canvas);
             }
         }
@@ -262,8 +238,14 @@ public class DrawingView extends View implements OnTouchListener {
 	private void touch_start(float x, float y) {
 		char gestureChar;
 
-		float dx = (float)((double)(x - gX) * PROP_WIDTH);
-		float dy = (float)((double)(y - gY) * PROP_HEIGHT);
+		//Evitar que el gesto y path incluya el movimiento de 0,0 al X,Y actual
+		if (gX == 0 & gY == 0){
+			gX = x;
+			gY = y;
+		}
+
+		float dx = (float)((double)(x - gX) * PROP_TOTAL);
+		float dy = (float)((double)(y - gY) * PROP_TOTAL);
 
 		mPath.reset();
 		mPath.moveTo(x, y);
@@ -288,7 +270,7 @@ public class DrawingView extends View implements OnTouchListener {
 			jsonPath = new JSONArray();
 			jsonPaths.put(jsonPath);
 			try {
-				jsonPath.put(new JSONObject().put("x", x).put("y", y));
+				jsonPath.put(new JSONObject().put("x", x - CENTER_WIDTH).put("y", y - CENTER_HEIGHT));
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -304,8 +286,8 @@ public class DrawingView extends View implements OnTouchListener {
             invalidate();
 		}
 
-		float dx = (float)((double)(x - gX) * PROP_WIDTH);
-		float dy = (float)((double)(y - gY) * PROP_HEIGHT);
+		float dx = (float)((double)(x - gX) * PROP_TOTAL);
+		float dy = (float)((double)(y - gY) * PROP_TOTAL);
 
 		float idx, idy;
 
@@ -318,7 +300,7 @@ public class DrawingView extends View implements OnTouchListener {
 				
 				if (!animating & jsonPath != null){
 					try {
-						jsonPath.put(new JSONObject().put("x", x).put("y", y));
+						jsonPath.put(new JSONObject().put("x", x - CENTER_WIDTH).put("y", y - CENTER_HEIGHT));
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
@@ -356,8 +338,7 @@ public class DrawingView extends View implements OnTouchListener {
 
                     final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.good);
                     mp.start();
-
-                    next();
+                    if (!SAVE_ENABLED) next();
                     return;
 				} else {
 					distance = editDistance(currentGesture.toString(),targetGesture);
@@ -369,7 +350,7 @@ public class DrawingView extends View implements OnTouchListener {
 
                         final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.good);
                         mp.start();
-						next();
+                        if (!SAVE_ENABLED) next();
 						return;
 					} else if (percentDev < 20){
 						Toast.makeText(getContext(), "Very good!! " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
@@ -378,7 +359,7 @@ public class DrawingView extends View implements OnTouchListener {
 
                         final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.good);
                         mp.start();
-						next();
+                        if (!SAVE_ENABLED) next();
 						return;
 					} else if (percentDev < 25){
 						Toast.makeText(getContext(), "Good! " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
@@ -387,21 +368,21 @@ public class DrawingView extends View implements OnTouchListener {
 
                         final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.good);
                         mp.start();
-						next();
+                        if (!SAVE_ENABLED) next();
 						return;
 					} else if (percentDev < 30){
 						Toast.makeText(getContext(), "Not bad " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
 						//TODO Mostrar animacion de reintentar
                         final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.bad);
                         mp.start();
-						reset();
+                        if (!SAVE_ENABLED) reset();
 						return;
 					} else {
 						Toast.makeText(getContext(), "Can be better " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
                         //TODO Mostrar animacion de reintentar
                         final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.bad);
                         mp.start();
-                        reset();
+                        if (!SAVE_ENABLED) reset();
                         return;
                     }
 				}
@@ -570,8 +551,8 @@ public class DrawingView extends View implements OnTouchListener {
                             animDelay++;
 
                             if (j==0){
-                                final float tempX = (float)((int)(point.getDouble("x") / PROP_WIDTH));
-                                final float tempY = (float)((int)(point.getDouble("y") / PROP_HEIGHT));
+                                final float tempX = (float)((int)((point.getDouble("x") / PROP_TOTAL) + CENTER_WIDTH));
+                                final float tempY = (float)((int)((point.getDouble("y") / PROP_TOTAL) + CENTER_HEIGHT));
 
                                 animHandler.postDelayed(new Runnable() {
                                     public void run() {
@@ -583,8 +564,8 @@ public class DrawingView extends View implements OnTouchListener {
 
                             } else {
 
-                                final float tempX = (float)((int)(point.getDouble("x") / PROP_WIDTH));
-                                final float tempY = (float)(((int)point.getDouble("y") / PROP_HEIGHT));
+                                final float tempX = (float)((int)((point.getDouble("x") / PROP_TOTAL) + CENTER_WIDTH));
+                                final float tempY = (float)((int)((point.getDouble("y") / PROP_TOTAL) + CENTER_HEIGHT));
 
                                 animHandler.postDelayed(new Runnable() {
                                     public void run() {
@@ -620,9 +601,6 @@ public class DrawingView extends View implements OnTouchListener {
 	
 
 	public void next(){
-        int height = getHeight();
-        int width = getWidth();
-
 		currentCharIndex++;
 		if (currentCharIndex == characterGroup.length()){
 			activity.levelCompleted();
@@ -632,7 +610,7 @@ public class DrawingView extends View implements OnTouchListener {
 		} else {
 			try {
 				currentChar = characterGroup.getString(currentCharIndex).charAt(0);
-                fontPaint.getTextPath(Character.toString(currentChar), 0, 1, (int)((width / 2) - CENTER_WIDTH), (int)((height / 2) + CENTER_HEIGHT), fontPath);
+                //fontPaint.getTextPath(Character.toString(currentChar), 0, 1, (int)CENTER_WIDTH, (int)CENTER_HEIGHT, fontPath);
 			} catch (ArrayIndexOutOfBoundsException e){
 				
 				return;
@@ -662,6 +640,16 @@ public class DrawingView extends View implements OnTouchListener {
                     animJson = StorageOperations.loadAssetsJson(getContext(), filePath);
                     animPaths = animJson.getJSONArray("paths");
                     targetGesture = animJson.getString("gesture");
+
+                    //Obtener el Rect del dibujo del font original para calculo de proporciones
+                    try {
+                        String[] RectSplit = animJson.getString("bounds").split("[,]");
+                        anim_bounds = new Rect(Integer.parseInt(RectSplit[0]), Integer.parseInt(RectSplit[1]), Integer.parseInt(RectSplit[2]), Integer.parseInt(RectSplit[3]));
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 } else {
                     Toast.makeText(getContext(), "Hint for " + Character.toString(currentChar) + " is not available.", Toast.LENGTH_SHORT).show();
                     animJson = null;
@@ -673,6 +661,8 @@ public class DrawingView extends View implements OnTouchListener {
 			e.printStackTrace();
 		}
 
+		//Actualicemos las Proporciones y Centro de Dibujo para el nuevo Character
+        CalcPropCenter();
 	}
 	
 	public void save(){
@@ -680,12 +670,22 @@ public class DrawingView extends View implements OnTouchListener {
 			File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "learntowrite");
 			if (file.exists() || file.mkdirs()) {
 				try {
+				    //Hacer el targetGesture a guardar igual al gesture recien dibujado
 					targetGesture = currentGesture.toString();
+
+					//Hacer la animacion igual al gesto recien dibujado
 					animJson = json;
 					animPaths = animJson.getJSONArray("paths");
+
+					//Agregar al JSON el gesto recien dibujado (Ya contiene los paths)
 					json.put("gesture", targetGesture);
+
+					//Calcular el tamaño del font segun se ha dibujado para guardarlos en el JSON y poder calcular proporcionalidad en ejecuciones futuras
+                    animPaint.getTextBounds(Character.toString(currentChar),0,1, bounds);
+                    json.put("bounds", Integer.toString(bounds.left) + "," + Integer.toString(bounds.top) + ","  + Integer.toString(bounds.right) + "," + Integer.toString(bounds.bottom));
+
 					Writer output;
-					if (currentChar >= 'A' && currentChar <= 'Z' || currentChar == '�'){
+					if (currentChar >= 'A' && currentChar <= 'Z' || currentChar == 'Ñ'){
 						output = new BufferedWriter(new FileWriter(new File(file,"M" + Character.toString(currentChar) + ".json")));
 					} else {
 						output = new BufferedWriter(new FileWriter(new File(file,Character.toString(currentChar) + ".json")));
@@ -708,5 +708,32 @@ public class DrawingView extends View implements OnTouchListener {
 		currentCharIndex = -1;
 		next();
 	}
-	
+
+	private void CalcPropCenter(){
+        int height = getHeight();
+        int width = getWidth();
+
+        //Calcular la proporcionalidad en cada eje y obtener un promedio para ajustar segun esto el tamaño del font, no podemos ajustar independiente debido a que el dibujo del font se basa en una proporcionalidad unica para su textsize
+        PROP_TOTAL = ((REFERENCE_WIDTH / width) + (REFERENCE_HEIGHT / height)) / 2;
+
+        //Calculemos el Tamaño apropiado del font/stroke y asignemoslos
+        animPaint.setTextSize((int)(FONT_SIZE / PROP_TOTAL));
+        animPaint.setStrokeWidth((float)(STROKE_WIDTH / PROP_TOTAL));
+        fontPaint.setTextSize((int)(FONT_SIZE / PROP_TOTAL));
+        fontPaint.setStrokeWidth((float)(STROKE_WIDTH / PROP_TOTAL));
+        mPaint.setStrokeWidth((float)(STROKE_WIDTH_ANIM / PROP_TOTAL));
+
+        //Calcular el tamaño del font ya pintado para obtener la proporcion exacta segun el tamaño del font pintado y el tamaño del font de la animacion y para obtener los valores de centrado
+        animPaint.getTextBounds(Character.toString(currentChar),0,1, bounds);
+        if (bounds.right - bounds.left != 0 && bounds.top - bounds.bottom != 0){
+            PROP_TOTAL = (((double)Math.abs(anim_bounds.right - anim_bounds.left) / (double)Math.abs(bounds.right - bounds.left)) + ((double)Math.abs(anim_bounds.top - anim_bounds.bottom) / (double)Math.abs(bounds.top - bounds.bottom))) / 2;
+        }
+        else{
+            PROP_TOTAL = 1;
+        }
+
+        //Calcular los valores de centrado en cada eje, largo del eje entre 2 mas el centro de la letra
+        CENTER_WIDTH = (width / 2) - Math.abs(((bounds.left - bounds.right)/2));
+        CENTER_HEIGHT = (height / 2) + Math.abs(((bounds.top - bounds.bottom)/2)) - bounds.bottom;
+    }
 }
