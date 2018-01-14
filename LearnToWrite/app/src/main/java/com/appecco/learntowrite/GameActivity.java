@@ -29,7 +29,7 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.AdRequest;
 import com.google.gson.Gson;
 
-public class GameActivity extends AppCompatActivity implements CategoryMenuDialogFragment.CategoryMenuInteractionListener, CharacterFinishedDialogFragment.LevelDialogListener, LevelMenuDialogFragment.LevelMenuDialogListener {
+public class GameActivity extends AppCompatActivity implements CategoryMenuDialogFragment.CategoryMenuDialogListener, CharacterFinishedDialogFragment.LevelDialogListener, LevelMenuDialogFragment.LevelMenuDialogListener {
 
     // TODO: Estandarizar el manejo de excepciones, el registro de eventos en la bitácora y las notificaciones al usuario
     // TODO: Estandarizar el uso de Activity, Dialog y Fragment. Este método de navegación entre fragmentos me parece más flexible que usando Dialog
@@ -181,54 +181,6 @@ public class GameActivity extends AppCompatActivity implements CategoryMenuDialo
         showCategoryMenuDialog();
 
     }
-
-//    public void onRadPenWidthClick(View view) {
-//
-//        boolean checked = ((RadioButton) view).isChecked();
-//
-//        switch(view.getId()) {
-//            case R.id.radPenWide:
-//                if (checked)
-//                    viewDraw.setPenWidth(36);
-//                break;
-//            case R.id.radPenMedium:
-//                if (checked)
-//                    viewDraw.setPenWidth(24);
-//                break;
-//            case R.id.radPenThin:
-//                if (checked)
-//                    viewDraw.setPenWidth(16);
-//                break;
-//        }
-//    }
-
-//    public void onRadPenColorClick(View view){
-//
-//        boolean checked = ((RadioButton) view).isChecked();
-//
-//        switch(view.getId()) {
-//            case R.id.radColorBlue:
-//                if (checked)
-//                    viewDraw.setPenColor(Color.BLUE);
-//                break;
-//            case R.id.radColorRed:
-//                if (checked)
-//                    viewDraw.setPenColor(Color.RED);
-//                break;
-//            case R.id.radColorGreen:
-//                if (checked)
-//                    viewDraw.setPenColor(Color.GREEN);
-//                break;
-//            case R.id.radColorYellow:
-//                if (checked)
-//                    viewDraw.setPenColor(Color.YELLOW);
-//                break;
-//            case R.id.radColorOrange:
-//                if (checked)
-//                    viewDraw.setPenColor(Color.rgb(255, 140, 0));
-//                break;
-//        }
-//    }
 
     public void levelCompleted(){
         //Mostremos el Ad

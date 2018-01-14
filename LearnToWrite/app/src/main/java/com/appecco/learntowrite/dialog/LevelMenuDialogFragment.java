@@ -1,20 +1,18 @@
 package com.appecco.learntowrite.dialog;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.appecco.learntowrite.R;
+import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,28 +21,43 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class LevelMenuDialogFragment extends DialogFragment {
-	
-	int levels;
-	JSONArray scores;
-	int selectedLevel;
 
-	LevelMenuDialogListener listener;
+	private static final String GAME_STRUCTURE_PARAM = "gameStructureParam";
+	private static final String PROGRESS_PARAM = "progressParam";
+	private static final String GAME_ORDER_PARAM = "gameOrderParam";
+	private static final String LEVEL_ORDER_PARAM = "levelOrderParam";
 
-	private JSONObject gameStructure;
+	LevelMenuDialogListener levelMenuDialogListener;
+
+	private GameStructure gameStructure;
 	private Progress progress;
-	private int gameIndex;
-	private int levelIndex;
+	private int gameOrder;
+	private int levelOrder;
 
-	public static LevelMenuDialogFragment newInstance(JSONObject gameStructure, Progress progress, int gameIndex, int levelIndex){
+	public static LevelMenuDialogFragment newInstance(GameStructure gameStructure, Progress progress, int gameOrder, int levelOrder){
 		LevelMenuDialogFragment fragment = new LevelMenuDialogFragment();
-		fragment.setGameStructure(gameStructure);
-		fragment.setProgress(progress);
-		fragment.setGameIndex(gameIndex);
-		fragment.setLevelIndex(levelIndex);
+
+		Bundle args = new Bundle();
+		args.putSerializable(GAME_STRUCTURE_PARAM, gameStructure);
+		args.putSerializable(PROGRESS_PARAM, progress);
+		args.putInt(GAME_ORDER_PARAM, gameOrder);
+		args.putInt(LEVEL_ORDER_PARAM, levelOrder);
+		fragment.setArguments(args);
+
 		return fragment;
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if (getArguments() != null) {
+			gameStructure = (GameStructure)(getArguments().getSerializable(GAME_STRUCTURE_PARAM));
+			progress = (Progress)(getArguments().getSerializable(PROGRESS_PARAM));
+			gameOrder = getArguments().getInt(GAME_ORDER_PARAM);
+			levelOrder = getArguments().getInt(LEVEL_ORDER_PARAM);
+		}
 	}
 
 	@Override
@@ -52,7 +65,7 @@ public class LevelMenuDialogFragment extends DialogFragment {
         super.onAttach(activity);
 
         try {
-            listener = (LevelMenuDialogListener) activity;
+            levelMenuDialogListener = (LevelMenuDialogListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()+ " must implement LevelMenuDialogListener");
         }
@@ -76,48 +89,34 @@ public class LevelMenuDialogFragment extends DialogFragment {
 		View view = inflater.inflate(R.layout.level_menu_layout, container, false);
 
 		TextView titleText = (TextView) view.findViewById(R.id.levelDialogText);
-		try {
-			String gameName = gameStructure.getJSONArray("games").getJSONObject(gameIndex).getString("name");
-			String levelName = gameStructure.getJSONArray("levels").getJSONObject(levelIndex).getString("name");
-			titleText.setText(gameName + " ( " + levelName + " )");
-		} catch (JSONException ex){
-			titleText.setText("Nivel?");
-		}
+		String gameName = gameStructure.findGameByOrder(gameOrder).getName();
+		String levelName = gameStructure.findLevelByOrder(levelOrder).getName();
+		titleText.setText(String.format("%s ( %s )",gameName,levelName));
 
 		LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.levelButtonsLayout);
-		JSONArray characters = null;
-		try {
-			characters = gameStructure.getJSONArray("games").getJSONObject(gameIndex).getJSONArray("characters");
-		} catch (JSONException ex) {
-			Toast.makeText(null, "Unable to load the elements in the current level",Toast.LENGTH_LONG).show();
-			onCancelButtonPressed();
-		}
+		String[] characters = null;
+		characters = gameStructure.findGameByOrder(gameOrder).getCharacters();
+
 		Button btn;
 
-		for (int i = 0; i < Math.ceil((double)characters.length()/(double)6); i++) {
+		for (int i = 0; i < Math.ceil((double)characters.length/(double)6); i++) {
 			LinearLayout layout_row = new LinearLayout(view.getContext());
 			layout_row.setLayoutParams(new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT));
 
 			for (int j = 0; j < 6; j++) {
-				if ((i*6) + j < characters.length()){
+				if ((i*6) + j < characters.length){
 					btn = new Button(getActivity());
 					btn.setLayoutParams(new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-					try {
-						btn.setAllCaps(false);
-						btn.setText(characters.getString((i * 6) + j));
-					} catch (JSONException ex){
-						btn.setText("?");
+					btn.setAllCaps(false);
+					btn.setText(characters[(i * 6) + j]);
+
+					String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
+					String levelTag = gameStructure.findLevelByOrder(levelOrder).getLevelTag();
+					if (progress.findGameByTag(gameTag).findLevelByTag(levelTag).getScores()[i*6+j] == -1){
+						btn.setEnabled(false);
+						btn.setAlpha(0.5f);
 					}
-					try {
-						String gameTag = gameStructure.getJSONArray("games").getJSONObject(gameIndex).getString("tag");
-						String levelTag = gameStructure.getJSONArray("levels").getJSONObject(levelIndex).getString("tag");
-						if (progress.findByTag(gameTag).findByTag(levelTag).getScores()[i*6+j] == -1){
-							btn.setEnabled(false);
-							btn.setAlpha(0.5f);
-						}
-					} catch (JSONException ex){
-						Toast.makeText(getActivity(),"Unable to determine if the level is locked",Toast.LENGTH_LONG).show();
-					}
+
 					btn.setTag((i*6) + j);
 					btn.setOnClickListener(new OnClickListener(){
 
@@ -125,15 +124,14 @@ public class LevelMenuDialogFragment extends DialogFragment {
 						public void onClick(View view) {
 							int characterIndex;
 							characterIndex = (int)((Button)view).getTag();
-							listener.onLevelMenuDialogSelection(gameIndex, levelIndex, characterIndex);
+
+							levelMenuDialogListener.onLevelMenuDialogSelection(gameOrder, levelOrder, characterIndex);
 
 							FragmentManager fragmentManager;
 							fragmentManager = getFragmentManager();
 							FragmentTransaction transaction = fragmentManager.beginTransaction();
 							transaction.remove(LevelMenuDialogFragment.this);
 							transaction.commit();
-
-//							getDialog().dismiss();
 
 						}
 
@@ -165,22 +163,25 @@ public class LevelMenuDialogFragment extends DialogFragment {
 	    return dialog;
 	}
 
-	void onCancelButtonPressed(){
-		listener.onLevelMenuDialogCancel(LevelMenuDialogFragment.this);
-		FragmentManager fragmentManager;
-		fragmentManager = getFragmentManager();
+	private void dismissFragment(){
+		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 		FragmentTransaction transaction = fragmentManager.beginTransaction();
-		transaction.remove(LevelMenuDialogFragment.this);
+		transaction.remove(this);
 		transaction.commit();
-
-//			getDialog().dismiss();
 	}
 
-	public JSONObject getGameStructure() {
+	void onCancelButtonPressed(){
+		dismissFragment();
+		if (levelMenuDialogListener != null) {
+			levelMenuDialogListener.onLevelMenuDialogCancel(LevelMenuDialogFragment.this);
+		}
+	}
+
+	public GameStructure getGameStructure() {
 		return gameStructure;
 	}
 
-	public void setGameStructure(JSONObject gameStructure) {
+	public void setGameStructure(GameStructure gameStructure) {
 		this.gameStructure = gameStructure;
 	}
 
@@ -192,25 +193,24 @@ public class LevelMenuDialogFragment extends DialogFragment {
 		this.progress = progress;
 	}
 
-	public int getGameIndex() {
-		return gameIndex;
+	public int getGameOrder() {
+		return gameOrder;
 	}
 
-	public void setGameIndex(int gameIndex) {
-		this.gameIndex = gameIndex;
+	public void setGameOrder(int gameOrder) {
+		this.gameOrder = gameOrder;
 	}
 
-	public int getLevelIndex() {
-		return levelIndex;
+	public int getLevelOrder() {
+		return levelOrder;
 	}
 
-	public void setLevelIndex(int levelIndex) {
-		this.levelIndex = levelIndex;
+	public void setLevelOrder(int levelOrder) {
+		this.levelOrder = levelOrder;
 	}
 
 	public interface LevelMenuDialogListener{
 		void onLevelMenuDialogSelection(int gameIndex, int levelIndex, int characterIndex);
-		//void onLevelMenuDialogSelection(DialogFragment dialog, int selectedLevel);
 		void onLevelMenuDialogCancel(DialogFragment dialog);
 	}
 

@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
 
 import org.json.JSONException;
@@ -13,10 +14,10 @@ import org.json.JSONObject;
 
 public class CategoriesPagerAdapter extends FragmentStatePagerAdapter {
 
-    private JSONObject gameStructure;
+    private GameStructure gameStructure;
     private Progress progress;
 
-    public CategoriesPagerAdapter(FragmentManager fm, JSONObject gameStructure, Progress progress){
+    public CategoriesPagerAdapter(FragmentManager fm, GameStructure gameStructure, Progress progress){
         super(fm);
         this.gameStructure = gameStructure;
         this.progress = progress;
@@ -25,11 +26,7 @@ public class CategoriesPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         int pageCount = 0;
-        try {
-            pageCount = gameStructure.getJSONArray("games").length() * gameStructure.getJSONArray("levels").length();
-        } catch (JSONException ex){
-            Log.v("CategoriesPagerAdapter","Invalid JSON gameStructure");
-        }
+        pageCount = gameStructure.getGames().length * gameStructure.getLevels().length;
         return pageCount;
     }
 
@@ -41,15 +38,16 @@ public class CategoriesPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         CategoryFragment fragment;
-        int gameIndex = 0;
-        int levelIndex = 0;
-        try {
-            gameIndex = position / gameStructure.getJSONArray("levels").length();
-            levelIndex = position % gameStructure.getJSONArray("levels").length();
-        } catch (JSONException ex){
-            Log.v("CategoriesPagerAdapter",ex.getMessage());
-        }
-        fragment = CategoryFragment.newInstance(gameStructure,progress, gameIndex, levelIndex);
+        int gameOrder = 0;
+        int levelOrder = 0;
+        gameOrder = position / gameStructure.getLevels().length + 1;
+        levelOrder = position % gameStructure.getLevels().length + 1;
+        fragment = CategoryFragment.newInstance(gameStructure,progress, gameOrder, levelOrder);
         return fragment;
+    }
+
+    @Override
+    public float getPageWidth(int position){
+        return 0.4f;
     }
 }

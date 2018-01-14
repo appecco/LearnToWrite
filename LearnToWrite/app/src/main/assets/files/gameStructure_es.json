@@ -1,49 +1,49 @@
 ﻿{   "_comments":
         ["Contour may be 'full','medium' or 'none', meaining the alpha blend of the drawn character for the kid to follow while writing.",
          "None means only the starting and ending points will be hinted unless the kid is allowed to draw the character anywhere"],
-    "alphaFriends":{
-        "a":"árbol",
-        "b":"burro",
-        "c":"casa",
-        "d":"dedo",
-        "e":"elefante",
-        "f":"foca",
-        "g":"gato",
-        "h":"hielo",
-        "i":"indio",
-        "j":"jirafa",
-        "k":"kiosko",
-        "l":"limón",
-        "m":"mamá",
-        "n":"niño",
-        "ñ":"caña",
-        "o":"oso",
-        "p":"papá",
-        "q":"queso",
-        "r":"ratón",
-        "t":"tomate",
-        "u":"uva",
-        "v":"vaso",
-        "w":"wantán",
-        "x":"saxofón",
-        "y":"yoyo",
-        "z":"zorro",
-        "0":"cero",
-        "1":"uno",
-        "2":"dos",
-        "3":"tres",
-        "4":"cuatro",
-        "5":"cinco",
-        "6":"seis",
-        "7":"siete",
-        "8":"ocho",
-        "9":"nueve"
+    "alphaFriends": {
+        "a": "árbol",
+        "b": "burro",
+        "c": "casa",
+        "d": "dedo",
+        "e": "elefante",
+        "f": "foca",
+        "g": "gato",
+        "h": "hielo",
+        "i": "indio",
+        "j": "jirafa",
+        "k": "kiosko",
+        "l": "limón",
+        "m": "mamá",
+        "n": "niño",
+        "ñ": "caña",
+        "o": "oso",
+        "p": "papá",
+        "q": "queso",
+        "r": "ratón",
+        "t": "tomate",
+        "u": "uva",
+        "v": "vaso",
+        "w": "wantán",
+        "x": "saxofón",
+        "y": "yoyo",
+        "z": "zorro",
+        "0": "cero",
+        "1": "uno",
+        "2": "dos",
+        "3": "tres",
+        "4": "cuatro",
+        "5": "cinco",
+        "6": "seis",
+        "7": "siete",
+        "8": "ocho",
+        "9": "nueve"
     },
     "games":[
         {
             "name": "Cursivas Mayúsculas",
-            "tag": "CURSIVE_UPPERCASE",
-            "order": 2,
+            "gameTag": "CURSIVE_UPPERCASE",
+            "gameOrder": 2,
             "characters": [
                 "A","B","C","D","E","F","G","H","I",
                 "J","K","L","M","N","Ñ","O","P","Q",
@@ -52,8 +52,8 @@
         },
         {
             "name": "Cursivas Minúsculas",
-            "tag": "CURSIVE_LOWERCASE",
-            "order": 1,
+            "gameTag": "CURSIVE_LOWERCASE",
+            "gameOrder": 1,
             "characters": [
                 "a","b","c","d","e","f","g","h","i",
                 "j","k","l","m","n","ñ","o","p","q",
@@ -62,8 +62,8 @@
         },
         {
             "name": "Números Cursivos",
-            "tag": "CURSIVE_NUMBERS",
-            "order": 3,
+            "gameTag": "CURSIVE_NUMBERS",
+            "gameOrder": 3,
             "characters": [
                 "0","1","2","3","4","5","6","7","8","9"
             ]
@@ -72,24 +72,30 @@
     "levels":[
             {
                 "name": "Principiante",
-                "tag": "BEGINNER",
-                "order":1,
+                "levelTag": "BEGINNER",
+                "levelOrder":1,
                 "hints":true,
-                "contour":"full"
+                "contour":"full",
+                "beginningMark": false,
+                "endingMark": false
             },
             {
                 "name": "Intermedio",
-                "tag": "INTERMEDIATE",
-                "order":2,
+                "levelTag": "INTERMEDIATE",
+                "levelOrder":2,
                 "hints":false,
-                "contour":"medium"
+                "contour":"medium",
+                "beginningMark": false,
+                "endingMark": false
             },
             {
                 "name": "Avanzado",
-                "tag": "ADVANCED",
-                "order":3,
+                "levelTag": "ADVANCED",
+                "levelOrder":3,
                 "hints":false,
-                "contour":"none"
+                "contour":"none",
+                "beginningMark": true,
+                "endingMark": true
             }
     ]
 }

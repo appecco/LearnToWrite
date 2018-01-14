@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@drawable/sky1">
 
     <TextView
         android:id="@+id/levelDialogText"
@@ -21,11 +23,35 @@
         android:contentDescription="@string/level_characters"
         android:src="@drawable/level_characters" />
 
-    <ImageView
-        android:id="@+id/imageView2"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.25"
-        android:src="@drawable/advertising" />
+        android:layout_weight="0.33"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="Cancel"
+            app:srcCompat="@drawable/redbutton" />
+
+        <ImageButton
+            android:id="@+id/retryLevelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="Retry Level"
+            app:srcCompat="@drawable/bluebutton" />
+
+        <ImageButton
+            android:id="@+id/nextLevelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="Play Next Level"
+            app:srcCompat="@drawable/greenbutton" />
+    </LinearLayout>
 
 </LinearLayout>

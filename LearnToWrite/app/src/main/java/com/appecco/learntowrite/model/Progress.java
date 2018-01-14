@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class Progress implements Serializable {
 
     private Game[] games;
+    private transient GameStructure gameStructure;
 
     public Game[] getGames() {
         return games;
@@ -14,7 +15,15 @@ public class Progress implements Serializable {
         this.games = games;
     }
 
-    public Game findByTag(String gameTag){
+    public GameStructure getGameStructure(){
+        return   this.gameStructure;
+    }
+
+    public void setGameStructure(GameStructure gameStructure){
+        this.gameStructure = gameStructure;
+    }
+
+    public Game findGameByTag(String gameTag){
         if (gameTag==null){
             return null;
         }
@@ -24,6 +33,39 @@ public class Progress implements Serializable {
             }
         }
         return null;
+    }
+
+    public boolean updateScore(String gameTag, String levelTag, int characterIndex, int score){
+        int[] scores;
+
+        boolean levelFinished = true;
+
+        // establecer el nuevo score si es mayor que el anterior
+        scores = findGameByTag(gameTag).findLevelByTag(levelTag).getScores();
+        scores[characterIndex] = (score>scores[characterIndex])?score:scores[characterIndex];
+
+        if (scores.length - 1 > characterIndex
+                && scores[characterIndex+1] == -1){
+            // desbloquear el siguiente caracter
+            scores[characterIndex+1] = 0;
+            levelFinished = false;
+        } else {
+            String nextLevelTag;
+            if (gameStructure.nextLevelByTag(levelTag) != null
+                    && findGameByTag(gameTag).findLevelByTag(gameStructure.nextLevelByTag(levelTag).getLevelTag()).getScores()[0] == -1){
+                // desbloquear el siguiente nivel de dificultad
+                updateScore(gameTag, gameStructure.nextLevelByTag(levelTag).getLevelTag(), 0, 0);
+            } else {
+                String firstLevelTag = gameStructure.findLevelByOrder(1).getLevelTag();
+                if (gameStructure.nextGameByTag(gameTag) != null
+                        && findGameByTag(gameStructure.nextGameByTag(gameTag).getGameTag()).findLevelByTag(firstLevelTag).getScores()[0] == -1){
+                    // desbloquear el siguiente juego
+                    findGameByTag(gameStructure.nextGameByTag(gameTag).getGameTag()).findLevelByTag(firstLevelTag).getScores()[0] = 0;
+                }
+            }
+        }
+
+        return levelFinished;
     }
 
     public static class Game {
@@ -39,7 +81,15 @@ public class Progress implements Serializable {
             this.gameTag = gameTag;
         }
 
-        public Level findByTag(String levelTag){
+        public Level[] getLevels() {
+            return levels;
+        }
+
+        public void setLevels(Level[] levels) {
+            this.levels = levels;
+        }
+
+        public Level findLevelByTag(String levelTag){
             if (levelTag==null){
                 return null;
             }

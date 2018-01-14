@@ -1,19 +1,27 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <ImageButton
             android:id="@+id/categoryImageButton"
             android:contentDescription="Category Image"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/printletter_icon" />
 
         <TextView
-            android:id="@+id/categoryName"
-            android:layout_width="match_parent"
+            android:id="@+id/gameName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/welcome_to_game"
+            android:textSize="32sp" />
+
+        <TextView
+            android:id="@+id/levelName"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical|center_horizontal"
             android:text="@string/welcome_to_game"

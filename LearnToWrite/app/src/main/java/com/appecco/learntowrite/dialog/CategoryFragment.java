@@ -1,12 +1,11 @@
 package com.appecco.learntowrite.dialog;
 
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.DialogFragment;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,27 +14,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.appecco.learntowrite.R;
+import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class CategoryFragment extends Fragment {
 
-    private JSONObject gameStructure;
+    private GameStructure gameStructure;
     private Progress progress;
-    private int gameIndex;
-    private int levelIndex;
+    private int gameOrder;
+    private int levelOrder;
 
-    public static CategoryFragment newInstance (JSONObject gameStructure, Progress progress, int gameIndex, int levelIndex){
+    public static CategoryFragment newInstance (GameStructure gameStructure, Progress progress, int gameOrder, int levelOrder){
         CategoryFragment fragment = new CategoryFragment();
         fragment.setGameStructure(gameStructure);
         fragment.setProgress(progress);
-        fragment.setGameIndex(gameIndex);
-        fragment.setLevelIndex(levelIndex);
+        fragment.setGameOrder(gameOrder);
+        fragment.setLevelOrder(levelOrder);
         return fragment;
     }
 
@@ -54,64 +53,56 @@ public class CategoryFragment extends Fragment {
                 showLevelMenuDialog();
             }
         });
-        try {
-            String gameTag = gameStructure.getJSONArray("games").getJSONObject(gameIndex).getString("tag");
-            String levelTag = gameStructure.getJSONArray("levels").getJSONObject(levelIndex).getString("tag");
-            if (progress.findByTag(gameTag).findByTag(levelTag).getScores()[0] == -1){
-                button.setEnabled(false);
-                button.setAlpha(0.5f);
-            }
-        } catch (JSONException ex){
-            Toast.makeText(getContext(),"Unable to determine if the level is locked",Toast.LENGTH_LONG).show();
+        String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
+        String levelTag = gameStructure.findLevelByOrder(levelOrder).getLevelTag();
+        if (progress.findGameByTag(gameTag).findLevelByTag(levelTag).getScores()[0] == -1){
+            button.setEnabled(false);
+            button.setAlpha(0.5f);
         }
 
-        TextView text = view.findViewById(R.id.categoryName);
-        try {
-            String gameName = gameStructure.getJSONArray("games").getJSONObject(gameIndex).getString("name");
-            String levelName = gameStructure.getJSONArray("levels").getJSONObject(levelIndex).getString("name");
-            text.setText(gameName + " ( " + levelName + " )");
-        } catch (JSONException ex){
-            text.setText("Categoría ?");
-        }
-
+        TextView gameNameText = view.findViewById(R.id.gameName);
+        gameNameText.setText(gameStructure.findGameByOrder(gameOrder).getName());
+        TextView levelNameText = view.findViewById(R.id.levelName);
+        levelNameText.setText(String.format("( %s )", gameStructure.findLevelByOrder(levelOrder).getName()));
         return view;
     }
 
     public void showLevelMenuDialog(){
         FragmentManager fragmentManager;
-        LevelMenuDialogFragment fragment = LevelMenuDialogFragment.newInstance(gameStructure,progress,gameIndex,levelIndex);
-        fragmentManager = getActivity().getFragmentManager();
-        //TODO: Esto está 'feo', solo funciona si el fragmento está dentro de otro fragmento principal en la caja de diálogo. Buscar una mejor forma, tal vez a través implementando un listener
-        ((DialogFragment)getParentFragment()).getDialog().dismiss();
+        LevelMenuDialogFragment fragment = LevelMenuDialogFragment.newInstance(gameStructure,progress, gameOrder, levelOrder);
+        fragmentManager = getActivity().getSupportFragmentManager();
 
-        // TODO: Estandarizar el uso de Activity, Dialog y Fragment. Este método de navegación entre fragmentos me parece más flexible que usando Dialog
         FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.remove(getParentFragment());
+        transaction.commit();
+
+
+        transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.add(android.R.id.content, fragment).addToBackStack("LevelMenuFragment").commit();
-        //fragment.show(fragmentManager, "LevelMenuDialogFragment");
     }
 
-    public int getGameIndex() {
-        return gameIndex;
+    public int getGameOrder() {
+        return gameOrder;
     }
 
-    public void setGameIndex(int gameIndex) {
-        this.gameIndex = gameIndex;
+    public void setGameOrder(int gameOrder) {
+        this.gameOrder = gameOrder;
     }
 
-    public int getLevelIndex() {
-        return levelIndex;
+    public int getLevelOrder() {
+        return levelOrder;
     }
 
-    public void setLevelIndex(int levelIndex) {
-        this.levelIndex = levelIndex;
+    public void setLevelOrder(int levelOrder) {
+        this.levelOrder = levelOrder;
     }
 
-    public JSONObject getGameStructure() {
+    public GameStructure getGameStructure() {
         return gameStructure;
     }
 
-    public void setGameStructure(JSONObject gameStructure) {
+    public void setGameStructure(GameStructure gameStructure) {
         this.gameStructure = gameStructure;
     }
 
