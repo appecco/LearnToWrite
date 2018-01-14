@@ -22,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -129,14 +130,14 @@ public class GameActivity extends AppCompatActivity implements CategoryMenuDialo
         });
 
 //        Funcionalidad usada para preparar los hints, NO BORRAR!!!
-//
+
 //        Button btnNext = (Button)findViewById(R.id.btnNext);
 //        btnNext.setOnClickListener(new OnClickListener(){
 //
 //            @Override
 //            public void onClick(View arg0) {
-//                viewDraw.next();
-//
+//                currentCharacterIndex++;
+//                setupLevel();
 //            }
 //
 //        });
