@@ -624,7 +624,7 @@ public class DrawingView extends View implements OnTouchListener {
 		reset();
 
 		//TODO Hacer que el Hint solo se de la primera vez que se va a hacer la letra y solo si no se esta mostrando el menu de nivel (El hint se tiene que dar despues de que se cierre el dialog del nivel)
-		hint();
+        if (!SAVE_ENABLED) hint();
 	}
 	
 	private void load(){
