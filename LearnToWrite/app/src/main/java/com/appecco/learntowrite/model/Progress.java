@@ -44,11 +44,12 @@ public class Progress implements Serializable {
         scores = findGameByTag(gameTag).findLevelByTag(levelTag).getScores();
         scores[characterIndex] = (score>scores[characterIndex])?score:scores[characterIndex];
 
-        if (scores.length - 1 > characterIndex
-                && scores[characterIndex+1] == -1){
-            // desbloquear el siguiente caracter
-            scores[characterIndex+1] = 0;
+        if (scores.length - 1 > characterIndex){
             levelFinished = false;
+            if (scores[characterIndex+1] == -1) {
+                // desbloquear el siguiente caracter
+                scores[characterIndex + 1] = 0;
+            }
         } else {
             String nextLevelTag;
             if (gameStructure.nextLevelByTag(levelTag) != null
