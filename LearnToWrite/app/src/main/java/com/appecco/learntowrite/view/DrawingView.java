@@ -59,7 +59,7 @@ public class DrawingView extends View implements OnTouchListener {
     private double PROP_TOTAL;
 
     //Ajuste de centrado en cada eje
-    private static final boolean SAVE_ENABLED = true;
+    private static final boolean SAVE_ENABLED = false;
     private double CENTER_WIDTH;
     private double CENTER_HEIGHT;
 
