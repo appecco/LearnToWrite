@@ -20,20 +20,18 @@ import com.appecco.learntowrite.model.Progress;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link CategoryMenuDialogListener} interface
- * to handle interaction events.
  * Use the {@link CategoryMenuDialogFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class CategoryMenuDialogFragment extends DialogFragment {
+
     private static final String GAME_STRUCTURE_PARAM = "gameStructureParam";
     private static final String PROGRESS_PARAM = "progressParam";
 
     private Progress progress;
     private GameStructure gameStructure;
 
-    private CategoryMenuDialogListener mListener;
+    private GameDialogsEventsListener gameDialogsEventsListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -75,7 +73,10 @@ public class CategoryMenuDialogFragment extends DialogFragment {
 
             @Override
             public void onClick(View view) {
-                onCancelButtonPressed();
+                dismissFragment();
+                if (gameDialogsEventsListener != null) {
+                    gameDialogsEventsListener.onCategoryDialogCancelPressed();
+                }
             }
         });
 
@@ -89,41 +90,20 @@ public class CategoryMenuDialogFragment extends DialogFragment {
         transaction.commit();
     }
 
-    public void onCancelButtonPressed() {
-        dismissFragment();
-        if (mListener != null) {
-            mListener.onCategoryDialogCancel();
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof CategoryMenuDialogListener) {
-            mListener = (CategoryMenuDialogListener) context;
+        if (context instanceof GameDialogsEventsListener) {
+            gameDialogsEventsListener = (GameDialogsEventsListener) context;
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement CategoryMenuDialogListener");
+            throw new RuntimeException(context.toString() + " must implement CategoryMenuDialogListener");
         }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        gameDialogsEventsListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface CategoryMenuDialogListener {
-        void onCategoryDialogCancel();
-    }
 }

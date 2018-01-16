@@ -6,10 +6,11 @@ import org.json.JSONArray;
 
 import com.appecco.learntowrite.dialog.CategoryMenuDialogFragment;
 import com.appecco.learntowrite.dialog.CharacterFinishedDialogFragment;
+import com.appecco.learntowrite.dialog.CharacterMenuDialogFragment;
+import com.appecco.learntowrite.dialog.GameDialogsEventsListener;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
 import com.appecco.learntowrite.view.DrawingView;
-import com.appecco.learntowrite.dialog.LevelMenuDialogFragment;
 import com.appecco.utils.Settings;
 import com.appecco.utils.StorageOperations;
 
@@ -22,7 +23,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -30,13 +30,13 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.AdRequest;
 import com.google.gson.Gson;
 
-public class GameActivity extends AppCompatActivity implements CategoryMenuDialogFragment.CategoryMenuDialogListener, CharacterFinishedDialogFragment.LevelDialogListener, LevelMenuDialogFragment.LevelMenuDialogListener {
+public class GameActivity extends AppCompatActivity implements GameDialogsEventsListener {
 
     // TODO: Estandarizar el manejo de excepciones, el registro de eventos en la bitácora y las notificaciones al usuario
     // TODO: Estandarizar el uso de Activity, Dialog y Fragment. Este método de navegación entre fragmentos me parece más flexible que usando Dialog
     // TODO: Convertir este Activity y todos sus Fragments a la librería support.v4, estandarizar los imports y las declaraciones de variables
     // TODO: Estandarizar el manejo de las interacciones a través de interfaces o clases genéricas, no a veces unas y a veces las otras
-    // TODO: Corregir la navegación hacia adelante y hacia atras entre GameActivity, CategoryMenuDialogFragment y LevelMenuDialogFragment
+    // TODO: Corregir la navegación hacia adelante y hacia atras entre GameActivity, CategoryMenuDialogFragment y CharacterMenuDialogFragment
     // TODO: Revisar valores quemados y cambiar por constantes o por variables o settings si aplica
 
     private static final String CURRENT_PROGRESS_KEY = "com.appecco.learntowrite.CURRENT_PROGRESS";
@@ -183,33 +183,6 @@ public class GameActivity extends AppCompatActivity implements CategoryMenuDialo
 
     }
 
-    public void levelCompleted(){
-        //Mostremos el Ad
-        ShowInterstitialAd();
-
-        String gameTag = gameStructure.findGameByOrder(currentGameOrder).getGameTag();
-        String levelTag = gameStructure.findLevelByOrder(currentLevelOrder).getLevelTag();
-        //TODO: Obtener el score correcto desde DrawingView
-        int score = 2;
-        boolean levelFinished = progress.updateScore(gameTag, levelTag, currentCharacterIndex, score);
-
-        String progressData;
-        Gson gson = new Gson();
-        progressData = gson.toJson(progress);
-        StorageOperations.storePreferences(this, CURRENT_PROGRESS_KEY + currentLanguage,progressData);
-
-        showCharacterFinishedDialog(score, levelFinished);
-    }
-
-    public void showCategoryMenuDialog(){
-        FragmentManager fragmentManager;
-        CategoryMenuDialogFragment categoryFragment = CategoryMenuDialogFragment.newInstance(gameStructure,progress);
-        fragmentManager = getSupportFragmentManager();
-
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(android.R.id.content, categoryFragment).addToBackStack("CategoryMenuFragment").commit();
-    }
 
     void setupLevel(){
         String character;
@@ -228,31 +201,35 @@ public class GameActivity extends AppCompatActivity implements CategoryMenuDialo
 
     }
 
-    @Override
-    public void onLevelMenuDialogSelection(int gameIndex, int levelIndex, int characterIndex) {
-        //currentLevel = selectedLevel;
+    public void levelCompleted(){
+        //Mostremos el Ad
+        ShowInterstitialAd();
 
-        // El diálogo del nivel se va a mostrar solo cuando se haya finalizado el nivel
-        // indicando el resultado y permitiendo pasar al siguiente o intentar de nuevo
-        // showLevelDialog();
+        String gameTag = gameStructure.findGameByOrder(currentGameOrder).getGameTag();
+        String levelTag = gameStructure.findLevelByOrder(currentLevelOrder).getLevelTag();
+        //TODO: Obtener el score correcto desde DrawingView
+        int score = 2;
+        boolean levelFinished = progress.updateScore(gameTag, levelTag, currentCharacterIndex, score);
 
-        // En este momento se está "simulando" el comportamiento anterior de DrawingView
-        // TODO: Cambiar DrawingView para encargarse únicamente del dibujado de una letra y su calificación
-        // Cuando esto se cambie, GameActivity deberá encargarse por completo del flujo del juego, sus niveles y caracteres
-        //int characterGroup = Integer.parseInt(levelDefinitions.getJSONObject(currentLevel).getString("characterGroup"));
-        //viewDraw.setCharacterGroup(gameStructure.getJSONArray("characterGroups").getJSONArray(characterGroup));
+        String progressData;
+        Gson gson = new Gson();
+        progressData = gson.toJson(progress);
+        StorageOperations.storePreferences(this, CURRENT_PROGRESS_KEY + currentLanguage,progressData);
 
-        this.currentGameOrder = gameIndex;
-        this.currentLevelOrder = levelIndex;
-        this.currentCharacterIndex = characterIndex;
-
-        setupLevel();
-
+        showCharacterFinishedDialog(score, levelFinished);
     }
 
-    @Override
-    public void onLevelMenuDialogCancel(android.support.v4.app.DialogFragment dialog) {
-        finish();
+
+    public void showCategoryMenuDialog(){
+        FragmentManager fragmentManager;
+        CategoryMenuDialogFragment categoryFragment = CategoryMenuDialogFragment.newInstance(gameStructure,progress);
+        fragmentManager = getSupportFragmentManager();
+
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(android.R.id.content, categoryFragment);
+        transaction.addToBackStack("CategoryMenuFragment");
+        transaction.commit();
     }
 
     public void showCharacterFinishedDialog(int score, boolean levelFinished) {
@@ -262,24 +239,11 @@ public class GameActivity extends AppCompatActivity implements CategoryMenuDialo
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(android.R.id.content, characterFinishedFragment).addToBackStack("characterFinishedFragment").commit();
+        transaction.add(android.R.id.content, characterFinishedFragment);
+        transaction.addToBackStack("characterFinishedFragment");
+        transaction.commit();
     }
 
-    @Override
-    public void onLevelDialogRetryLevel(DialogFragment dialog) {
-        setupLevel();
-    }
-
-    @Override
-    public void onLevelDialogNextLevel(DialogFragment dialog) {
-        this.currentCharacterIndex++;
-        setupLevel();
-    }
-
-    @Override
-    public void onLevelDialogCancel(DialogFragment dialog) {
-        finish();
-    }
 
     private void PrepareInterstitialAd() {
         //Inicializar Interstitial Ads
@@ -300,7 +264,77 @@ public class GameActivity extends AppCompatActivity implements CategoryMenuDialo
     }
 
     @Override
-    public void onCategoryDialogCancel() {
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 1){
+            // GameActivity no puede mostrarse si no es porque se ejecutará el 'juego' de un caracter
+            // en cualquier caso, si el usuario presionó 'back' habiendo un solo fragmento en el stack
+            // se debe cerrar el fragmento y la actividad
+            getSupportFragmentManager().popBackStack();
+            finish();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void onCategoryDialogCancelPressed() {
+        // Limpiar el stack eliminando el CategoryMenuDialogFragment
+        getSupportFragmentManager().popBackStack();
+        finish();
+    }
+
+    @Override
+    public void onCategorySelected(int gameOrder, int levelOrder) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        CharacterMenuDialogFragment fragment = CharacterMenuDialogFragment.newInstance(gameStructure,progress, gameOrder, levelOrder);
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(android.R.id.content, fragment);
+        transaction.addToBackStack("LevelMenuFragment");
+        transaction.commit();
+    }
+
+    @Override
+    public void onCharacterDialogCancelPressed() {
+        // Regresar al menú de cateogrías revirtiendo la transacción que mostró el CharacterMenuDialogFragment
+        getSupportFragmentManager().popBackStack();
+    }
+
+    @Override
+    public void onCharacterSelected(int gameOrder, int levelOrder, int characterIndex) {
+        // En este momento se está "simulando" el comportamiento anterior de DrawingView
+        // TODO: Cambiar DrawingView para encargarse únicamente del dibujado de una letra y su calificación
+        // Cuando esto se cambie, GameActivity deberá encargarse por completo del flujo del juego, sus niveles y caracteres
+        //int characterGroup = Integer.parseInt(levelDefinitions.getJSONObject(currentLevel).getString("characterGroup"));
+        //viewDraw.setCharacterGroup(gameStructure.getJSONArray("characterGroups").getJSONArray(characterGroup));
+
+        // Eliminar los fragmentos CategoryMenuDialogFragment y CharacterMenuDialogFragment
+        getSupportFragmentManager().popBackStack();
+        getSupportFragmentManager().popBackStack();
+
+        this.currentGameOrder = gameOrder;
+        this.currentLevelOrder = levelOrder;
+        this.currentCharacterIndex = characterIndex;
+
+        setupLevel();
+    }
+
+    @Override
+    public void onRetryCharacterSelected() {
+        getSupportFragmentManager().popBackStack();
+        setupLevel();
+    }
+
+    @Override
+    public void onNextCharacterSelected() {
+        getSupportFragmentManager().popBackStack();
+        this.currentCharacterIndex++;
+        setupLevel();
+    }
+
+    @Override
+    public void onFinishedCharacterDialogCancelPressed() {
+        getSupportFragmentManager().popBackStack();
         finish();
     }
 }

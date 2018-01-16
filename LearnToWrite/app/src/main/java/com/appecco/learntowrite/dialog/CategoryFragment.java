@@ -1,6 +1,8 @@
 package com.appecco.learntowrite.dialog;
 
 
+import android.app.Activity;
+import android.content.Context;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -29,6 +31,8 @@ public class CategoryFragment extends Fragment {
     private int gameOrder;
     private int levelOrder;
 
+    private GameDialogsEventsListener gameDialogsEventsListener;
+
     public static CategoryFragment newInstance (GameStructure gameStructure, Progress progress, int gameOrder, int levelOrder){
         CategoryFragment fragment = new CategoryFragment();
         fragment.setGameStructure(gameStructure);
@@ -36,6 +40,16 @@ public class CategoryFragment extends Fragment {
         fragment.setGameOrder(gameOrder);
         fragment.setLevelOrder(levelOrder);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            gameDialogsEventsListener = (GameDialogsEventsListener) context;
+        } catch (ClassCastException ex){
+            throw new RuntimeException(context.toString() + " must implement CategoryMenuDialogListener");
+        }
     }
 
     @Override
@@ -50,7 +64,7 @@ public class CategoryFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showLevelMenuDialog();
+                gameDialogsEventsListener.onCategorySelected(gameOrder, levelOrder);
             }
         });
         String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
@@ -65,21 +79,6 @@ public class CategoryFragment extends Fragment {
         TextView levelNameText = view.findViewById(R.id.levelName);
         levelNameText.setText(String.format("( %s )", gameStructure.findLevelByOrder(levelOrder).getName()));
         return view;
-    }
-
-    public void showLevelMenuDialog(){
-        FragmentManager fragmentManager;
-        LevelMenuDialogFragment fragment = LevelMenuDialogFragment.newInstance(gameStructure,progress, gameOrder, levelOrder);
-        fragmentManager = getActivity().getSupportFragmentManager();
-
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.remove(getParentFragment());
-        transaction.commit();
-
-
-        transaction = fragmentManager.beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(android.R.id.content, fragment).addToBackStack("LevelMenuFragment").commit();
     }
 
     public int getGameOrder() {

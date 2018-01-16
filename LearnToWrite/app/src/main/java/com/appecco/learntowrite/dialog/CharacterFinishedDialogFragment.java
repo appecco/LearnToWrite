@@ -5,6 +5,7 @@ import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -36,13 +37,7 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 	int score;
 	boolean levelFinished;
 
-	public interface LevelDialogListener{
-        void onLevelDialogRetryLevel(DialogFragment dialog);
-        void onLevelDialogNextLevel(DialogFragment dialog);
-        void onLevelDialogCancel(DialogFragment dialog);
-	}
-	
-	LevelDialogListener listener;
+	GameDialogsEventsListener gameDialogsEventsListener;
 
 	public static CharacterFinishedDialogFragment newInstance(GameStructure gameStructure, Progress progress,
 															  int gameOrder, int levelOrder,
@@ -78,14 +73,12 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 	}
 
 	@Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        this.activity = activity;
-
+    public void onAttach(Context context) {
+        super.onAttach(context);
         try {
-            listener = (LevelDialogListener) activity;
+            gameDialogsEventsListener = (GameDialogsEventsListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()+ " must implement LevelDialogListener");
+            throw new RuntimeException(context.toString()+ " must implement LevelDialogListener");
         }
     }
 
@@ -99,7 +92,9 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 
 			@Override
 			public void onClick(View view) {
-				onCancelButtonPressed();
+				if (gameDialogsEventsListener != null){
+					gameDialogsEventsListener.onFinishedCharacterDialogCancelPressed();
+				}
 			}
 		});
 
@@ -108,7 +103,10 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 
 			@Override
 			public void onClick(View view) {
-				onRetryLevelButtonPressed();
+				dismissFragment();
+				if (gameDialogsEventsListener != null){
+					gameDialogsEventsListener.onRetryCharacterSelected();
+				}
 			}
 		});
 
@@ -117,7 +115,9 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 
 			@Override
 			public void onClick(View view) {
-				onNextLevelButtonPressed();
+				if (gameDialogsEventsListener != null){
+					gameDialogsEventsListener.onNextCharacterSelected();
+				}
 			}
 		});
 		if (score == 0 || levelFinished){
@@ -151,27 +151,6 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 		FragmentTransaction transaction = fragmentManager.beginTransaction();
 		transaction.remove(this);
 		transaction.commit();
-	}
-
-	private void onCancelButtonPressed(){
-		dismissFragment();
-		if (listener != null){
-			listener.onLevelDialogCancel(this);
-		}
-	}
-
-	private void onRetryLevelButtonPressed(){
-		dismissFragment();
-		if (listener != null){
-			listener.onLevelDialogRetryLevel(this);
-		}
-	}
-
-	private void onNextLevelButtonPressed(){
-		dismissFragment();
-		if (listener != null){
-			listener.onLevelDialogNextLevel(this);
-		}
 	}
 
 	public void setMessageText(String messageText){
