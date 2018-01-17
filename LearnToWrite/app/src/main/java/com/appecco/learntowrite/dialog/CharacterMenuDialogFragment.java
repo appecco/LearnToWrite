@@ -17,6 +17,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -107,7 +108,7 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 					btn.setLayoutParams(new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 					btn.setAllCaps(false);
 					btn.setText(characters[(i * 6) + j]);
-
+					// TODO: Cambiar por ImageButton y mostrar la letra con el font correcto y el número de estrellas ganadas
 					String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
 					String levelTag = gameStructure.findLevelByOrder(levelOrder).getLevelTag();
 					if (progress.findGameByTag(gameTag).findLevelByTag(levelTag).getScores()[i*6+j] == -1){
@@ -134,8 +135,8 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 			linearLayout.addView(layout_row);
 		}
 
-		btn = (Button)view.findViewById(R.id.btnLevelMenuCancel);
-		btn.setOnClickListener(new OnClickListener(){
+		ImageButton cancelButton = (ImageButton)view.findViewById(R.id.cancelButton);
+		cancelButton.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {

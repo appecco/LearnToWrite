@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class GameStructure implements Serializable {
 
-    private HashMap<String,String> alphaFriends;
+    private HashMap<String, String> alphaFriends;
     private Game[] games;
     private Level[] levels;
 
@@ -38,59 +38,59 @@ public class GameStructure implements Serializable {
         this.levels = levels;
     }
 
-    public Game findGameByTag(String gameTag){
-        if (gameTag==null){
+    public Game findGameByTag(String gameTag) {
+        if (gameTag == null) {
             return null;
         }
-        for (Game game:games){
-            if (gameTag.equals(game.gameTag)){
+        for (Game game : games) {
+            if (gameTag.equals(game.gameTag)) {
                 return game;
             }
         }
         return null;
     }
 
-    public Game findGameByOrder(int order){
-        for (Game game:games){
-            if (order == game.gameOrder){
+    public Game findGameByOrder(int order) {
+        for (Game game : games) {
+            if (order == game.gameOrder) {
                 return game;
             }
         }
         return null;
     }
 
-    public Game nextGameByTag(String gameTag){
+    public Game nextGameByTag(String gameTag) {
         Game currentGame = findGameByTag(gameTag);
         int currentGameOrder = currentGame.getGameOrder();
-        Game nextGame = findGameByOrder(currentGameOrder+1);
+        Game nextGame = findGameByOrder(currentGameOrder + 1);
         return nextGame;
     }
 
-    public Level findLevelByTag(String levelTag){
-        if (levelTag == null){
+    public Level findLevelByTag(String levelTag) {
+        if (levelTag == null) {
             return null;
         }
-        for (Level level:levels){
-            if (levelTag.equals(level.levelTag)){
+        for (Level level : levels) {
+            if (levelTag.equals(level.levelTag)) {
                 return level;
             }
         }
         return null;
     }
 
-    public Level findLevelByOrder(int order){
-        for (Level level:levels){
-            if (order == level.levelOrder){
+    public Level findLevelByOrder(int order) {
+        for (Level level : levels) {
+            if (order == level.levelOrder) {
                 return level;
             }
         }
         return null;
     }
 
-    public Level nextLevelByTag(String levelTag){
+    public Level nextLevelByTag(String levelTag) {
         Level currentLevel = findLevelByTag(levelTag);
         int currentLevelOrder = currentLevel.getLevelOrder();
-        Level nextLevel = findLevelByOrder(currentLevelOrder+1);
+        Level nextLevel = findLevelByOrder(currentLevelOrder + 1);
         return nextLevel;
     }
 
@@ -142,6 +142,7 @@ public class GameStructure implements Serializable {
         private String contour;
         private boolean beginningMark;
         private boolean endingMark;
+        private int accuracy;
 
         public String getName() {
             return name;
@@ -197,6 +198,14 @@ public class GameStructure implements Serializable {
 
         public void setEndingMark(boolean endingMark) {
             this.endingMark = endingMark;
+        }
+
+        public int getAccuracy() {
+            return accuracy;
+        }
+
+        public void setAccuracy(int accuracy) {
+            this.accuracy = accuracy;
         }
     }
 }

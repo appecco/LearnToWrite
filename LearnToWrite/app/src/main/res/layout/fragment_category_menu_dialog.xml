@@ -4,46 +4,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center_horizontal"
     android:background="@drawable/sky1"
     tools:context="com.appecco.learntowrite.dialog.CategoryMenuDialogFragment">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/categoryDialogText"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.2"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="@string/welcome_to_game"
+        android:textSize="32sp" />
 
-        <TextView
-            android:id="@+id/categoryDialogText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.2"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="@string/welcome_to_game"
-            android:textSize="32sp" />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/categoryPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp"
+        android:clipToPadding="false"
+        android:gravity="center"
+        android:paddingLeft="36dp"
+        android:paddingRight="36dp">
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/categoryPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_marginBottom="8dp"
-            android:layout_weight="0.2"
-            android:clipToPadding="false"
-            android:gravity="center"
-            android:paddingLeft="36dp"
-            android:paddingRight="36dp">
+    </android.support.v4.view.ViewPager>
 
-        </android.support.v4.view.ViewPager>
-
-        <ImageButton
-            android:id="@+id/cancelButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.03"
-            android:contentDescription="Cancel Button"
-            android:src="@drawable/redbutton" />
-    </LinearLayout>
+    <ImageButton
+        android:id="@+id/cancelButton"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:background="@null"
+        android:contentDescription="@string/cancel_button"
+        android:scaleType="fitCenter"
+        android:src="@drawable/back" />
 
 </LinearLayout>

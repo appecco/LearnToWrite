@@ -14,10 +14,10 @@ import com.appecco.learntowrite.view.DrawingView;
 import com.appecco.utils.Settings;
 import com.appecco.utils.StorageOperations;
 
+import android.media.MediaPlayer;
 import android.support.v4.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -34,13 +34,10 @@ import com.google.gson.Gson;
 public class GameActivity extends AppCompatActivity implements GameDialogsEventsListener {
 
     // TODO: Estandarizar el manejo de excepciones, el registro de eventos en la bitácora y las notificaciones al usuario
-    // TODO: Estandarizar el uso de Activity, Dialog y Fragment. Este método de navegación entre fragmentos me parece más flexible que usando Dialog
-    // TODO: Convertir este Activity y todos sus Fragments a la librería support.v4, estandarizar los imports y las declaraciones de variables
-    // TODO: Estandarizar el manejo de las interacciones a través de interfaces o clases genéricas, no a veces unas y a veces las otras
-    // TODO: Corregir la navegación hacia adelante y hacia atras entre GameActivity, CategoryMenuDialogFragment y CharacterMenuDialogFragment
     // TODO: Revisar valores quemados y cambiar por constantes o por variables o settings si aplica
 
     private static final String CURRENT_PROGRESS_KEY = "com.appecco.learntowrite.CURRENT_PROGRESS";
+    private static final int ATTEMPTS_COUNT = 3;
 
     DrawingView viewDraw;
 
@@ -52,6 +49,9 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
     private int currentLevelOrder;
     private int currentCharacterIndex;
 
+    private int currentCharacterScore;
+    private int currentAttemptIndex;
+
     String currentLanguage;
 
     private GameStructure gameStructure;
@@ -61,9 +61,7 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        JSONArray gamesJson;
         super.onCreate(savedInstanceState);
-        setTheme(R.style.Theme_AppCompat_Light_NoActionBar);
         setContentView(R.layout.activity_game);
 
         //Preparar Ad
@@ -184,40 +182,60 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
 
     }
 
-
     void setupLevel(){
-        String character;
-
-        character = gameStructure.findGameByOrder(currentGameOrder).getCharacters()[currentCharacterIndex];
-
-        // TODO: Eliminar el uso de JSON dentro de DrawingView
-        JSONArray characterGroup = new JSONArray();
-        for (int i=0;i<3;i++) {
-            characterGroup.put(character);
-        }
-
-        // TODO: Agregarle a DrawingView el mecanismo para establecer el nivel de dificultad
-        // TODO: Corregir que DrawingView está dando una calificación después de mostrar el hint al cambiar de nivel
-        viewDraw.setCharacterGroup(characterGroup);
-
+        currentCharacterScore = 0;
+        currentAttemptIndex = 0;
+        setupChallenge();
     }
 
-    public void levelCompleted(){
+    void setupChallenge(){
+        GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
+        String character = gameStructure.findGameByOrder(currentGameOrder).getCharacters()[currentCharacterIndex];
+
+        viewDraw.setCharacter(character.charAt(0));
+        // Para evitar que se muestre el hint en cada intento
+        viewDraw.setShowHints(level.isHints() && currentAttemptIndex == 0);
+        viewDraw.setContourType(level.getContour());
+        viewDraw.setShowBeginningMark(level.isBeginningMark());
+        viewDraw.setShowEndingMark(level.isEndingMark());
+        viewDraw.setScore(currentCharacterScore);
+
+        viewDraw.startChallenge();
+    }
+
+    public void challengeCompleted(int score){
+        GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
+        if (score >= level.getAccuracy()){
+            final MediaPlayer mp = MediaPlayer.create(this, R.raw.good);
+            mp.start();
+            currentCharacterScore++;
+        } else {
+            final MediaPlayer mp = MediaPlayer.create(this, R.raw.bad);
+            mp.start();
+        }
+        if (currentAttemptIndex < ATTEMPTS_COUNT - 1){
+            currentAttemptIndex++;
+            setupChallenge();
+        } else {
+            levelCompleted();
+        }
+    }
+
+    void levelCompleted(){
         //Mostremos el Ad
         ShowInterstitialAd();
 
         String gameTag = gameStructure.findGameByOrder(currentGameOrder).getGameTag();
         String levelTag = gameStructure.findLevelByOrder(currentLevelOrder).getLevelTag();
-        //TODO: Obtener el score correcto desde DrawingView
-        int score = 2;
-        boolean levelFinished = progress.updateScore(gameTag, levelTag, currentCharacterIndex, score);
+
+        boolean levelFinished = progress.updateScore(gameTag, levelTag, currentCharacterIndex, currentCharacterScore);
 
         String progressData;
         Gson gson = new Gson();
         progressData = gson.toJson(progress);
         StorageOperations.storePreferences(this, CURRENT_PROGRESS_KEY + currentLanguage,progressData);
 
-        showCharacterFinishedDialog(score, levelFinished);
+        showCharacterFinishedDialog(currentCharacterScore, levelFinished);
     }
 
 

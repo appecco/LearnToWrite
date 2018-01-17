@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class CharacterFinishedDialogFragment extends DialogFragment {
@@ -87,6 +88,11 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 							 Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.level_layout, container, false);
 
+		int scoreImages[] = {R.drawable.stars0,R.drawable.stars1,R.drawable.stars2,R.drawable.stars3};
+
+		ImageView imageScore = (ImageView)view.findViewById(R.id.imageScore);
+		imageScore.setImageResource(scoreImages[score]);
+
 		ImageButton cancelButton = (ImageButton)view.findViewById(R.id.cancelButton);
 		cancelButton.setOnClickListener(new View.OnClickListener(){
 
@@ -131,6 +137,10 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 			messageText.setText("Congratulations, you have finished this level!!");
 		} else {
 			if (score == 0) {
+				messageText.setText(
+						String.format("Your score on %s is %d. You should try this again!",
+								gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex],
+								score));
 			} else if (score > 0 && score < 3) {
 				messageText.setText(
 						String.format("Your score on %s is %d. That's good but can be better!",

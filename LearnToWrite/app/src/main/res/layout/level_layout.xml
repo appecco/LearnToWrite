@@ -16,12 +16,11 @@
         android:textSize="@dimen/dialog_message_text_size" />
 
     <ImageView
-        android:id="@+id/imageView1"
+        android:id="@+id/imageScore"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.67"
-        android:contentDescription="@string/level_characters"
-        android:src="@drawable/level_characters" />
+        android:src="@drawable/stars0" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,27 +30,35 @@
 
         <ImageButton
             android:id="@+id/cancelButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:layout_weight="1"
+            android:adjustViewBounds="false"
+            android:background="@null"
             android:contentDescription="Cancel"
-            app:srcCompat="@drawable/redbutton" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/back" />
 
         <ImageButton
             android:id="@+id/retryLevelButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:layout_weight="1"
+            android:background="@null"
             android:contentDescription="Retry Level"
-            app:srcCompat="@drawable/bluebutton" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/restart" />
 
         <ImageButton
             android:id="@+id/nextLevelButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:layout_weight="1"
+            android:background="@null"
             android:contentDescription="Play Next Level"
-            app:srcCompat="@drawable/greenbutton" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/forward" />
+
     </LinearLayout>
 
 </LinearLayout>

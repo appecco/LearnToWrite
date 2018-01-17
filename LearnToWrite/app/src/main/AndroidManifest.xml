@@ -25,7 +25,7 @@
             android:label="@string/title_activity_game"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="sensorLandscape"
-            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
+            android:theme="@style/AppCompatTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
