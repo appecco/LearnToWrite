@@ -19,7 +19,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
+//import android.media.MediaPlayer;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -217,10 +217,11 @@ public class DrawingView extends View implements OnTouchListener {
 
 		for (Path p : paths) {
 			if (animating) {
+			    //Pintar el hint, ampliar el STROKE para asegurar que cubra el path de la letra
 				mPaint.setStrokeWidth((float) (STROKE_WIDTH_ANIM / PROP_TOTAL));
 				drawCanvas.drawPath(p, mPaint);
 				drawCanvas.drawBitmap(transpBitmap, 0, 0, null);
-			} else {
+    		} else {
 				drawCanvas.drawPath(p, mPaint);
 			}
 		}
@@ -236,21 +237,30 @@ public class DrawingView extends View implements OnTouchListener {
 			}
 		}
 
+        if (animating){
+            //Pintemos el cursor (pointing_hand)
+            Drawable cursor = getResources().getDrawable(R.drawable.pointing_hand);
+            cursor.setBounds((int)mX , (int)mY, (int)(mX + (150 / PROP_TOTAL)), (int)(mY + (150 / PROP_TOTAL)));
+            cursor.draw(canvas);
+        }
+
 		//TODO Dependiendo del nivel hay que hacer que se dibujen puntos a lo largo del Path como guia para el dibujo
 	}
 
 	private void touch_start(float x, float y) {
 		char gestureChar;
 
-		//Evitar que el gesto y path incluya el movimiento de 0,0 al X,Y actual
+		//Evitar que el gesto incluya el movimiento de 0,0 al X,Y actual
 		if (gX == 0 & gY == 0) {
 			gX = x;
 			gY = y;
 		}
 
+		//Calcular el deltaX (dx) y deltaY (dx) vs las ultimas coordenadas guardadas para el gesto (gX, gY)
 		float dx = (float) ((double) (x - gX) * PROP_TOTAL);
 		float dy = (float) ((double) (y - gY) * PROP_TOTAL);
 
+		//Reiniciar el Path y asignar las variables (mX, mY son para el control del dibujo, gX, gY para el control del gesto)
 		mPath.reset();
 		mPath.moveTo(x, y);
 		mX = x;
@@ -258,17 +268,15 @@ public class DrawingView extends View implements OnTouchListener {
 		gX = x;
 		gY = y;
 
+
 		if (!animating) {
-
 			if (Math.abs(dx) + Math.abs(dy) > GESTURE_TOLERANCE) {
-
-				gX = x;
-				gY = y;
-
+			    //Solamente queremos un caracter del trazo sin touch asi calculemos el caracter del gesto completo y guardemos uno solo caracter para todo
 				gestureChar = getGestureChar(dx, dy, GESTURE_TYPE_MOVE);
-				for (float s = GESTURE_TOLERANCE; s <= Math.abs(dx) + Math.abs(dy); s += GESTURE_TOLERANCE) {
-					currentGesture.append(gestureChar);
-				}
+                currentGesture.append(gestureChar);
+//				for (float s = GESTURE_TOLERANCE; s <= Math.abs(dx) + Math.abs(dy); s += GESTURE_TOLERANCE) {
+//					currentGesture.append(gestureChar);
+//				}
 			}
 
 			jsonPath = new JSONArray();
@@ -335,7 +343,8 @@ public class DrawingView extends View implements OnTouchListener {
 
 			if (animPaths != null && animPaths.length() == paths.size()) {
 				similarity = similarity(currentGesture.toString(), targetGesture);
-				activity.challengeCompleted(similarity);
+				if (SAVE_ENABLED) Toast.makeText(getContext(), Integer.toString((int) similarity), Toast.LENGTH_SHORT).show();
+                if (!SAVE_ENABLED) activity.challengeCompleted(similarity);
 				return;
 /*
 				if (similarity > 70) {
