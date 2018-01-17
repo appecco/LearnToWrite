@@ -44,7 +44,6 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
     // Game: se refiere al tipo de caracteres que se está enseñando (por ejemplo: Cursivas Mayúsculas)
     // Level: se refiere al nivel de dificultad (por ejemplo: intermediate significa sin hint y con el outline ligeramente transparente
     // Character: se refiere a la letra que se está aprendiendo
-    private String currentGameName;
     private int currentGameOrder;
     private int currentLevelOrder;
     private int currentCharacterIndex;
@@ -68,9 +67,6 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
         PrepareInterstitialAd();
 
         viewDraw = (DrawingView)findViewById(R.id.viewDraw);
-
-        Bundle b = getIntent().getExtras();
-        currentGameName = b.getString("game");
 
         ImageButton btnRetry = (ImageButton)findViewById(R.id.btnRetry);
         btnRetry.setOnClickListener(new OnClickListener(){
@@ -321,12 +317,6 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
 
     @Override
     public void onCharacterSelected(int gameOrder, int levelOrder, int characterIndex) {
-        // En este momento se está "simulando" el comportamiento anterior de DrawingView
-        // TODO: Cambiar DrawingView para encargarse únicamente del dibujado de una letra y su calificación
-        // Cuando esto se cambie, GameActivity deberá encargarse por completo del flujo del juego, sus niveles y caracteres
-        //int characterGroup = Integer.parseInt(levelDefinitions.getJSONObject(currentLevel).getString("characterGroup"));
-        //viewDraw.setCharacterGroup(gameStructure.getJSONArray("characterGroups").getJSONArray(characterGroup));
-
         // Eliminar los fragmentos CategoryMenuDialogFragment y CharacterMenuDialogFragment
         getSupportFragmentManager().popBackStack();
         getSupportFragmentManager().popBackStack();
