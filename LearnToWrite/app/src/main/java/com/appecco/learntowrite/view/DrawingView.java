@@ -324,67 +324,30 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	private void touch_up() {
-		int distance;
-		int percentDev;
+		double similarity;
 
 		if (!animating){
 			mPath.lineTo(mX, mY);
 			
 			if (animPaths != null && animPaths.length() == paths.size()){
-				if (currentGesture.toString().equals(targetGesture)){
-					Toast.makeText(getContext(), "Perfect!!!!", Toast.LENGTH_LONG).show();
-                    //TODO Mostrar animacion de exito (Perfect!!!!)
-                    level_score = level_score + 1;
-
-                    final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.good);
-                    mp.start();
-                    if (!SAVE_ENABLED) next();
-                    return;
-				} else {
-					distance = editDistance(currentGesture.toString(),targetGesture);
-					percentDev = (int)((double)distance / (double)targetGesture.length() * 100);
-					if (percentDev < 15){
-						Toast.makeText(getContext(), "Excellent!!! " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
-                        //TODO Mostrar animacion de exito (3 Estrellas)
+					similarity = similarity(currentGesture.toString(),targetGesture) * 100;
+					if (similarity > 70){
+						Toast.makeText(getContext(), Integer.toString((int)similarity), Toast.LENGTH_SHORT).show();
                         level_score = level_score + 1;
 
                         final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.good);
                         mp.start();
-                        if (!SAVE_ENABLED) next();
-						return;
-					} else if (percentDev < 20){
-						Toast.makeText(getContext(), "Very good!! " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
-                        //TODO Mostrar animacion de exito (2 Estrellas)
-                        level_score = level_score + 1;
 
-                        final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.good);
-                        mp.start();
                         if (!SAVE_ENABLED) next();
-						return;
-					} else if (percentDev < 25){
-						Toast.makeText(getContext(), "Good! " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
-						//TODO Mostrar animacion de exito (1 Estrella)
-                        level_score = level_score + 1;
-
-                        final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.good);
-                        mp.start();
-                        if (!SAVE_ENABLED) next();
-						return;
-					} else if (percentDev < 30){
-						Toast.makeText(getContext(), "Not bad " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
-						//TODO Mostrar animacion de reintentar
-                        final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.bad);
-                        mp.start();
-                        if (!SAVE_ENABLED) reset();
 						return;
 					} else {
-						Toast.makeText(getContext(), "Can be better " + Integer.toString(percentDev), Toast.LENGTH_LONG).show();
-                        //TODO Mostrar animacion de reintentar
-                        final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.bad);
+						Toast.makeText(getContext(), Integer.toString((int)similarity), Toast.LENGTH_SHORT).show();
+
+						final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.bad);
                         mp.start();
+
                         if (!SAVE_ENABLED) reset();
                         return;
-                    }
 				}
 			}
 		}
@@ -448,25 +411,68 @@ public class DrawingView extends View implements OnTouchListener {
 		return gestureChar;
 	}
 
-	private int editDistance(String s, String t){
-		int d[][] = new int[s.length()+1][t.length()+1];
-		for (int i=0; i<s.length()+1; i++){
-			d[i][0] = i;
-		}
-		for (int j=0; j<t.length()+1; j++){
-			d[0][j] = j;
-		}
-		for (int j=1; j<t.length()+1; j++){
-			for (int i=1; i<s.length()+1; i++){
-				if (s.charAt(i-1) == t.charAt(j-1)){
-					d[i][j] = d[i-1][j-1];
-				} else {
-					d[i][j] = Math.min(Math.min(d[i-1][j]+1, d[i][j-1]+1), d[i-1][j-1]+1);
-				}
-			}
-		}
-		return d[s.length()][t.length()];
-	}
+//	private int editDistance(String s, String t){
+//		int d[][] = new int[s.length()+1][t.length()+1];
+//		for (int i=0; i<s.length()+1; i++){
+//			d[i][0] = i;
+//		}
+//		for (int j=0; j<t.length()+1; j++){
+//			d[0][j] = j;
+//		}
+//		for (int j=1; j<t.length()+1; j++){
+//			for (int i=1; i<s.length()+1; i++){
+//				if (s.charAt(i-1) == t.charAt(j-1)){
+//					d[i][j] = d[i-1][j-1];
+//				} else {
+//					d[i][j] = Math.min(Math.min(d[i-1][j]+1, d[i][j-1]+1), d[i-1][j-1]+1);
+//				}
+//			}
+//		}
+//		return d[s.length()][t.length()];
+//	}
+
+    private static double similarity(String s1, String s2) {
+	    //Regresa la similaridad de dos cadenas de texto en un coeficiente de 0 a 100% representando que tanto hay que cambiar una cadena de texto para convertirla en la otra por LevenshteinDistance
+
+        //Es indispensable que se llame a EditDistance con la cadena mas larga en el primer parametro
+        String longer = s1, shorter = s2;
+        if (s1.length() < s2.length()) {
+            longer = s2; shorter = s1;
+        }
+
+        //Longer deberia tener la cadena mas larga, si longer es 0 ambas son 0-Lenght
+        int longerLength = longer.length();
+        if (longerLength == 0) { return 1.0;}
+
+        return (longerLength - editDistance(longer, shorter)) / (double) longerLength;
+    }
+
+    private static int editDistance(String s1, String s2) {
+	    //algoritmo LevenshteinDistance
+        s1 = s1.toLowerCase();
+        s2 = s2.toLowerCase();
+
+        int[] costs = new int[s2.length() + 1];
+        for (int i = 0; i <= s1.length(); i++) {
+            int lastValue = i;
+            for (int j = 0; j <= s2.length(); j++) {
+                if (i == 0)
+                    costs[j] = j;
+                else {
+                    if (j > 0) {
+                        int newValue = costs[j - 1];
+                        if (s1.charAt(i - 1) != s2.charAt(j - 1))
+                            newValue = Math.min(Math.min(newValue, lastValue),costs[j]) + 1;
+                        costs[j - 1] = lastValue;
+                        lastValue = newValue;
+                    }
+                }
+            }
+            if (i > 0)
+                costs[s2.length()] = lastValue;
+        }
+        return costs[s2.length()];
+    }
 	
 	@Override
 	public boolean onTouch(View arg0, MotionEvent event) {
@@ -607,10 +613,10 @@ public class DrawingView extends View implements OnTouchListener {
 			level_score = 0;
             final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.end_level);
             mp.start();
+            return;
 		} else {
 			try {
 				currentChar = characterGroup.getString(currentCharIndex).charAt(0);
-                //fontPaint.getTextPath(Character.toString(currentChar), 0, 1, (int)CENTER_WIDTH, (int)CENTER_HEIGHT, fontPath);
 			} catch (ArrayIndexOutOfBoundsException e){
 				
 				return;
@@ -623,7 +629,6 @@ public class DrawingView extends View implements OnTouchListener {
 		load();
 		reset();
 
-		//TODO Hacer que el Hint solo se de la primera vez que se va a hacer la letra y solo si no se esta mostrando el menu de nivel (El hint se tiene que dar despues de que se cierre el dialog del nivel)
         if (!SAVE_ENABLED) hint();
 	}
 	
