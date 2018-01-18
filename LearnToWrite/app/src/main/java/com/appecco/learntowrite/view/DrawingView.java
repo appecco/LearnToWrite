@@ -14,13 +14,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PathMeasure;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-//import android.media.MediaPlayer;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -222,15 +220,16 @@ public class DrawingView extends View implements OnTouchListener {
 				mPaint.setStrokeWidth((float) (STROKE_WIDTH_ANIM / PROP_TOTAL));
 				drawCanvas.drawPath(p, mPaint);
 				drawCanvas.drawBitmap(transpBitmap, 0, 0, null);
+//                Log.d("DRAW", "Animating");
+
+    		} else {
+				drawCanvas.drawPath(p, mPaint);
 
 //				//DEBUG
 //                PathMeasure pm = new PathMeasure(p, false);
 //                float aCoordinates[] = {0f, 0f};
 //                pm.getPosTan(pm.getLength(), aCoordinates, null);
-//				Log.d("DRAW", "Number of Paths: " + paths.size() + "  -   Last Point: " + Float.toString(aCoordinates[0]) + "," + Float.toString(aCoordinates[1]));
-    		} else {
-				drawCanvas.drawPath(p, mPaint);
-//                Log.d("DRAW", "Not animating");
+//                Log.d("DRAW", "Number of Paths: " + paths.size() + "  -   Last Point: " + Float.toString(aCoordinates[0]) + "," + Float.toString(aCoordinates[1]));
 			}
 		}
 
@@ -285,6 +284,11 @@ public class DrawingView extends View implements OnTouchListener {
 		gX = x;
 		gY = y;
 
+		//Dibujemos el punto de inicio para que si el trazo es solo de un punto se vea
+        if (!SAVE_ENABLED){
+            mPath.lineTo((int)(mX - (3 / PROP_TOTAL)), (int)(mY - (3 / PROP_TOTAL)));
+            mPath.lineTo((int)(mX + (3 / PROP_TOTAL)), (int)(mY + (3 / PROP_TOTAL)));
+        }
 
 		if (!animating) {
 			if (Math.abs(dx) + Math.abs(dy) > GESTURE_TOLERANCE) {
@@ -359,7 +363,14 @@ public class DrawingView extends View implements OnTouchListener {
 
 		if (!animating) {
 			if (animPaths != null && animPaths.length() == paths.size()) {
-				similarity = similarity(currentGesture.toString(), targetGesture);
+			    //Hagamos una pausa para dar oportunidad a que se mire el trazo realizado
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                similarity = similarity(currentGesture.toString(), targetGesture);
 				if (SAVE_ENABLED) Toast.makeText(getContext(), Integer.toString((int) similarity), Toast.LENGTH_SHORT).show();
                 if (!SAVE_ENABLED) activity.challengeCompleted(similarity);
 				return;
@@ -385,16 +396,6 @@ public class DrawingView extends View implements OnTouchListener {
 */
 			}
 		}
-        else {
-		    //Si estamos animando, y es un segundo trazo, y el trazo tiene una longitud de 0 (Es solo un punto) hay que insertar uno adicional para que se pinte el punto
-		    if (paths.size() > 1){
-                PathMeasure pm = new PathMeasure(mPath, false);
-                if (pm.getLength() == 0){
-                    mPath.lineTo((int)(mX + (5 / PROP_TOTAL)), (int)(mY + (5 / PROP_TOTAL)));
-                }
-            }
-        }
-
 
         mPath = new Path();
 		paths.add(mPath);
