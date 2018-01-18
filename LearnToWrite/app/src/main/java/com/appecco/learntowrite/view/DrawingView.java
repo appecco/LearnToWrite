@@ -255,6 +255,15 @@ public class DrawingView extends View implements OnTouchListener {
 		//TODO Dependiendo del nivel hay que hacer que se dibujen puntos a lo largo del Path como guia para el dibujo
 	}
 
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		transpBitmap = null;
+		hintCanvas.setBitmap(null);
+		canvasBitmap = null;
+		drawCanvas.setBitmap(null);
+	}
+
 	private void touch_start(float x, float y) {
 		char gestureChar;
 

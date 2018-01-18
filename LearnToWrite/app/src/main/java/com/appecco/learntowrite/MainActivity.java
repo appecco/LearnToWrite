@@ -61,37 +61,6 @@ public class MainActivity extends Activity {
                 mPlayerClick.start();
 
                 Intent intent = new Intent(MainActivity.this,GameActivity.class);
-                Bundle b = new Bundle();
-                b.putString("game", "Lower Case");
-                intent.putExtras(b);
-                startActivity(intent);
-            }
-        });
-
-        ImageButton btnNewGamePrint = (ImageButton)findViewById(R.id.btnNewGamePrint);
-        btnNewGamePrint.setOnClickListener(new OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                mPlayerClick.start();
-
-                Intent intent = new Intent(MainActivity.this,GameActivity.class);
-                Bundle b = new Bundle();
-                b.putString("game", "Upper Case");
-                intent.putExtras(b);
-                startActivity(intent);
-            }
-        });
-
-        ImageButton btnNewGameNumbers = (ImageButton)findViewById(R.id.btnNewGameNumbers);
-        btnNewGameNumbers.setOnClickListener(new OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                mPlayerClick.start();
-
-                Intent intent = new Intent(MainActivity.this,GameActivity.class);
-                Bundle b = new Bundle();
-                b.putString("game", "Numbers");
-                intent.putExtras(b);
                 startActivity(intent);
             }
         });

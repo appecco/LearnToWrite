@@ -50,35 +50,11 @@
             android:layout_weight=".5" />
 
         <ImageButton
-            android:id="@+id/btnNewGamePrint"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/printletter_icon" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight=".2" />
-
-        <ImageButton
             android:id="@+id/btnNewGameCursive"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/cursiveletter_icon" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight=".2" />
-
-        <ImageButton
-            android:id="@+id/btnNewGameNumbers"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/numbers_icon" />
+            android:background="@drawable/cursiveletter_icon"/>
 
         <Space
             android:layout_width="0dp"

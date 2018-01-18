@@ -7,10 +7,12 @@ import com.appecco.learntowrite.model.Progress;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +22,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.Map;
 
 public class CharacterMenuDialogFragment extends DialogFragment {
 
@@ -89,14 +93,22 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 
 		TextView titleText = (TextView) view.findViewById(R.id.levelDialogText);
 		String gameName = gameStructure.findGameByOrder(gameOrder).getName();
+		String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
 		String levelName = gameStructure.findLevelByOrder(levelOrder).getName();
+		String levelTag = gameStructure.findLevelByOrder(levelOrder).getLevelTag();
 		titleText.setText(String.format("%s ( %s )",gameName,levelName));
 
 		LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.levelButtonsLayout);
-		String[] characters = null;
-		characters = gameStructure.findGameByOrder(gameOrder).getCharacters();
+		String[] characters = gameStructure.findGameByOrder(gameOrder).getCharacters();
+		int[] scores = progress.findGameByTag(gameTag).findLevelByTag(levelTag).getScores();
 
 		Button btn;
+		Map<Integer, Drawable> levelStars = new ArrayMap<>();
+		levelStars.put(-1,getResources().getDrawable(R.drawable.microstars0));
+		levelStars.put(0,getResources().getDrawable(R.drawable.microstars0));
+		levelStars.put(1,getResources().getDrawable(R.drawable.microstars1));
+		levelStars.put(2,getResources().getDrawable(R.drawable.microstars2));
+		levelStars.put(3,getResources().getDrawable(R.drawable.microstars3));
 
 		for (int i = 0; i < Math.ceil((double)characters.length/(double)6); i++) {
 			LinearLayout layout_row = new LinearLayout(view.getContext());
@@ -107,11 +119,9 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 					btn = new Button(getActivity());
 					btn.setLayoutParams(new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 					btn.setAllCaps(false);
+					btn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, levelStars.get(scores[(i*6)+j]) );
 					btn.setText(characters[(i * 6) + j]);
-					// TODO: Cambiar por ImageButton y mostrar la letra con el font correcto y el número de estrellas ganadas
-					String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
-					String levelTag = gameStructure.findLevelByOrder(levelOrder).getLevelTag();
-					if (progress.findGameByTag(gameTag).findLevelByTag(levelTag).getScores()[i*6+j] == -1){
+					if (scores[i*6+j] == -1){
 						btn.setEnabled(false);
 						btn.setAlpha(0.5f);
 					}
