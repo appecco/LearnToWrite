@@ -14,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PathMeasure;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
@@ -221,8 +222,15 @@ public class DrawingView extends View implements OnTouchListener {
 				mPaint.setStrokeWidth((float) (STROKE_WIDTH_ANIM / PROP_TOTAL));
 				drawCanvas.drawPath(p, mPaint);
 				drawCanvas.drawBitmap(transpBitmap, 0, 0, null);
+
+//				//DEBUG
+//                PathMeasure pm = new PathMeasure(p, false);
+//                float aCoordinates[] = {0f, 0f};
+//                pm.getPosTan(pm.getLength(), aCoordinates, null);
+//				Log.d("DRAW", "Number of Paths: " + paths.size() + "  -   Last Point: " + Float.toString(aCoordinates[0]) + "," + Float.toString(aCoordinates[1]));
     		} else {
 				drawCanvas.drawPath(p, mPaint);
+//                Log.d("DRAW", "Not animating");
 			}
 		}
 
@@ -338,9 +346,9 @@ public class DrawingView extends View implements OnTouchListener {
 	private void touch_up() {
 		int similarity;
 
-		if (!animating) {
-			mPath.lineTo(mX, mY);
+        mPath.lineTo(mX, mY);
 
+		if (!animating) {
 			if (animPaths != null && animPaths.length() == paths.size()) {
 				similarity = similarity(currentGesture.toString(), targetGesture);
 				if (SAVE_ENABLED) Toast.makeText(getContext(), Integer.toString((int) similarity), Toast.LENGTH_SHORT).show();
@@ -368,8 +376,18 @@ public class DrawingView extends View implements OnTouchListener {
 */
 			}
 		}
+        else {
+		    //Si estamos animando, y es un segundo trazo, y el trazo tiene una longitud de 0 (Es solo un punto) hay que insertar uno adicional para que se pinte el punto
+		    if (paths.size() > 1){
+                PathMeasure pm = new PathMeasure(mPath, false);
+                if (pm.getLength() == 0){
+                    mPath.lineTo((int)(mX + (5 / PROP_TOTAL)), (int)(mY + (5 / PROP_TOTAL)));
+                }
+            }
+        }
 
-		mPath = new Path();
+
+        mPath = new Path();
 		paths.add(mPath);
 	}
 
@@ -515,7 +533,6 @@ public class DrawingView extends View implements OnTouchListener {
 					break;
 				case MotionEvent.ACTION_UP:
 					touch_up();
-					invalidate();
 					break;
 			}
 		}
@@ -604,17 +621,18 @@ public class DrawingView extends View implements OnTouchListener {
 						animHandler.postDelayed(new Runnable() {
 							public void run() {
 								touch_up();
+								invalidate();
 							}
 						}, animDelay * 25);
 					}
 
-					//Hacemos el reset y animating=false tambien delayed para que evite que se cambie el flag antes de que termine de animar
+					//Hacemos el reset y animating=false tambien delayed para que evite que se cambie el flag antes de que termine de animar, el delay debe ser un pelito mas grande para dar tiempo que se vea la animacion del final
 					animHandler.postDelayed(new Runnable() {
 						public void run() {
 							animating = false;
 							reset();
 						}
-					}, animDelay * 25);
+					}, animDelay * 30);
 
 				} catch (JSONException e) {
 					e.printStackTrace();
