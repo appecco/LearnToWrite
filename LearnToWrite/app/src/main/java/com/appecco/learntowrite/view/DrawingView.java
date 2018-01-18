@@ -220,6 +220,7 @@ public class DrawingView extends View implements OnTouchListener {
 				mPaint.setStrokeWidth((float) (STROKE_WIDTH_ANIM / PROP_TOTAL));
 				drawCanvas.drawPath(p, mPaint);
 				drawCanvas.drawBitmap(transpBitmap, 0, 0, null);
+//				//DEBUG
 //                Log.d("DRAW", "Animating");
 
     		} else {
@@ -295,9 +296,6 @@ public class DrawingView extends View implements OnTouchListener {
 			    //Solamente queremos un caracter del trazo sin touch asi calculemos el caracter del gesto completo y guardemos uno solo caracter para todo
 				gestureChar = getGestureChar(dx, dy, GESTURE_TYPE_MOVE);
                 currentGesture.append(gestureChar);
-//				for (float s = GESTURE_TOLERANCE; s <= Math.abs(dx) + Math.abs(dy); s += GESTURE_TOLERANCE) {
-//					currentGesture.append(gestureChar);
-//				}
 			}
 
 			jsonPath = new JSONArray();
@@ -365,7 +363,7 @@ public class DrawingView extends View implements OnTouchListener {
 			if (animPaths != null && animPaths.length() == paths.size()) {
 			    //Hagamos una pausa para dar oportunidad a que se mire el trazo realizado
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(250);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -374,26 +372,6 @@ public class DrawingView extends View implements OnTouchListener {
 				if (SAVE_ENABLED) Toast.makeText(getContext(), Integer.toString((int) similarity), Toast.LENGTH_SHORT).show();
                 if (!SAVE_ENABLED) activity.challengeCompleted(similarity);
 				return;
-/*
-				if (similarity > 70) {
-					Toast.makeText(getContext(), Integer.toString((int) similarity), Toast.LENGTH_SHORT).show();
-					level_score = level_score + 1;
-
-					final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.good);
-					mp.start();
-
-					if (!SAVE_ENABLED) next();
-					return;
-				} else {
-					Toast.makeText(getContext(), Integer.toString((int) similarity), Toast.LENGTH_SHORT).show();
-
-					final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.bad);
-					mp.start();
-
-					if (!SAVE_ENABLED) reset();
-					return;
-				}
-*/
 			}
 		}
 
@@ -456,26 +434,6 @@ public class DrawingView extends View implements OnTouchListener {
 		return gestureChar;
 	}
 
-//	private int editDistance(String s, String t){
-//		int d[][] = new int[s.length()+1][t.length()+1];
-//		for (int i=0; i<s.length()+1; i++){
-//			d[i][0] = i;
-//		}
-//		for (int j=0; j<t.length()+1; j++){
-//			d[0][j] = j;
-//		}
-//		for (int j=1; j<t.length()+1; j++){
-//			for (int i=1; i<s.length()+1; i++){
-//				if (s.charAt(i-1) == t.charAt(j-1)){
-//					d[i][j] = d[i-1][j-1];
-//				} else {
-//					d[i][j] = Math.min(Math.min(d[i-1][j]+1, d[i][j-1]+1), d[i-1][j-1]+1);
-//				}
-//			}
-//		}
-//		return d[s.length()][t.length()];
-//	}
-
 	private static int similarity(String s1, String s2) {
 		//Regresa la similaridad de dos cadenas de texto en un coeficiente de 0 a 100% representando que tanto hay que cambiar una cadena de texto para convertirla en la otra por LevenshteinDistance
 
@@ -535,8 +493,7 @@ public class DrawingView extends View implements OnTouchListener {
 					break;
 				case MotionEvent.ACTION_MOVE:
 					for (int i = 0; i < event.getHistorySize(); i++) {
-						touch_move(event.getHistoricalX(i), event.getHistoricalY(i),
-								true);
+						touch_move(event.getHistoricalX(i), event.getHistoricalY(i),true);
 					}
 					touch_move(x, y, false);
 					invalidate();
@@ -652,34 +609,6 @@ public class DrawingView extends View implements OnTouchListener {
 			}
 		}
 	}
-	
-/*
-	public void next(){
-		currentCharIndex++;
-		if (currentCharIndex == characterGroup.length()){
-			activity.levelCompleted();
-			level_score = 0;
-            final MediaPlayer mp = MediaPlayer.create(this.getContext(), R.raw.end_level);
-            mp.start();
-            return;
-		} else {
-			try {
-				currentChar = characterGroup.getString(currentCharIndex).charAt(0);
-			} catch (ArrayIndexOutOfBoundsException e){
-				
-				return;
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		transpBitmap = null;
-		load();
-		reset();
-
-        if (!SAVE_ENABLED) hint();
-	}
-*/
 
 	private void load() {
 		try {
@@ -755,14 +684,6 @@ public class DrawingView extends View implements OnTouchListener {
 			Log.e("LearnToWrite", "Media not mounted");
 		}
 	}
-
-/*
-	public void setCharacterGroup(JSONArray characterGroup) {
-		this.characterGroup = characterGroup;
-		currentCharIndex = -1;
-		next();
-	}
-*/
 
 	public void setCharacter(char character) {
 		this.currentChar = character;
