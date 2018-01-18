@@ -77,7 +77,7 @@
                 "contour":"full",
                 "beginningMark": false,
                 "endingMark": false,
-                "accuracy": 70
+                "accuracy": 65
             },
             {
                 "name":"Intermediate",
@@ -87,7 +87,7 @@
                 "contour":"medium",
                 "beginningMark": false,
                 "endingMark": false,
-                "accuracy": 75
+                "accuracy": 70
             },
             {
                 "name":"Advanced",
