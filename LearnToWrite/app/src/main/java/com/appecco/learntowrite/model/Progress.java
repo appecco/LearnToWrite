@@ -69,7 +69,7 @@ public class Progress implements Serializable {
         return levelFinished;
     }
 
-    public static class Game {
+    public static class Game implements Serializable {
 
         private String gameTag;
         private Level[] levels;
@@ -102,7 +102,7 @@ public class Progress implements Serializable {
             return null;
         }
 
-        public static class Level {
+        public static class Level implements Serializable {
 
             private String levelTag;
             private int[] scores;
