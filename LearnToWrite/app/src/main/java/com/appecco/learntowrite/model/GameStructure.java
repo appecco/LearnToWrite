@@ -94,7 +94,7 @@ public class GameStructure implements Serializable {
         return nextLevel;
     }
 
-    public static class Game {
+    public static class Game implements Serializable {
 
         private String name;
         private String gameTag;
@@ -134,7 +134,7 @@ public class GameStructure implements Serializable {
         }
     }
 
-    public static class Level {
+    public static class Level implements Serializable {
         private String name;
         private String levelTag;
         private int levelOrder;
