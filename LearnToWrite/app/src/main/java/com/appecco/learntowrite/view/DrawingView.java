@@ -101,6 +101,9 @@ public class DrawingView extends View implements OnTouchListener {
 	private boolean showBeginningMark;
 	private boolean showEndingMark;
 
+	private final Drawable star = getResources().getDrawable(R.drawable.star);
+    private final Drawable empty_star = getResources().getDrawable(R.drawable.empty_star);
+
 	public DrawingView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		initView();
@@ -238,12 +241,15 @@ public class DrawingView extends View implements OnTouchListener {
 
 		canvas.drawBitmap(canvasBitmap, 0, 0, null);
 
-		//Agreguemos las estrellas segun el score del nivel
-		if (level_score > 0) {
-			Drawable star = getResources().getDrawable(R.drawable.star);
-			for (int i = 1; i <= level_score; i++) {
+		//Agreguemos las 3 estrellas segun el score del nivel se decide si empty o filled
+		for (int i = 1; i <= 3; i++) {
+			if (level_score >= i) {
 				star.setBounds((int) ((10 + ((i - 1) * 100)) / PROP_TOTAL), (int) (10 / PROP_TOTAL), (int) ((80 + ((i - 1) * 100)) / PROP_TOTAL), (int) (80 / PROP_TOTAL));
 				star.draw(canvas);
+			}
+			else{
+				empty_star.setBounds((int) ((10 + ((i - 1) * 100)) / PROP_TOTAL), (int) (10 / PROP_TOTAL), (int) ((80 + ((i - 1) * 100)) / PROP_TOTAL), (int) (80 / PROP_TOTAL));
+				empty_star.draw(canvas);
 			}
 		}
 
@@ -370,9 +376,14 @@ public class DrawingView extends View implements OnTouchListener {
                     e.printStackTrace();
                 }
 
+                //Calculemos que tan similares son los trazos, si esta habilitado el Save lo mostramos en un Toast sino se lo pasamos al GameActivity
                 similarity = similarity(currentGesture.toString(), targetGesture);
-				if (SAVE_ENABLED) Toast.makeText(getContext(), Integer.toString((int) similarity), Toast.LENGTH_SHORT).show();
-                if (!SAVE_ENABLED) activity.challengeCompleted(similarity);
+				if (SAVE_ENABLED){
+				    Toast.makeText(getContext(), Integer.toString((int) similarity), Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    activity.challengeCompleted(similarity);
+                }
 				return;
 			}
 		}

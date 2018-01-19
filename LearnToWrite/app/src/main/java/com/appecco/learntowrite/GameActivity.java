@@ -59,6 +59,8 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
 
     private InterstitialAd mInterstitialAd;
 
+    private MediaPlayer mp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,11 +127,11 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     public void challengeCompleted(int score){
         GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
         if (score >= level.getAccuracy()){
-            final MediaPlayer mp = MediaPlayer.create(this, R.raw.good);
+            mp = MediaPlayer.create(this, R.raw.good);
             mp.start();
             currentCharacterScore++;
         } else {
-            final MediaPlayer mp = MediaPlayer.create(this, R.raw.bad);
+            mp = MediaPlayer.create(this, R.raw.bad);
             mp.start();
         }
         if (currentAttemptIndex < ATTEMPTS_COUNT - 1){
@@ -140,6 +142,15 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
             // Eliminar DrawingFragment del stack y presentar el diálogo de fin del caracter
             getSupportFragmentManager().popBackStack();
             levelCompleted();
+        }
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        if (mp !=null){
+            mp.release();
+            mp = null;
         }
     }
 
