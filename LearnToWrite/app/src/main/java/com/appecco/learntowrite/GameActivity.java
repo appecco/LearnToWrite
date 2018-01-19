@@ -16,7 +16,9 @@ import com.appecco.learntowrite.view.DrawingView;
 import com.appecco.utils.Settings;
 import com.appecco.utils.StorageOperations;
 
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.graphics.Color;
@@ -42,6 +44,13 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     private static final String CURRENT_PROGRESS_KEY = "com.appecco.learntowrite.CURRENT_PROGRESS";
     private static final int ATTEMPTS_COUNT = 3;
 
+    private static final int MAX_SOUND_POOL_STREAMS = 4;
+    private static final int DEFAULT_SOUND_POOL_PRIORITY = 1;
+    private static final int DEFAULT_SOUND_POOL_QUALITY = 0;
+    private static final float DEFAULT_SOUND_POOL_RATE = 1.0f;
+    private static final float SOUND_POOL_VOLUME = 1.0f;
+    private static final int SOUND_POOL_NO_LOOP = 0;
+
     // Game: se refiere al tipo de caracteres que se está enseñando (por ejemplo: Cursivas Mayúsculas)
     // Level: se refiere al nivel de dificultad (por ejemplo: intermediate significa sin hint y con el outline ligeramente transparente
     // Character: se refiere a la letra que se está aprendiendo
@@ -60,6 +69,11 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     private InterstitialAd mInterstitialAd;
 
     private MediaPlayer mp;
+    private SoundPool soundPool;
+    private int goodSoundId;
+    private int badSoundId;
+    private boolean goodSoundLoaded;
+    private boolean badSoundLoaded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,8 +109,35 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         progress = gson.fromJson(progressData,Progress.class);
         progress.setGameStructure(gameStructure);
 
+        prepareSoundResources();
+
         showCategoryMenuDialog();
 
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        prepareSoundResources();
+    }
+
+    void prepareSoundResources(){
+        soundPool = new SoundPool(MAX_SOUND_POOL_STREAMS, AudioManager.STREAM_MUSIC, DEFAULT_SOUND_POOL_QUALITY);
+        goodSoundId = soundPool.load(this, R.raw.good,DEFAULT_SOUND_POOL_PRIORITY);
+        badSoundId = soundPool.load(this, R.raw.bad,DEFAULT_SOUND_POOL_PRIORITY);
+        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
+                if (status == 0){
+                    if (soundId == goodSoundId){
+                        goodSoundLoaded = true;
+                    }
+                    if (soundId == badSoundId){
+                        badSoundLoaded = true;
+                    }
+                }
+            }
+        });
     }
 
     void setupLevel(){
@@ -127,12 +168,18 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     public void challengeCompleted(int score){
         GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
         if (score >= level.getAccuracy()){
-            mp = MediaPlayer.create(this, R.raw.good);
-            mp.start();
+//            mp = MediaPlayer.create(this, R.raw.good);
+//            mp.start();
+            if (goodSoundLoaded) {
+                soundPool.play(goodSoundId, SOUND_POOL_VOLUME, SOUND_POOL_VOLUME, DEFAULT_SOUND_POOL_PRIORITY, SOUND_POOL_NO_LOOP, DEFAULT_SOUND_POOL_RATE);
+            }
             currentCharacterScore++;
         } else {
-            mp = MediaPlayer.create(this, R.raw.bad);
-            mp.start();
+//            mp = MediaPlayer.create(this, R.raw.bad);
+//            mp.start();
+            if (badSoundLoaded) {
+                soundPool.play(badSoundId, SOUND_POOL_VOLUME, SOUND_POOL_VOLUME, DEFAULT_SOUND_POOL_PRIORITY, SOUND_POOL_NO_LOOP, DEFAULT_SOUND_POOL_RATE);
+            }
         }
         if (currentAttemptIndex < ATTEMPTS_COUNT - 1){
             currentAttemptIndex++;
@@ -148,10 +195,12 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     @Override
     protected void onStop(){
         super.onStop();
-        if (mp !=null){
-            mp.release();
-            mp = null;
-        }
+//        if (mp !=null){
+//            mp.release();
+//            mp = null;
+//        }
+        soundPool.release();
+        soundPool = null;
     }
 
     void levelCompleted(){
@@ -171,6 +220,11 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         CharacterMenuDialogFragment characterMenuDialogFragment = (CharacterMenuDialogFragment) getSupportFragmentManager().findFragmentByTag("CharacterMenuDialogFragment");
         if (characterMenuDialogFragment != null){
             characterMenuDialogFragment.loadCharacterButtons();
+        }
+
+        CategoryMenuDialogFragment categoryMenuDialogFragment = (CategoryMenuDialogFragment) getSupportFragmentManager().findFragmentByTag("CategoryMenuDialogFragment");
+        if (categoryMenuDialogFragment != null){
+            categoryMenuDialogFragment.loadCategoryButtons();
         }
 
         showCharacterFinishedDialog(currentCharacterScore, levelFinished);
@@ -200,7 +254,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(android.R.id.content, categoryFragment);
+        transaction.add(android.R.id.content, categoryFragment,"CategoryMenuDialogFragment");
         //transaction.addToBackStack("CategoryMenuFragment");
         transaction.commit();
     }
@@ -212,8 +266,8 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(android.R.id.content, characterFinishedFragment);
-        transaction.addToBackStack("characterFinishedFragment");
+        transaction.add(android.R.id.content, characterFinishedFragment, "CharacterFinishedDialogFragment");
+        transaction.addToBackStack("CharacterFinishedDialogFragment");
         transaction.commit();
     }
 
