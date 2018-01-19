@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
@@ -103,6 +104,8 @@ public class DrawingView extends View implements OnTouchListener {
 
 	private final Drawable star = getResources().getDrawable(R.drawable.star);
     private final Drawable empty_star = getResources().getDrawable(R.drawable.empty_star);
+
+    private final DashPathEffect dashEffect = new DashPathEffect(new float[]{10, 40}, 0);
 
 	public DrawingView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -211,13 +214,28 @@ public class DrawingView extends View implements OnTouchListener {
 			hintCanvas.drawPath(fontPath, animPaint);
 		}
 
-		fontPaint.setColor(characterOutlineColor);
-		fontPaint.setStyle(Paint.Style.STROKE);
-		drawCanvas.drawPath(fontPath, fontPaint);
+		//Elijamos como se pinta el font segun el nivel de dificultad
+		if (contourType.equals("full")) {
+            fontPaint.setColor(characterOutlineColor);
+            fontPaint.setStyle(Paint.Style.STROKE);
+            drawCanvas.drawPath(fontPath, fontPaint);
 
-		fontPaint.setColor(characterFillColor);
-		fontPaint.setStyle(Paint.Style.FILL);
-		drawCanvas.drawPath(fontPath, fontPaint);
+            fontPaint.setColor(characterFillColor);
+            fontPaint.setStyle(Paint.Style.FILL);
+            drawCanvas.drawPath(fontPath, fontPaint);
+        }
+        else if (contourType.equals("medium")){
+            fontPaint.setColor(Color.argb(50,0,0,255));
+            fontPaint.setStyle(Paint.Style.STROKE);
+            fontPaint.setPathEffect(dashEffect);
+            fontPaint.setStrokeWidth((int)(STROKE_WIDTH/2));
+            drawCanvas.drawPath(fontPath, fontPaint);
+        }
+        else{
+            fontPaint.setColor(Color.argb(90,0,0,255));
+            fontPaint.setStyle(Paint.Style.STROKE);
+            drawCanvas.drawPath(fontPath, fontPaint);
+        }
 
 		for (Path p : paths) {
 			if (animating) {
@@ -371,7 +389,7 @@ public class DrawingView extends View implements OnTouchListener {
 			if (animPaths != null && animPaths.length() == paths.size()) {
 			    //Hagamos una pausa para dar oportunidad a que se mire el trazo realizado
                 try {
-                    Thread.sleep(250);
+                    Thread.sleep(200);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
