@@ -109,7 +109,6 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 
 			@Override
 			public void onClick(View view) {
-				dismissFragment();
 				if (gameDialogsEventsListener != null){
 					gameDialogsEventsListener.onRetryCharacterSelected();
 				}
@@ -154,13 +153,6 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 		}
 
 		return view;
-	}
-
-	private void dismissFragment(){
-		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-		FragmentTransaction transaction = fragmentManager.beginTransaction();
-		transaction.remove(this);
-		transaction.commit();
 	}
 
 	public void setMessageText(String messageText){

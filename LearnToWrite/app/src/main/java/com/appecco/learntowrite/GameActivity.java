@@ -7,7 +7,9 @@ import org.json.JSONArray;
 import com.appecco.learntowrite.dialog.CategoryMenuDialogFragment;
 import com.appecco.learntowrite.dialog.CharacterFinishedDialogFragment;
 import com.appecco.learntowrite.dialog.CharacterMenuDialogFragment;
+import com.appecco.learntowrite.dialog.DrawingFragment;
 import com.appecco.learntowrite.dialog.GameDialogsEventsListener;
+import com.appecco.learntowrite.dialog.GameEventsListener;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
 import com.appecco.learntowrite.view.DrawingView;
@@ -15,6 +17,7 @@ import com.appecco.utils.Settings;
 import com.appecco.utils.StorageOperations;
 
 import android.media.MediaPlayer;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -31,15 +34,13 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.AdRequest;
 import com.google.gson.Gson;
 
-public class GameActivity extends AppCompatActivity implements GameDialogsEventsListener {
+public class GameActivity extends AppCompatActivity implements GameEventsListener, GameDialogsEventsListener {
 
     // TODO: Estandarizar el manejo de excepciones, el registro de eventos en la bitácora y las notificaciones al usuario
     // TODO: Revisar valores quemados y cambiar por constantes o por variables o settings si aplica
 
     private static final String CURRENT_PROGRESS_KEY = "com.appecco.learntowrite.CURRENT_PROGRESS";
     private static final int ATTEMPTS_COUNT = 3;
-
-    DrawingView viewDraw;
 
     // Game: se refiere al tipo de caracteres que se está enseñando (por ejemplo: Cursivas Mayúsculas)
     // Level: se refiere al nivel de dificultad (por ejemplo: intermediate significa sin hint y con el outline ligeramente transparente
@@ -65,88 +66,6 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
 
         //Preparar Ad
         PrepareInterstitialAd();
-
-        viewDraw = (DrawingView)findViewById(R.id.viewDraw);
-
-        ImageButton btnRetry = (ImageButton)findViewById(R.id.btnRetry);
-        btnRetry.setOnClickListener(new OnClickListener(){
-
-            @Override
-            public void onClick(View arg0) {
-                viewDraw.reset();
-                //EditText txtGesture = (EditText)findViewById(R.id.txtGesture);
-                //txtGesture.setText("");
-            }
-
-        });
-
-        ImageButton btnHint = (ImageButton)findViewById(R.id.btnHint);
-        btnHint.setOnClickListener(new OnClickListener(){
-
-            @Override
-            public void onClick(View arg0) {
-                viewDraw.hint();
-
-            }
-
-        });
-
-        ImageButton btnRed = (ImageButton)findViewById(R.id.btnRed);
-        btnRed.setOnClickListener(new OnClickListener(){
-
-            @Override
-            public void onClick(View arg0) {
-                viewDraw.setPenColor(Color.RED);
-
-            }
-
-        });
-
-        ImageButton btnBlue = (ImageButton)findViewById(R.id.btnBlue);
-        btnBlue.setOnClickListener(new OnClickListener(){
-
-            @Override
-            public void onClick(View arg0) {
-                viewDraw.setPenColor(Color.BLUE);
-
-            }
-
-        });
-
-        ImageButton btnGreen = (ImageButton)findViewById(R.id.btnGreen);
-        btnGreen.setOnClickListener(new OnClickListener(){
-
-            @Override
-            public void onClick(View arg0) {
-                viewDraw.setPenColor(Color.GREEN);
-
-            }
-
-        });
-
-//        Funcionalidad usada para preparar los hints, NO BORRAR!!!
-
-//        Button btnNext = (Button)findViewById(R.id.btnNext);
-//        btnNext.setOnClickListener(new OnClickListener(){
-//
-//            @Override
-//            public void onClick(View arg0) {
-//                currentCharacterIndex++;
-//                setupLevel();
-//            }
-//
-//        });
-//
-//        Button btnSave = (Button)findViewById(R.id.btnSave);
-//        btnSave.setOnClickListener(new OnClickListener(){
-//
-//            @Override
-//            public void onClick(View arg0) {
-//                viewDraw.save();
-//
-//            }
-//
-//        });
 
         currentLanguage = Settings.get(this, Settings.CURRENT_LANGUAGE, "es");
 
@@ -181,24 +100,28 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
     void setupLevel(){
         currentCharacterScore = 0;
         currentAttemptIndex = 0;
+
+        showDrawingFragment();
+    }
+
+    @Override
+    public void readyForChallenge(){
         setupChallenge();
     }
 
     void setupChallenge(){
-        GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
-        String character = gameStructure.findGameByOrder(currentGameOrder).getCharacters()[currentCharacterIndex];
+        DrawingFragment drawingFragment = (DrawingFragment) getSupportFragmentManager().findFragmentByTag("DrawingFragment");
 
-        viewDraw.setCharacter(character.charAt(0));
-        // Para evitar que se muestre el hint en cada intento
-        viewDraw.setShowHints(level.isHints() && currentAttemptIndex == 0);
-        viewDraw.setContourType(level.getContour());
-        viewDraw.setShowBeginningMark(level.isBeginningMark());
-        viewDraw.setShowEndingMark(level.isEndingMark());
-        viewDraw.setScore(currentCharacterScore);
+        if (currentAttemptIndex > 0){
+            // No importa si el nivel incluye mostrar hints, estos solo se muestran en el primer intento
+            drawingFragment.setShowHints(false);
+        }
+        drawingFragment.setScore(currentCharacterScore);
+        drawingFragment.startChallenge();
 
-        viewDraw.startChallenge();
     }
 
+    @Override
     public void challengeCompleted(int score){
         GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
         if (score >= level.getAccuracy()){
@@ -211,8 +134,11 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
         }
         if (currentAttemptIndex < ATTEMPTS_COUNT - 1){
             currentAttemptIndex++;
+            DrawingFragment drawingFragment = (DrawingFragment) getSupportFragmentManager().findFragmentByTag("DrawingFragment");
             setupChallenge();
         } else {
+            // Eliminar DrawingFragment del stack y presentar el diálogo de fin del caracter
+            getSupportFragmentManager().popBackStack();
             levelCompleted();
         }
     }
@@ -231,9 +157,30 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
         progressData = gson.toJson(progress);
         StorageOperations.storePreferences(this, CURRENT_PROGRESS_KEY + currentLanguage,progressData);
 
+        CharacterMenuDialogFragment characterMenuDialogFragment = (CharacterMenuDialogFragment) getSupportFragmentManager().findFragmentByTag("CharacterMenuDialogFragment");
+        if (characterMenuDialogFragment != null){
+            characterMenuDialogFragment.loadCharacterButtons();
+        }
+
         showCharacterFinishedDialog(currentCharacterScore, levelFinished);
     }
 
+    public void showDrawingFragment(){
+        GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
+        String character = gameStructure.findGameByOrder(currentGameOrder).getCharacters()[currentCharacterIndex];
+
+        FragmentManager fragmentManager;
+        DrawingFragment drawingFragment = DrawingFragment.newInstance(character.charAt(0),level.isHints(),
+                level.getContour(),level.isBeginningMark(),level.isEndingMark());
+        fragmentManager = getSupportFragmentManager();
+
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(android.R.id.content, drawingFragment,"DrawingFragment");
+        transaction.addToBackStack("DrawingFragment");
+        transaction.commit();
+        fragmentManager.executePendingTransactions();
+    }
 
     public void showCategoryMenuDialog(){
         FragmentManager fragmentManager;
@@ -243,7 +190,7 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.add(android.R.id.content, categoryFragment);
-        transaction.addToBackStack("CategoryMenuFragment");
+        //transaction.addToBackStack("CategoryMenuFragment");
         transaction.commit();
     }
 
@@ -279,22 +226,9 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
     }
 
     @Override
-    public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() == 1){
-            // GameActivity no puede mostrarse si no es porque se ejecutará el 'juego' de un caracter
-            // en cualquier caso, si el usuario presionó 'back' habiendo un solo fragmento en el stack
-            // se debe cerrar el fragmento y la actividad
-            getSupportFragmentManager().popBackStack();
-            finish();
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
     public void onCategoryDialogCancelPressed() {
         // Limpiar el stack eliminando el CategoryMenuDialogFragment
-        getSupportFragmentManager().popBackStack();
+        // getSupportFragmentManager().popBackStack();
         finish();
     }
 
@@ -304,8 +238,8 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
         CharacterMenuDialogFragment fragment = CharacterMenuDialogFragment.newInstance(gameStructure,progress, gameOrder, levelOrder);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(android.R.id.content, fragment);
-        transaction.addToBackStack("LevelMenuFragment");
+        transaction.add(android.R.id.content, fragment,"CharacterMenuDialogFragment");
+        transaction.addToBackStack("CharacterMenuDialogFragment");
         transaction.commit();
     }
 
@@ -317,10 +251,6 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
 
     @Override
     public void onCharacterSelected(int gameOrder, int levelOrder, int characterIndex) {
-        // Eliminar los fragmentos CategoryMenuDialogFragment y CharacterMenuDialogFragment
-        getSupportFragmentManager().popBackStack();
-        getSupportFragmentManager().popBackStack();
-
         this.currentGameOrder = gameOrder;
         this.currentLevelOrder = levelOrder;
         this.currentCharacterIndex = characterIndex;
@@ -330,12 +260,14 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
 
     @Override
     public void onRetryCharacterSelected() {
+        // Eliminar el fragmento de fin de caracter
         getSupportFragmentManager().popBackStack();
         setupLevel();
     }
 
     @Override
     public void onNextCharacterSelected() {
+        // Eliminar el fragmento de fin de caracter
         getSupportFragmentManager().popBackStack();
         this.currentCharacterIndex++;
         setupLevel();
@@ -343,7 +275,8 @@ public class GameActivity extends AppCompatActivity implements GameDialogsEvents
 
     @Override
     public void onFinishedCharacterDialogCancelPressed() {
+        // Eliminar el fragmento de fin de caracter
         getSupportFragmentManager().popBackStack();
-        finish();
+        // finish(); // Solo regresar al menú de caracteres, no hasta MainActivity
     }
 }

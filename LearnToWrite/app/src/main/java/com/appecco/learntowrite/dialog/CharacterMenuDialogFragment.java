@@ -6,6 +6,7 @@ import com.appecco.learntowrite.model.Progress;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.DialogFragment;
@@ -93,14 +94,38 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 
 		TextView titleText = (TextView) view.findViewById(R.id.levelDialogText);
 		String gameName = gameStructure.findGameByOrder(gameOrder).getName();
-		String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
 		String levelName = gameStructure.findLevelByOrder(levelOrder).getName();
-		String levelTag = gameStructure.findLevelByOrder(levelOrder).getLevelTag();
 		titleText.setText(String.format("%s ( %s )",gameName,levelName));
 
-		LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.levelButtonsLayout);
+		loadCharacterButtons(view);
+
+		ImageButton cancelButton = (ImageButton)view.findViewById(R.id.cancelButton);
+		cancelButton.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				if (gameDialogsEventsListener != null) {
+					gameDialogsEventsListener.onCharacterDialogCancelPressed();
+				}
+			}
+
+		});
+
+		return view;
+	}
+
+	public void loadCharacterButtons(){
+		loadCharacterButtons(getView());
+	}
+
+	private void loadCharacterButtons(View view) {
+		String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
+		String levelTag = gameStructure.findLevelByOrder(levelOrder).getLevelTag();
 		String[] characters = gameStructure.findGameByOrder(gameOrder).getCharacters();
 		int[] scores = progress.findGameByTag(gameTag).findLevelByTag(levelTag).getScores();
+
+		LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.levelButtonsLayout);
+		linearLayout.removeAllViewsInLayout();
 
 		Button btn;
 		Map<Integer, Drawable> levelStars = new ArrayMap<>();
@@ -144,40 +169,13 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 			}
 			linearLayout.addView(layout_row);
 		}
-
-		ImageButton cancelButton = (ImageButton)view.findViewById(R.id.cancelButton);
-		cancelButton.setOnClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				onCancelButtonPressed();
-			}
-
-		});
-
-		return view;
 	}
-
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		Dialog dialog = super.onCreateDialog(savedInstanceState);
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 	    return dialog;
-	}
-
-	private void dismissFragment(){
-		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-		FragmentTransaction transaction = fragmentManager.beginTransaction();
-		transaction.remove(this);
-		transaction.commit();
-	}
-
-	void onCancelButtonPressed(){
-		dismissFragment();
-		if (gameDialogsEventsListener != null) {
-			gameDialogsEventsListener.onCharacterDialogCancelPressed();
-		}
 	}
 
 	public GameStructure getGameStructure() {
@@ -210,11 +208,6 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 
 	public void setLevelOrder(int levelOrder) {
 		this.levelOrder = levelOrder;
-	}
-
-	public interface LevelMenuDialogListener{
-		void onLevelMenuDialogSelection(int gameIndex, int levelIndex, int characterIndex);
-		void onLevelMenuDialogCancel(DialogFragment dialog);
 	}
 
 }

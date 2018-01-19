@@ -181,6 +181,8 @@ public class DrawingView extends View implements OnTouchListener {
 		super.onSizeChanged(w, h, oldw, oldh);
 		canvasBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
 		drawCanvas = new Canvas(canvasBitmap);
+		CalcPropCenter();
+		activity.readyForChallenge();
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.appecco.learntowrite.dialog;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -26,6 +27,11 @@ import org.json.JSONException;
  */
 public class CategoryFragment extends Fragment {
 
+    private static final String GAME_STRUCTURE_PARAM = "gameStructureParam";
+    private static final String PROGRESS_PARAM = "progressParam";
+    private static final String GAME_ORDER_PARAM = "gameOrderParam";
+    private static final String LEVEL_ORDER_PARAM = "levelOrderParam";
+
     private GameStructure gameStructure;
     private Progress progress;
     private int gameOrder;
@@ -35,11 +41,25 @@ public class CategoryFragment extends Fragment {
 
     public static CategoryFragment newInstance (GameStructure gameStructure, Progress progress, int gameOrder, int levelOrder){
         CategoryFragment fragment = new CategoryFragment();
-        fragment.setGameStructure(gameStructure);
-        fragment.setProgress(progress);
-        fragment.setGameOrder(gameOrder);
-        fragment.setLevelOrder(levelOrder);
+        Bundle args = new Bundle();
+        args.putSerializable(GAME_STRUCTURE_PARAM, gameStructure);
+        args.putSerializable(PROGRESS_PARAM, progress);
+        args.putInt(GAME_ORDER_PARAM, gameOrder);
+        args.putInt(LEVEL_ORDER_PARAM, levelOrder);
+        fragment.setArguments(args);
+
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            gameStructure = (GameStructure)(getArguments().getSerializable(GAME_STRUCTURE_PARAM));
+            progress = (Progress)(getArguments().getSerializable(PROGRESS_PARAM));
+            gameOrder = getArguments().getInt(GAME_ORDER_PARAM);
+            levelOrder = getArguments().getInt(LEVEL_ORDER_PARAM);
+        }
     }
 
     @Override
