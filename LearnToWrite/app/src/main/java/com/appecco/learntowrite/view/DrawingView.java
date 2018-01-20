@@ -232,9 +232,9 @@ public class DrawingView extends View implements OnTouchListener {
             drawCanvas.drawPath(fontPath, fontPaint);
         }
         else{
-            fontPaint.setColor(Color.argb(90,0,0,255));
-            fontPaint.setStyle(Paint.Style.STROKE);
-            drawCanvas.drawPath(fontPath, fontPaint);
+			fontPaint.setColor(Color.argb(90,255,255,200));
+			fontPaint.setStyle(Paint.Style.FILL);
+			drawCanvas.drawPath(fontPath, fontPaint);
         }
 
 		for (Path p : paths) {
