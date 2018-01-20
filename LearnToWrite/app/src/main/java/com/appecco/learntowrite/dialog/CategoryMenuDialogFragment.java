@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -80,6 +81,13 @@ public class CategoryMenuDialogFragment extends DialogFragment {
         });
 
         return view;
+    }
+
+    public void loadCategoryButtons(){
+        View view = getView();
+        ViewPager viewPager = (ViewPager)view.findViewById(R.id.categoryPager);
+        PagerAdapter pagerAdapter = viewPager.getAdapter();
+        pagerAdapter.notifyDataSetChanged();
     }
 
     @Override
