@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/sky1"
+    android:background="#41c4f4"
     tools:context="com.appecco.learntowrite.dialog.DrawingFragment">
 
     <LinearLayout

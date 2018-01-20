@@ -389,7 +389,7 @@ public class DrawingView extends View implements OnTouchListener {
 			if (animPaths != null && animPaths.length() == paths.size()) {
 			    //Hagamos una pausa para dar oportunidad a que se mire el trazo realizado
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
