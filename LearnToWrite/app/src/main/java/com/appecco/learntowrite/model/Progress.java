@@ -44,24 +44,27 @@ public class Progress implements Serializable {
         scores = findGameByTag(gameTag).findLevelByTag(levelTag).getScores();
         scores[characterIndex] = (score>scores[characterIndex])?score:scores[characterIndex];
 
-        if (scores.length - 1 > characterIndex){
-            levelFinished = false;
-            if (scores[characterIndex+1] == -1) {
-                // desbloquear el siguiente caracter
-                scores[characterIndex + 1] = 0;
-            }
-        } else {
-            String nextLevelTag;
-            if (gameStructure.nextLevelByTag(levelTag) != null
-                    && findGameByTag(gameTag).findLevelByTag(gameStructure.nextLevelByTag(levelTag).getLevelTag()).getScores()[0] == -1){
-                // desbloquear el siguiente nivel de dificultad
-                updateScore(gameTag, gameStructure.nextLevelByTag(levelTag).getLevelTag(), 0, 0);
+        // si se pasó el caracter, desbloquear el siguiente caracter o el siguiente nivel según corresponda
+        if (score > 0) {
+            if (scores.length - 1 > characterIndex) {
+                levelFinished = false;
+                if (scores[characterIndex + 1] == -1) {
+                    // desbloquear el siguiente caracter
+                    scores[characterIndex + 1] = 0;
+                }
             } else {
-                String firstLevelTag = gameStructure.findLevelByOrder(1).getLevelTag();
-                if (gameStructure.nextGameByTag(gameTag) != null
-                        && findGameByTag(gameStructure.nextGameByTag(gameTag).getGameTag()).findLevelByTag(firstLevelTag).getScores()[0] == -1){
-                    // desbloquear el siguiente juego
-                    findGameByTag(gameStructure.nextGameByTag(gameTag).getGameTag()).findLevelByTag(firstLevelTag).getScores()[0] = 0;
+                String nextLevelTag;
+                if (gameStructure.nextLevelByTag(levelTag) != null
+                        && findGameByTag(gameTag).findLevelByTag(gameStructure.nextLevelByTag(levelTag).getLevelTag()).getScores()[0] == -1) {
+                    // desbloquear el siguiente nivel de dificultad
+                    updateScore(gameTag, gameStructure.nextLevelByTag(levelTag).getLevelTag(), 0, 0);
+                } else {
+                    String firstLevelTag = gameStructure.findLevelByOrder(1).getLevelTag();
+                    if (gameStructure.nextGameByTag(gameTag) != null
+                            && findGameByTag(gameStructure.nextGameByTag(gameTag).getGameTag()).findLevelByTag(firstLevelTag).getScores()[0] == -1) {
+                        // desbloquear el siguiente juego
+                        findGameByTag(gameStructure.nextGameByTag(gameTag).getGameTag()).findLevelByTag(firstLevelTag).getScores()[0] = 0;
+                    }
                 }
             }
         }
