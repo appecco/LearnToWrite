@@ -1,76 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#41c4f4"
     tools:context="com.appecco.learntowrite.dialog.DrawingFragment">
+    <!--android:background="#41c4f4"-->
 
-    <LinearLayout
-        android:layout_width="52sp"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
+    <!--<LinearLayout-->
+        <!--android:layout_width="52sp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="vertical" >-->
 
-        <ImageButton
-            android:id="@+id/btnHint"
-            android:layout_width="match_parent"
-            android:layout_height="46sp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/hint" />
+        <!--<ImageButton-->
+            <!--android:id="@+id/btnHint"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="46sp"-->
+            <!--android:scaleType="fitCenter"-->
+            <!--android:src="@drawable/hint" />-->
 
-        <ImageButton
-            android:id="@+id/btnRetry"
-            android:layout_width="match_parent"
-            android:layout_height="46sp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/restart_flat" />
+        <!--<ImageButton-->
+            <!--android:id="@+id/btnRetry"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="46sp"-->
+            <!--android:scaleType="fitCenter"-->
+            <!--android:src="@drawable/restart_flat" />-->
 
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+        <!--<Space-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="1" />-->
 
-        <ImageButton
-            android:id="@+id/btnRed"
-            android:layout_width="match_parent"
-            android:layout_height="46sp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/redbutton" />
+        <!--<ImageButton-->
+            <!--android:id="@+id/btnRed"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="46sp"-->
+            <!--android:scaleType="fitCenter"-->
+            <!--android:src="@drawable/redbutton" />-->
 
-        <ImageButton
-            android:id="@+id/btnBlue"
-            android:layout_width="match_parent"
-            android:layout_height="46sp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/bluebutton" />
+        <!--<ImageButton-->
+            <!--android:id="@+id/btnBlue"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="46sp"-->
+            <!--android:scaleType="fitCenter"-->
+            <!--android:src="@drawable/bluebutton" />-->
 
-        <ImageButton
-            android:id="@+id/btnGreen"
-            android:layout_width="match_parent"
-            android:layout_height="46sp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/greenbutton" />
+        <!--<ImageButton-->
+            <!--android:id="@+id/btnGreen"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="46sp"-->
+            <!--android:scaleType="fitCenter"-->
+            <!--android:src="@drawable/greenbutton" />-->
 
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+        <!--<Space-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="1" />-->
 
-        <!--<Button-->
-        <!--android:id="@+id/btnNext"-->
-        <!--style="?android:attr/buttonStyleSmall"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Next" />-->
+        <!--&lt;!&ndash;<Button&ndash;&gt;-->
+        <!--&lt;!&ndash;android:id="@+id/btnNext"&ndash;&gt;-->
+        <!--&lt;!&ndash;style="?android:attr/buttonStyleSmall"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:text="Next" />&ndash;&gt;-->
 
-        <!--<Button-->
-        <!--android:id="@+id/btnSave"-->
-        <!--style="?android:attr/buttonStyleSmall"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Save" />-->
+        <!--&lt;!&ndash;<Button&ndash;&gt;-->
+        <!--&lt;!&ndash;android:id="@+id/btnSave"&ndash;&gt;-->
+        <!--&lt;!&ndash;style="?android:attr/buttonStyleSmall"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:text="Save" />&ndash;&gt;-->
 
-    </LinearLayout>
+    <!--</LinearLayout>-->
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -89,6 +89,106 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="62sp"
+            android:layout_alignParentTop="true">
+
+            <Space
+                android:id="@+id/space1"
+                android:layout_width="15sp"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"/>
+
+            <ImageButton
+                android:id="@+id/btnRetry"
+                android:layout_width="46sp"
+                android:layout_height="46sp"
+                android:layout_toStartOf="@+id/space1"
+                android:layout_alignParentBottom="true"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/restart_flat" />
+
+            <Space
+                android:id="@+id/space2"
+                android:layout_width="10sp"
+                android:layout_height="match_parent"
+                android:layout_toStartOf="@+id/btnRetry"
+                android:layout_alignParentBottom="true"/>
+
+            <ImageButton
+                android:id="@+id/btnHint"
+                android:layout_width="46sp"
+                android:layout_height="46sp"
+                android:layout_toStartOf="@+id/space2"
+                android:layout_alignParentBottom="true"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/hint" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="62sp"
+            android:layout_alignParentBottom="true">
+
+            <Space
+                android:id="@+id/space3"
+                android:layout_width="15sp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"/>
+
+            <ImageButton
+                android:id="@+id/btnRed"
+                android:layout_width="46sp"
+                android:layout_height="46sp"
+                android:layout_toEndOf="@+id/space3"
+                android:scaleType="fitCenter"
+                android:layout_alignParentTop="true"
+                android:background="@null"
+                android:src="@drawable/redbutton" />
+
+            <Space
+                android:id="@+id/space4"
+                android:layout_width="10sp"
+                android:layout_height="match_parent"
+                android:layout_toEndOf="@+id/btnRed"
+                android:layout_alignParentTop="true"/>
+
+            <ImageButton
+                android:id="@+id/btnBlue"
+                android:layout_width="46sp"
+                android:layout_height="46sp"
+                android:layout_toEndOf="@+id/space4"
+                android:scaleType="fitCenter"
+                android:layout_alignParentTop="true"
+                android:background="@null"
+                android:src="@drawable/bluebutton" />
+
+            <Space
+                android:id="@+id/space5"
+                android:layout_width="10sp"
+                android:layout_height="match_parent"
+                android:layout_toEndOf="@+id/btnBlue"
+                android:layout_alignParentTop="true"/>
+
+            <ImageButton
+                android:id="@+id/btnGreen"
+                android:layout_width="46sp"
+                android:layout_height="46sp"
+                android:layout_toEndOf="@+id/space5"
+                android:scaleType="fitCenter"
+                android:layout_alignParentTop="true"
+                android:background="@null"
+                android:src="@drawable/greenbutton" />
+
+        </RelativeLayout>
+
     </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>
