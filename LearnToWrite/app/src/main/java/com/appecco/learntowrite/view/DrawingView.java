@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
@@ -68,14 +69,12 @@ public class DrawingView extends View implements OnTouchListener {
 
 	private GameActivity activity;
 
-	private Typeface customFont;
-
 	private Bitmap transpBitmap;
 	private Bitmap canvasBitmap;
+    private Bitmap backgroundBitmap;
 	private Canvas hintCanvas, drawCanvas;
 	private Path mPath, fontPath;
 	private Paint mPaint, fontPaint, animPaint;
-	private Paint gridPaint;
 	private LinkedList<Path> paths = new LinkedList<Path>();
 
 	private float mX, mY, gX = 0, gY = 0;
@@ -83,11 +82,6 @@ public class DrawingView extends View implements OnTouchListener {
 	private JSONArray jsonPaths;
 	private JSONArray jsonPath;
 
-	private int characterOutlineColor = Color.BLUE;
-	private int characterFillColor = Color.YELLOW;
-
-	//private int currentCharIndex = -1;
-	//private JSONArray characterGroup;
 	private char currentChar = ' ';
 	private String targetGesture = "X";
 	private StringBuilder currentGesture = new StringBuilder();
@@ -120,12 +114,12 @@ public class DrawingView extends View implements OnTouchListener {
 	private void initView() {
 		activity = (GameActivity) getContext();
 
+        final Typeface customFont = Typeface.createFromAsset(getContext().getAssets(), "fonts/dnealiancursive.ttf");
+
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 
 		this.setOnTouchListener(this);
-
-		customFont = Typeface.createFromAsset(getContext().getAssets(), "fonts/dnealiancursive.ttf");
 
 		mPaint = new Paint();
 		mPaint.setAntiAlias(true);
@@ -155,12 +149,7 @@ public class DrawingView extends View implements OnTouchListener {
 		fontPaint.setStrokeCap(Paint.Cap.ROUND);
 		fontPaint.setStrokeWidth(STROKE_WIDTH);
 
-		gridPaint = new Paint();
-		gridPaint.setColor(Color.GRAY);
-		gridPaint.setStrokeWidth(1);
-		gridPaint.setStyle(Paint.Style.STROKE);
-
-		fontPath = new Path();
+        fontPath = new Path();
 
 		hintCanvas = new Canvas();
 		drawCanvas = new Canvas();
@@ -185,18 +174,26 @@ public class DrawingView extends View implements OnTouchListener {
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
-		canvasBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+
+        //Preparar el Bitmap de fondo (Mutable y Scaled)
+        backgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background2);
+        backgroundBitmap = Bitmap.createScaledBitmap(backgroundBitmap,w,h,true);
+
+        //Copiar a canvasBitmap el background ya scaled y luego dibujarlo en el drawCanvas
+        canvasBitmap = backgroundBitmap.copy(Bitmap.Config.ARGB_8888, true);
 		drawCanvas = new Canvas(canvasBitmap);
-		CalcPropCenter();
+
+		initWindowProportions();
 		activity.readyForChallenge();
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		int height = getHeight();
-		int width = getWidth();
+        final int characterOutlineColor = Color.BLUE;
+        final int characterFillColor = Color.YELLOW;
 
-		drawCanvas.drawColor(Color.WHITE);
+        int height = getHeight();
+		int width = getWidth();
 
 		fontPaint.setColor(characterFillColor);
 		fontPaint.setStyle(Paint.Style.FILL);
@@ -205,7 +202,7 @@ public class DrawingView extends View implements OnTouchListener {
 		if (transpBitmap == null) {
 			transpBitmap = Bitmap.createBitmap(width, height, Config.ARGB_8888);
 			hintCanvas.setBitmap(transpBitmap);
-			hintCanvas.drawColor(Color.WHITE);
+            hintCanvas.drawBitmap(backgroundBitmap, 0, 0, null);
 
 			fontPaint.setColor(characterOutlineColor);
 			fontPaint.setStyle(Paint.Style.STROKE);
@@ -243,17 +240,8 @@ public class DrawingView extends View implements OnTouchListener {
 				mPaint.setStrokeWidth((float) (STROKE_WIDTH_ANIM / PROP_TOTAL));
 				drawCanvas.drawPath(p, mPaint);
 				drawCanvas.drawBitmap(transpBitmap, 0, 0, null);
-//				//DEBUG
-//                Log.d("DRAW", "Animating");
-
     		} else {
 				drawCanvas.drawPath(p, mPaint);
-
-//				//DEBUG
-//                PathMeasure pm = new PathMeasure(p, false);
-//                float aCoordinates[] = {0f, 0f};
-//                pm.getPosTan(pm.getLength(), aCoordinates, null);
-//                Log.d("DRAW", "Number of Paths: " + paths.size() + "  -   Last Point: " + Float.toString(aCoordinates[0]) + "," + Float.toString(aCoordinates[1]));
 			}
 		}
 
@@ -288,6 +276,7 @@ public class DrawingView extends View implements OnTouchListener {
 		hintCanvas.setBitmap(null);
 		canvasBitmap = null;
 		drawCanvas.setBitmap(null);
+		backgroundBitmap = null;
 	}
 
 	private void touch_start(float x, float y) {
@@ -566,7 +555,13 @@ public class DrawingView extends View implements OnTouchListener {
 				e.printStackTrace();
 			}
 
-			invalidate();
+            //Reiniciemos el canvas para asegurar que este limpio, verificamos que backgroundBitmap no sea null ya que puede estarse ejecutando un reset delayed cuando ya se cerro el drawingview
+            if (backgroundBitmap != null) {
+                canvasBitmap = backgroundBitmap.copy(Bitmap.Config.ARGB_8888, true);
+                drawCanvas = new Canvas(canvasBitmap);
+            }
+
+            invalidate();
 		}
 	}
 
@@ -675,7 +670,7 @@ public class DrawingView extends View implements OnTouchListener {
 		}
 
 		//Actualicemos las Proporciones y Centro de Dibujo para el nuevo Character
-		CalcPropCenter();
+		initWindowProportions();
 	}
 
 	public void save() {
@@ -750,7 +745,7 @@ public class DrawingView extends View implements OnTouchListener {
 		}
 	}
 
-	private void CalcPropCenter(){
+	private void initWindowProportions(){
         int height = getHeight();
         int width = getWidth();
 
@@ -777,4 +772,5 @@ public class DrawingView extends View implements OnTouchListener {
         CENTER_WIDTH = (width / 2) - Math.abs(((bounds.left - bounds.right)/2));
         CENTER_HEIGHT = (height / 2) + Math.abs(((bounds.top - bounds.bottom)/2)) - bounds.bottom;
     }
+
 }
