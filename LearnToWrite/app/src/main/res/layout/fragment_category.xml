@@ -4,26 +4,14 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
-        <ImageButton
+        <Button
             android:id="@+id/categoryImageButton"
+            android:layout_width="225sp"
+            android:layout_height="180sp"
+            android:background="@drawable/category_button"
             android:contentDescription="Category Image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/printletter_icon" />
+            android:scaleType="fitCenter" />
 
-        <TextView
-            android:id="@+id/gameName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/welcome_to_game"
-            android:textSize="25sp" />
-
-        <TextView
-            android:id="@+id/levelName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/welcome_to_game"
-            android:textSize="25sp" />
     </LinearLayout>
 
 

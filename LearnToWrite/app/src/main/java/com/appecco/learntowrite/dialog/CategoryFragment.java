@@ -3,6 +3,7 @@ package com.appecco.learntowrite.dialog;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -12,6 +13,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
+import com.appecco.utils.Settings;
 
 import org.json.JSONException;
 
@@ -78,8 +81,17 @@ public class CategoryFragment extends Fragment {
 
         View view =  inflater.inflate(R.layout.fragment_category, container, false);
 
-        ImageButton button = view.findViewById(R.id.categoryImageButton);
-        // button.setImageIcon(?);
+        String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
+        String levelTag = gameStructure.findLevelByOrder(levelOrder).getLevelTag();
+
+        Button button = (Button)view.findViewById(R.id.categoryImageButton);
+        String imageResourceName = String.format("%s_%s",gameTag.toLowerCase(), levelTag.toLowerCase());
+        Resources contextResources = getActivity().getResources();
+        int imageResourceId = contextResources.getIdentifier(imageResourceName, "drawable", getActivity().getPackageName());
+        if (imageResourceId != 0) {
+            button.setBackground(getContext().getResources().getDrawable(imageResourceId));
+        }
+
         // TODO: Crear íconos específicos para cada categoría (combinación de juego y nivel)
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,17 +99,11 @@ public class CategoryFragment extends Fragment {
                 gameDialogsEventsListener.onCategorySelected(gameOrder, levelOrder);
             }
         });
-        String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
-        String levelTag = gameStructure.findLevelByOrder(levelOrder).getLevelTag();
         if (progress.findGameByTag(gameTag).findLevelByTag(levelTag).getScores()[0] == -1){
             button.setEnabled(false);
             button.setAlpha(0.5f);
         }
 
-        TextView gameNameText = view.findViewById(R.id.gameName);
-        gameNameText.setText(gameStructure.findGameByOrder(gameOrder).getName());
-        TextView levelNameText = view.findViewById(R.id.levelName);
-        levelNameText.setText(String.format("( %s )", gameStructure.findLevelByOrder(levelOrder).getName()));
         return view;
     }
 
