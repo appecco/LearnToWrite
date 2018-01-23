@@ -6,12 +6,11 @@ import com.appecco.learntowrite.model.Progress;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.support.v4.app.Fragment;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.ArrayMap;
 import android.view.Gravity;
@@ -33,6 +32,8 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 	private static final String PROGRESS_PARAM = "progressParam";
 	private static final String GAME_ORDER_PARAM = "gameOrderParam";
 	private static final String LEVEL_ORDER_PARAM = "levelOrderParam";
+
+	private static final int BUTTONS_PER_ROW = 7;
 
 	GameDialogsEventsListener gameDialogsEventsListener;
 
@@ -120,6 +121,8 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 	}
 
 	private void loadCharacterButtons(View view) {
+//		final Typeface customFont = Typeface.createFromAsset(getContext().getAssets(), "fonts/dnealiancursive.ttf");
+
 		String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
 		String levelTag = gameStructure.findLevelByOrder(levelOrder).getLevelTag();
 		String[] characters = gameStructure.findGameByOrder(gameOrder).getCharacters();
@@ -136,24 +139,29 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 		levelStars.put(2,getResources().getDrawable(R.drawable.microstars2));
 		levelStars.put(3,getResources().getDrawable(R.drawable.microstars3));
 
-		for (int i = 0; i < Math.ceil((double)characters.length/(double)6); i++) {
+		for (int i = 0; i < Math.ceil((double)characters.length/(double)BUTTONS_PER_ROW); i++) {
 			LinearLayout layout_row = new LinearLayout(view.getContext());
 			layout_row.setLayoutParams(new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT));
 			layout_row.setGravity(Gravity.CENTER);
 
-			for (int j = 0; j < 6; j++) {
-				if ((i*6) + j < characters.length){
+			for (int j = 0; j < BUTTONS_PER_ROW; j++) {
+				if ((i * BUTTONS_PER_ROW) + j < characters.length){
 					btn = new Button(getActivity());
 					btn.setLayoutParams(new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 					btn.setAllCaps(false);
-					btn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, levelStars.get(scores[(i*6)+j]) );
-					btn.setText(characters[(i * 6) + j]);
-					if (scores[i*6+j] == -1){
+					btn.setBackground(getResources().getDrawable(R.drawable.level_button));
+					btn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, levelStars.get(scores[(i * BUTTONS_PER_ROW) + j]) );
+					btn.setText(characters[(i * BUTTONS_PER_ROW) + j]);
+					btn.setTextColor(Color.YELLOW);
+					//btn.setTypeface(customFont);
+					//btn.setWidth(50);
+					btn.setTextSize(16);
+					if (scores[(i * BUTTONS_PER_ROW) + j] == -1){
 						btn.setEnabled(false);
 						btn.setAlpha(0.5f);
 					}
 
-					btn.setTag((i*6) + j);
+					btn.setTag((i * BUTTONS_PER_ROW) + j);
 					btn.setOnClickListener(new OnClickListener(){
 
 						@Override
