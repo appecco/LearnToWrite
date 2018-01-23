@@ -10,6 +10,8 @@ public interface GameDialogsEventsListener {
     void onCategorySelected(int gameOrder, int levelOrder);
     void onCharacterDialogCancelPressed();
     void onCharacterSelected(int gameOrder, int levelOrder, int characterIndex);
+    void onCancelCharacterSelected();
+    void onStartCharacterSelected();
     void onRetryCharacterSelected();
     void onNextCharacterSelected();
     void onFinishedCharacterDialogCancelPressed();

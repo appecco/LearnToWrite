@@ -6,6 +6,7 @@ import org.json.JSONArray;
 
 import com.appecco.learntowrite.dialog.CategoryMenuDialogFragment;
 import com.appecco.learntowrite.dialog.CharacterFinishedDialogFragment;
+import com.appecco.learntowrite.dialog.CharacterIntroDialogFragment;
 import com.appecco.learntowrite.dialog.CharacterMenuDialogFragment;
 import com.appecco.learntowrite.dialog.DrawingFragment;
 import com.appecco.learntowrite.dialog.GameDialogsEventsListener;
@@ -165,6 +166,12 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     }
 
     @Override
+    public void readyForHint(){
+        CharacterIntroDialogFragment characterIntroDialogFragment = (CharacterIntroDialogFragment)getSupportFragmentManager().findFragmentByTag("CharacterIntroDialogFragment");
+        characterIntroDialogFragment.startHint();
+    }
+
+    @Override
     public void challengeCompleted(int score){
         GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
         if (score >= level.getAccuracy()){
@@ -271,6 +278,24 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         transaction.commit();
     }
 
+    public void showCharacterIntroDialog(){
+        FragmentManager fragmentManager;
+        CharacterIntroDialogFragment characterIntroFragment = CharacterIntroDialogFragment.newInstance(gameStructure,progress, currentGameOrder, currentLevelOrder, currentCharacterIndex);
+        fragmentManager = getSupportFragmentManager();
+
+        characterIntroFragment.setGameStructure(gameStructure);
+        characterIntroFragment.setProgress(progress);
+        characterIntroFragment.setGameOrder(currentGameOrder);
+        characterIntroFragment.setLevelOrder(currentLevelOrder);
+        characterIntroFragment.setCharacterIndex(currentCharacterIndex);
+
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(android.R.id.content, characterIntroFragment, "CharacterIntroDialogFragment");
+        transaction.addToBackStack("CharacterIntroDialogFragment");
+        transaction.commit();
+    }
+
 
     private void PrepareInterstitialAd() {
         //Inicializar Interstitial Ads
@@ -320,6 +345,18 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         this.currentLevelOrder = levelOrder;
         this.currentCharacterIndex = characterIndex;
 
+        showCharacterIntroDialog();
+    }
+
+    @Override
+    public void onCancelCharacterSelected() {
+        getSupportFragmentManager().popBackStack();
+    }
+
+    @Override
+    public void onStartCharacterSelected() {
+        // Eliminar el fragmento de introducción del caracter del stack para que no regrese a él luego de finalizar el caracter
+        getSupportFragmentManager().popBackStack();
         setupLevel();
     }
 

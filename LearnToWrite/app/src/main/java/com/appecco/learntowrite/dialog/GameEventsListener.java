@@ -7,6 +7,7 @@ package com.appecco.learntowrite.dialog;
 public interface GameEventsListener {
 
     void readyForChallenge();
+    void readyForHint();
     void challengeCompleted(int score);
 
 }

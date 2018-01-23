@@ -8,6 +8,7 @@ import java.io.Writer;
 import java.util.LinkedList;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
@@ -31,6 +32,7 @@ import android.view.View.OnTouchListener;
 import android.widget.Toast;
 
 import org.json.*;
+import org.w3c.dom.Attr;
 
 import com.appecco.learntowrite.GameActivity;
 import com.appecco.learntowrite.R;
@@ -51,6 +53,10 @@ public class DrawingView extends View implements OnTouchListener {
 	private static final double REFERENCE_WIDTH = 1673d;
 	private static final double REFERENCE_HEIGHT = 1080d;
 
+	// Modo de operación de DrawingView
+	private static final String MODE_DRAW = "draw";
+	private static final String MODE_HINT = "hint";
+
 	//Tolerancia base para los paths (Que tanto se debe mover para dibujar una nueva linea)
 	private static final float DRAW_TOLERANCE = 4;
 	//Tolerancia base para los gestos (Que tanto se debe mover para tomar un nuevo punto incluyendo proporcionalidad)
@@ -68,6 +74,8 @@ public class DrawingView extends View implements OnTouchListener {
 	private Rect anim_bounds = new Rect();
 
 	private GameActivity activity;
+
+	private String mode = MODE_DRAW;
 
 	private Bitmap transpBitmap;
 	private Bitmap canvasBitmap;
@@ -101,14 +109,30 @@ public class DrawingView extends View implements OnTouchListener {
 
     private final DashPathEffect dashEffect = new DashPathEffect(new float[]{10, 40}, 0);
 
+    public DrawingView(Context context, AttributeSet attrs, int defaultStyle){
+    	super(context,attrs,defaultStyle);
+    	processAttributes(attrs);
+    	initView();
+	}
+
 	public DrawingView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		processAttributes(attrs);
 		initView();
 	}
 
 	public DrawingView(Context context) {
 		super(context);
 		initView();
+	}
+
+	private void processAttributes(AttributeSet attrs){
+		TypedArray attrsArray = getContext().obtainStyledAttributes(attrs, R.styleable.DrawingView);
+		String modeValue = attrsArray.getString(R.styleable.DrawingView_mode);
+		if (modeValue != null){
+			this.mode = modeValue;
+		}
+		attrsArray.recycle();
 	}
 
 	private void initView() {
@@ -184,7 +208,13 @@ public class DrawingView extends View implements OnTouchListener {
 		drawCanvas = new Canvas(canvasBitmap);
 
 		initWindowProportions();
-		activity.readyForChallenge();
+
+		if (MODE_DRAW.equals(mode)) {
+			activity.readyForChallenge();
+		}
+		if (MODE_HINT.equals(mode)) {
+			activity.readyForHint();
+		}
 	}
 
 	@Override
@@ -247,15 +277,16 @@ public class DrawingView extends View implements OnTouchListener {
 
 		canvas.drawBitmap(canvasBitmap, 0, 0, null);
 
-		//Agreguemos las 3 estrellas segun el score del nivel se decide si empty o filled
-		for (int i = 1; i <= 3; i++) {
-			if (level_score >= i) {
-				star.setBounds((int) ((10 + ((i - 1) * 100)) / PROP_TOTAL), (int) (10 / PROP_TOTAL), (int) ((80 + ((i - 1) * 100)) / PROP_TOTAL), (int) (80 / PROP_TOTAL));
-				star.draw(canvas);
-			}
-			else{
-				empty_star.setBounds((int) ((10 + ((i - 1) * 100)) / PROP_TOTAL), (int) (10 / PROP_TOTAL), (int) ((80 + ((i - 1) * 100)) / PROP_TOTAL), (int) (80 / PROP_TOTAL));
-				empty_star.draw(canvas);
+        if (MODE_DRAW.equals(mode)) {
+			//Agreguemos las 3 estrellas segun el score del nivel se decide si empty o filled
+			for (int i = 1; i <= 3; i++) {
+				if (level_score >= i) {
+					star.setBounds((int) ((10 + ((i - 1) * 100)) / PROP_TOTAL), (int) (10 / PROP_TOTAL), (int) ((80 + ((i - 1) * 100)) / PROP_TOTAL), (int) (80 / PROP_TOTAL));
+					star.draw(canvas);
+				} else {
+					empty_star.setBounds((int) ((10 + ((i - 1) * 100)) / PROP_TOTAL), (int) (10 / PROP_TOTAL), (int) ((80 + ((i - 1) * 100)) / PROP_TOTAL), (int) (80 / PROP_TOTAL));
+					empty_star.draw(canvas);
+				}
 			}
 		}
 
@@ -502,7 +533,7 @@ public class DrawingView extends View implements OnTouchListener {
 
 	@Override
 	public boolean onTouch(View arg0, MotionEvent event) {
-		if (!animating) {
+		if (!animating && MODE_DRAW.equals(mode)) {
 			float x = event.getX();
 			float y = event.getY();
 
@@ -636,7 +667,7 @@ public class DrawingView extends View implements OnTouchListener {
 		}
 	}
 
-	private void load() {
+	public void load() {
 		try {
 			if (currentChar != ' ') {
 				String filePath;
@@ -740,9 +771,10 @@ public class DrawingView extends View implements OnTouchListener {
 		animating = false;
 		load();
 		reset();
-		if (showHints && !SAVE_ENABLED){
-			hint();
-		}
+//  Los hints solo se mostrarán a petición del usuario y en el fragmento anterior, no de forma automática al iniciar un caracter
+//		if (showHints && !SAVE_ENABLED){
+//			hint();
+//		}
 	}
 
 	private void initWindowProportions(){
@@ -773,4 +805,11 @@ public class DrawingView extends View implements OnTouchListener {
         CENTER_HEIGHT = (height / 2) + Math.abs(((bounds.top - bounds.bottom)/2)) - bounds.bottom;
     }
 
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
 }
