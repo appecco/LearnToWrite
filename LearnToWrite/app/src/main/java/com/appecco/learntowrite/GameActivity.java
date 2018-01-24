@@ -59,7 +59,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     private int currentLevelOrder;
     private int currentCharacterIndex;
 
-    private int currentCharacterScore;
+    private Boolean currentCharacterScore[];
     private int currentAttemptIndex;
 
     String currentLanguage;
@@ -142,7 +142,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     }
 
     void setupLevel(){
-        currentCharacterScore = 0;
+        currentCharacterScore = new Boolean[3];
         currentAttemptIndex = 0;
 
         showDrawingFragment();
@@ -180,13 +180,14 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
             if (goodSoundLoaded) {
                 soundPool.play(goodSoundId, SOUND_POOL_VOLUME, SOUND_POOL_VOLUME, DEFAULT_SOUND_POOL_PRIORITY, SOUND_POOL_NO_LOOP, DEFAULT_SOUND_POOL_RATE);
             }
-            currentCharacterScore++;
+            currentCharacterScore[currentAttemptIndex] = true;
         } else {
 //            mp = MediaPlayer.create(this, R.raw.bad);
 //            mp.start();
             if (badSoundLoaded) {
                 soundPool.play(badSoundId, SOUND_POOL_VOLUME, SOUND_POOL_VOLUME, DEFAULT_SOUND_POOL_PRIORITY, SOUND_POOL_NO_LOOP, DEFAULT_SOUND_POOL_RATE);
             }
+            currentCharacterScore[currentAttemptIndex] = false;
         }
         if (currentAttemptIndex < ATTEMPTS_COUNT - 1){
             currentAttemptIndex++;
@@ -211,13 +212,19 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     }
 
     void levelCompleted(){
+        int scoreValue = 0;
+        for (int i=0; i<ATTEMPTS_COUNT; i++){
+            if (currentCharacterScore[i] != null && currentCharacterScore[i]){
+                scoreValue++;
+            }
+        }
         //Mostremos el Ad
         ShowInterstitialAd();
 
         String gameTag = gameStructure.findGameByOrder(currentGameOrder).getGameTag();
         String levelTag = gameStructure.findLevelByOrder(currentLevelOrder).getLevelTag();
 
-        boolean levelFinished = progress.updateScore(gameTag, levelTag, currentCharacterIndex, currentCharacterScore);
+        boolean levelFinished = progress.updateScore(gameTag, levelTag, currentCharacterIndex, scoreValue);
 
         String progressData;
         Gson gson = new Gson();
@@ -234,7 +241,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
             categoryMenuDialogFragment.loadCategoryButtons();
         }
 
-        showCharacterFinishedDialog(currentCharacterScore, levelFinished);
+        showCharacterFinishedDialog(scoreValue, levelFinished);
     }
 
     public void showDrawingFragment(){
@@ -372,7 +379,8 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         // Eliminar el fragmento de fin de caracter
         getSupportFragmentManager().popBackStack();
         this.currentCharacterIndex++;
-        setupLevel();
+        //setupLevel();
+        showCharacterIntroDialog();
     }
 
     @Override

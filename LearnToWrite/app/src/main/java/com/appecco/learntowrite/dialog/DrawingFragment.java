@@ -30,7 +30,7 @@ public class DrawingFragment extends Fragment {
     private boolean beginningMark;
     private boolean endingMark;
 
-    private int score;
+    private Boolean[] score;
 
     private DrawingView viewDraw;
 
@@ -173,11 +173,11 @@ public class DrawingFragment extends Fragment {
         this.showHints = showHints;
     }
 
-    public int getScore() {
+    public Boolean[] getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(Boolean[] score) {
         this.score = score;
     }
 

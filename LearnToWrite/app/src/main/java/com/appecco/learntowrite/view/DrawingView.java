@@ -98,7 +98,7 @@ public class DrawingView extends View implements OnTouchListener {
 	private JSONObject animJson;
 	private JSONArray animPaths;
 
-	private int level_score;
+	private Boolean[] level_score;
 	private boolean showHints;
 	private String contourType;
 	private boolean showBeginningMark;
@@ -106,6 +106,7 @@ public class DrawingView extends View implements OnTouchListener {
 
 	private final Drawable star = getResources().getDrawable(R.drawable.star);
     private final Drawable empty_star = getResources().getDrawable(R.drawable.empty_star);
+    private final Drawable failed_star = getResources().getDrawable(R.drawable.failed_star);
 
     private final DashPathEffect dashEffect = new DashPathEffect(new float[]{10, 40}, 0);
 
@@ -181,7 +182,7 @@ public class DrawingView extends View implements OnTouchListener {
 		mPath = new Path();
 		paths.add(mPath);
 
-		level_score = 0;
+		// level_score = 0;
 
 		try {
 			jsonPaths = new JSONArray();
@@ -277,14 +278,19 @@ public class DrawingView extends View implements OnTouchListener {
 
 		canvas.drawBitmap(canvasBitmap, 0, 0, null);
 
-        if (MODE_DRAW.equals(mode)) {
+        Rect starBounds;
+        if (MODE_DRAW.equals(mode) && level_score != null) {
 			//Agreguemos las 3 estrellas segun el score del nivel se decide si empty o filled
-			for (int i = 1; i <= 3; i++) {
-				if (level_score >= i) {
-					star.setBounds((int) ((10 + ((i - 1) * 100)) / PROP_TOTAL), (int) (10 / PROP_TOTAL), (int) ((80 + ((i - 1) * 100)) / PROP_TOTAL), (int) (80 / PROP_TOTAL));
+			for (int i = 0; i < 3; i++) {
+				starBounds = new Rect((int) ((10 + ((i) * 100)) / PROP_TOTAL), (int) (10 / PROP_TOTAL), (int) ((80 + ((i) * 100)) / PROP_TOTAL), (int) (80 / PROP_TOTAL));
+				if (level_score[i] != null && level_score[i]) {
+					star.setBounds(starBounds);
 					star.draw(canvas);
+				} else if(level_score[i] != null && !level_score[i]) {
+					failed_star.setBounds(starBounds);
+					failed_star.draw(canvas);
 				} else {
-					empty_star.setBounds((int) ((10 + ((i - 1) * 100)) / PROP_TOTAL), (int) (10 / PROP_TOTAL), (int) ((80 + ((i - 1) * 100)) / PROP_TOTAL), (int) (80 / PROP_TOTAL));
+					empty_star.setBounds(starBounds);
 					empty_star.draw(canvas);
 				}
 			}
@@ -762,7 +768,7 @@ public class DrawingView extends View implements OnTouchListener {
 		this.showEndingMark = showEndingMark;
 	}
 
-	public void setScore(int score){
+	public void setScore(Boolean[] score){
     	this.level_score = score;
 	}
 
