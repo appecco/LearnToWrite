@@ -94,10 +94,10 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 	Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.level_menu_layout, container, false);
 
-		TextView titleText = (TextView) view.findViewById(R.id.levelDialogText);
-		String gameName = gameStructure.findGameByOrder(gameOrder).getName();
-		String levelName = gameStructure.findLevelByOrder(levelOrder).getName();
-		titleText.setText(String.format("%s ( %s )",gameName,levelName));
+//		TextView titleText = (TextView) view.findViewById(R.id.levelDialogText);
+//		String gameName = gameStructure.findGameByOrder(gameOrder).getName();
+//		String levelName = gameStructure.findLevelByOrder(levelOrder).getName();
+//		titleText.setText(String.format("%s ( %s )",gameName,levelName));
 
 		loadCharacterButtons(view);
 

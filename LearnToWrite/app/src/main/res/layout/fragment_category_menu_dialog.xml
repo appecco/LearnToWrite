@@ -8,13 +8,14 @@
     android:background="@drawable/background"
     tools:context="com.appecco.learntowrite.dialog.CategoryMenuDialogFragment">
 
-    <TextView
-        android:id="@+id/categoryDialogText"
+    <LinearLayout
+        android:id="@+id/linlaySpace1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical|center_horizontal"
-        android:text="@string/welcome_to_game"
-        android:textSize="32sp" />
+        android:layout_weight="1"
+        android:orientation="horizontal" >
+
+    </LinearLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/categoryPager"

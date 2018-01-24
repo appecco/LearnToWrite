@@ -6,14 +6,14 @@
     android:orientation="vertical"
     android:background="@drawable/background">
 
-    <TextView
-        android:id="@+id/levelDialogText"
+    <LinearLayout
+        android:id="@+id/linlaySpace1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.33"
-        android:gravity="center_vertical|center_horizontal"
-        android:text="@string/welcome_to_level"
-        android:textSize="@dimen/dialog_message_text_size" />
+        android:layout_weight="0.1"
+        android:orientation="horizontal" >
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/imageScore"

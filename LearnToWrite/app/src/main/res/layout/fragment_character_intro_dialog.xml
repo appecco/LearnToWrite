@@ -7,13 +7,14 @@
     android:gravity="center_horizontal"
     android:background="@drawable/background">
 
-    <TextView
-        android:id="@+id/characterIntroTitle"
+    <LinearLayout
+        android:id="@+id/linlaySpace1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="@string/welcome_to_game"
-        android:textSize="25sp" />
+        android:layout_weight="0.1"
+        android:orientation="horizontal" >
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/introSectionsLayout"

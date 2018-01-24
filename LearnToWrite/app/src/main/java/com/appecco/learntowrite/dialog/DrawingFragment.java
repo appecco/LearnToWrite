@@ -7,7 +7,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.view.DrawingView;
@@ -33,7 +36,7 @@ public class DrawingFragment extends Fragment {
     private Boolean[] score;
 
     private DrawingView viewDraw;
-
+    private ImageView starView;
 
     public DrawingFragment() {
         // Required empty public constructor
@@ -138,6 +141,8 @@ public class DrawingFragment extends Fragment {
 
         });
 
+        starView = (ImageView)view.findViewById(R.id.animated_star);
+
 //        Funcionalidad usada para preparar los hints, NO BORRAR!!!
 
 //        Button btnNext = (Button)findViewById(R.id.btnNext);
@@ -165,6 +170,12 @@ public class DrawingFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        starView.removeCallbacks(starAnimationRunnable);
+    }
+
     public boolean isShowHints() {
         return showHints;
     }
@@ -181,6 +192,10 @@ public class DrawingFragment extends Fragment {
         this.score = score;
     }
 
+    public void startStarAnimation(){
+        starView.post(starAnimationRunnable);
+    }
+
     public void startChallenge(){
         viewDraw.setCharacter(character);
         viewDraw.setShowHints(showHints);
@@ -191,4 +206,32 @@ public class DrawingFragment extends Fragment {
 
         viewDraw.startChallenge();
     }
+
+    private final Runnable starAnimationRunnable = new Runnable(){
+
+        @Override
+        public void run() {
+            Animation starAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.star_animation);
+            final ImageView animatedStar = (ImageView)getView().findViewById(R.id.animated_star);
+            animatedStar.setVisibility(View.VISIBLE);
+            starAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    animatedStar.setVisibility(View.INVISIBLE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            animatedStar.startAnimation(starAnimation);
+        }
+    };
+
 }

@@ -130,27 +130,27 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 			nextLevelButton.setEnabled(false);
 		}
 
-		TextView messageText = (TextView)view.findViewById(R.id.levelDialogText);
-		if (levelFinished){
-			// TODO: Internacionalizar y agregar el nombre del nivel
-			messageText.setText(R.string.level_finished_congratulations);
-		} else {
-			if (score == 0) {
-				messageText.setText(
-						String.format("Your score on %s is %d. You should try this again!",
-								gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex],
-								score));
-			} else if (score > 0 && score < 3) {
-				messageText.setText(
-						String.format("Your score on %s is %d. That's good but can be better!",
-								gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex],
-								score));
-			} else if (score == 3){
-				messageText.setText(
-						String.format("Your have passed %s with flying colors. Great Job!",
-								gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex]));
-			}
-		}
+//		TextView messageText = (TextView)view.findViewById(R.id.levelDialogText);
+//		if (levelFinished){
+//			// TODO: Internacionalizar y agregar el nombre del nivel
+//			messageText.setText(R.string.level_finished_congratulations);
+//		} else {
+//			if (score == 0) {
+//				messageText.setText(
+//						String.format("Your score on %s is %d. You should try this again!",
+//								gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex],
+//								score));
+//			} else if (score > 0 && score < 3) {
+//				messageText.setText(
+//						String.format("Your score on %s is %d. That's good but can be better!",
+//								gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex],
+//								score));
+//			} else if (score == 3){
+//				messageText.setText(
+//						String.format("Your have passed %s with flying colors. Great Job!",
+//								gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex]));
+//			}
+//		}
 
 		return view;
 	}

@@ -2,8 +2,6 @@ package com.appecco.learntowrite;
 
 import java.io.IOException;
 
-import org.json.JSONArray;
-
 import com.appecco.learntowrite.dialog.CategoryMenuDialogFragment;
 import com.appecco.learntowrite.dialog.CharacterFinishedDialogFragment;
 import com.appecco.learntowrite.dialog.CharacterIntroDialogFragment;
@@ -13,24 +11,17 @@ import com.appecco.learntowrite.dialog.GameDialogsEventsListener;
 import com.appecco.learntowrite.dialog.GameEventsListener;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
-import com.appecco.learntowrite.view.DrawingView;
 import com.appecco.utils.Settings;
 import com.appecco.utils.StorageOperations;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.InterstitialAd;
@@ -173,30 +164,29 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
 
     @Override
     public void challengeCompleted(int score){
+        DrawingFragment drawingFragment = (DrawingFragment) getSupportFragmentManager().findFragmentByTag("DrawingFragment");
         GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
         if (score >= level.getAccuracy()){
-//            mp = MediaPlayer.create(this, R.raw.good);
-//            mp.start();
             if (goodSoundLoaded) {
                 soundPool.play(goodSoundId, SOUND_POOL_VOLUME, SOUND_POOL_VOLUME, DEFAULT_SOUND_POOL_PRIORITY, SOUND_POOL_NO_LOOP, DEFAULT_SOUND_POOL_RATE);
             }
             currentCharacterScore[currentAttemptIndex] = true;
         } else {
-//            mp = MediaPlayer.create(this, R.raw.bad);
-//            mp.start();
             if (badSoundLoaded) {
                 soundPool.play(badSoundId, SOUND_POOL_VOLUME, SOUND_POOL_VOLUME, DEFAULT_SOUND_POOL_PRIORITY, SOUND_POOL_NO_LOOP, DEFAULT_SOUND_POOL_RATE);
             }
             currentCharacterScore[currentAttemptIndex] = false;
         }
         if (currentAttemptIndex < ATTEMPTS_COUNT - 1){
+            if (currentCharacterScore[currentAttemptIndex]) {
+                drawingFragment.startStarAnimation();
+            }
             currentAttemptIndex++;
-            DrawingFragment drawingFragment = (DrawingFragment) getSupportFragmentManager().findFragmentByTag("DrawingFragment");
             setupChallenge();
         } else {
             // Eliminar DrawingFragment del stack y presentar el diálogo de fin del caracter
             getSupportFragmentManager().popBackStack();
-            levelCompleted();
+            processChallengeCompleted();
         }
     }
 
@@ -211,15 +201,19 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         soundPool = null;
     }
 
-    void levelCompleted(){
+    void processChallengeCompleted(){
         int scoreValue = 0;
         for (int i=0; i<ATTEMPTS_COUNT; i++){
             if (currentCharacterScore[i] != null && currentCharacterScore[i]){
                 scoreValue++;
             }
         }
-        //Mostremos el Ad
-        ShowInterstitialAd();
+
+        int charactersBeforeAd = 5 - currentLevelOrder;
+        if (currentCharacterIndex % charactersBeforeAd == 0){
+            //Mostremos el Ad
+            ShowInterstitialAd();
+        }
 
         String gameTag = gameStructure.findGameByOrder(currentGameOrder).getGameTag();
         String levelTag = gameStructure.findLevelByOrder(currentLevelOrder).getLevelTag();

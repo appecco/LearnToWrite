@@ -97,10 +97,10 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 	Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_character_intro_dialog, container, false);
 
-		TextView titleText = (TextView) view.findViewById(R.id.characterIntroTitle);
-		String gameName = gameStructure.findGameByOrder(gameOrder).getName();
-		String levelName = gameStructure.findLevelByOrder(levelOrder).getName();
-		titleText.setText(String.format("%s ( %s )",gameName,levelName));
+//		TextView titleText = (TextView) view.findViewById(R.id.characterIntroTitle);
+//		String gameName = gameStructure.findGameByOrder(gameOrder).getName();
+//		String levelName = gameStructure.findLevelByOrder(levelOrder).getName();
+//		titleText.setText(String.format("%s ( %s )",gameName,levelName));
 
 		ImageView alphaFriendImage = (ImageView)view.findViewById(R.id.alphafriendImage);
 		String character = gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex];
