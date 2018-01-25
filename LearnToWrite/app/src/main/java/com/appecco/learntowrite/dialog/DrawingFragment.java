@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
@@ -145,19 +146,18 @@ public class DrawingFragment extends Fragment {
 
 //        Funcionalidad usada para preparar los hints, NO BORRAR!!!
 
-//        Button btnNext = (Button)findViewById(R.id.btnNext);
-//        btnNext.setOnClickListener(new OnClickListener(){
+//        Button btnNext = (Button)view.findViewById(R.id.btnNext);
+//        btnNext.setOnClickListener(new View.OnClickListener(){
 //
 //            @Override
 //            public void onClick(View arg0) {
-//                currentCharacterIndex++;
-//                setupLevel();
+//                character++;
+//                startChallenge();
 //            }
-//
 //        });
 //
-//        Button btnSave = (Button)findViewById(R.id.btnSave);
-//        btnSave.setOnClickListener(new OnClickListener(){
+//        Button btnSave = (Button)view.findViewById(R.id.btnSave);
+//        btnSave.setOnClickListener(new View.OnClickListener(){
 //
 //            @Override
 //            public void onClick(View arg0) {
