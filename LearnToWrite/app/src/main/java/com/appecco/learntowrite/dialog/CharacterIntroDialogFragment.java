@@ -4,10 +4,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,16 +16,12 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
 import com.appecco.learntowrite.view.DrawingView;
 import com.appecco.utils.Settings;
-
-import java.util.Map;
 
 public class CharacterIntroDialogFragment extends DialogFragment {
 
@@ -42,6 +38,16 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 	private int gameOrder;
 	private int levelOrder;
 	private int characterIndex;
+
+	private SoundPool soundPool;
+	private int LetterSoundId;
+
+    private static final int MAX_SOUND_POOL_STREAMS = 4;
+    private static final int DEFAULT_SOUND_POOL_PRIORITY = 1;
+    private static final int DEFAULT_SOUND_POOL_QUALITY = 0;
+    private static final float DEFAULT_SOUND_POOL_RATE = 1.0f;
+    private static final float SOUND_POOL_VOLUME = 1.0f;
+    private static final int SOUND_POOL_NO_LOOP = 0;
 
 	public static CharacterIntroDialogFragment newInstance(GameStructure gameStructure, Progress progress, int gameOrder, int levelOrder, int characterIndex){
 		CharacterIntroDialogFragment fragment = new CharacterIntroDialogFragment();
@@ -101,6 +107,8 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 //		String gameName = gameStructure.findGameByOrder(gameOrder).getName();
 //		String levelName = gameStructure.findLevelByOrder(levelOrder).getName();
 //		titleText.setText(String.format("%s ( %s )",gameName,levelName));
+
+        prepareSoundResources();
 
 		ImageView alphaFriendImage = (ImageView)view.findViewById(R.id.alphafriendImage);
 		String character = gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex];
@@ -200,5 +208,18 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 
 	public void setCharacterIndex(int characterIndex) {
 		this.characterIndex = characterIndex;
+	}
+
+	void prepareSoundResources(){
+		soundPool = new SoundPool(MAX_SOUND_POOL_STREAMS, AudioManager.STREAM_MUSIC, DEFAULT_SOUND_POOL_QUALITY);
+		LetterSoundId = soundPool.load(this.getContext(), R.raw.a_es, DEFAULT_SOUND_POOL_PRIORITY);
+		soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+			@Override
+			public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
+				if (status == 0){
+                    soundPool.play(LetterSoundId, SOUND_POOL_VOLUME, SOUND_POOL_VOLUME, DEFAULT_SOUND_POOL_PRIORITY, SOUND_POOL_NO_LOOP, DEFAULT_SOUND_POOL_RATE);
+				}
+			}
+		});
 	}
 }

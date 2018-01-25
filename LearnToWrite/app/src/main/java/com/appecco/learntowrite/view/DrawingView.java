@@ -278,19 +278,17 @@ public class DrawingView extends View implements OnTouchListener {
 
 		canvas.drawBitmap(canvasBitmap, 0, 0, null);
 
-        Rect starBounds;
         if (MODE_DRAW.equals(mode) && level_score != null) {
 			//Agreguemos las 3 estrellas segun el score del nivel se decide si empty o filled
 			for (int i = 0; i < 3; i++) {
-				starBounds = new Rect((int) ((10 + ((i) * 100)) / PROP_TOTAL), (int) (10 / PROP_TOTAL), (int) ((80 + ((i) * 100)) / PROP_TOTAL), (int) (80 / PROP_TOTAL));
 				if (level_score[i] != null && level_score[i]) {
-					star.setBounds(starBounds);
+					star.setBounds((int) ((10 + ((i) * 100)) / PROP_TOTAL), (int) (10 / PROP_TOTAL), (int) ((80 + ((i) * 100)) / PROP_TOTAL), (int) (80 / PROP_TOTAL));
 					star.draw(canvas);
 				} else if(level_score[i] != null && !level_score[i]) {
-					failed_star.setBounds(starBounds);
+					failed_star.setBounds((int) ((10 + ((i) * 100)) / PROP_TOTAL), (int) (10 / PROP_TOTAL), (int) ((80 + ((i) * 100)) / PROP_TOTAL), (int) (80 / PROP_TOTAL));
 					failed_star.draw(canvas);
 				} else {
-					empty_star.setBounds(starBounds);
+					empty_star.setBounds((int) ((10 + ((i) * 100)) / PROP_TOTAL), (int) (10 / PROP_TOTAL), (int) ((80 + ((i) * 100)) / PROP_TOTAL), (int) (80 / PROP_TOTAL));
 					empty_star.draw(canvas);
 				}
 			}
