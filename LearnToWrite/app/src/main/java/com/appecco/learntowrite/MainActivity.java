@@ -1,20 +1,16 @@
 package com.appecco.learntowrite;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
-import android.text.StaticLayout;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
 import com.google.android.gms.ads.MobileAds;
-
-import java.io.IOException;
 
 public class MainActivity extends Activity {
 
@@ -43,15 +39,19 @@ public class MainActivity extends Activity {
 
         //Play Intro Video
         // TODO: Activar el video de introducción cuando se vaya a liberar la app
-        // Intent intent = new Intent(MainActivity.this,VideoActivity.class);
-        // startActivity(intent);
+         Intent intent = new Intent(MainActivity.this,VideoActivity.class);
+         startActivity(intent);
 
         final MediaPlayer mPlayerClick = MediaPlayer.create(this, R.raw.button_click);
 
         setContentView(R.layout.activity_main);
 
         //Inicializar ADS
-        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+        //Test Id
+        //MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+
+        //LearnToWrite Id
+        MobileAds.initialize(this, "ca-app-pub-1507251474990125~6376776099");
 
         ImageButton btnNewGameCursive = (ImageButton)findViewById(R.id.btnNewGameCursive);
         btnNewGameCursive.setOnClickListener(new OnClickListener(){

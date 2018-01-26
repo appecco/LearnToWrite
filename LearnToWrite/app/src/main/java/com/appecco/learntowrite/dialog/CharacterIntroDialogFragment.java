@@ -4,8 +4,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
-import android.media.AudioManager;
-import android.media.SoundPool;
+import android.media.MediaPlayer;
+//import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -39,15 +39,55 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 	private int levelOrder;
 	private int characterIndex;
 
-	private SoundPool soundPool;
-	private int LetterSoundId;
+    private MediaPlayer mLetterSound;
 
-    private static final int MAX_SOUND_POOL_STREAMS = 4;
-    private static final int DEFAULT_SOUND_POOL_PRIORITY = 1;
-    private static final int DEFAULT_SOUND_POOL_QUALITY = 0;
-    private static final float DEFAULT_SOUND_POOL_RATE = 1.0f;
-    private static final float SOUND_POOL_VOLUME = 1.0f;
-    private static final int SOUND_POOL_NO_LOOP = 0;
+//    public class LetterSound extends AsyncTask<Void, Void, Void> {
+//        MediaPlayer backGroudPlayer;
+//
+//        @Override
+//        protected Void doInBackground(Void... params) {
+//
+//            backGroudPlayer = MediaPlayer.create(getActivity(), R.raw.a_es);
+//            backGroudPlayer.setLooping(false);
+//            backGroudPlayer.setVolume(100,100);
+//            backGroudPlayer.start();
+//            return null;
+//        }
+//
+//        public void stop(){
+//            backGroudPlayer.stop();
+//        }
+//
+//    }
+//
+//    LetterSound mLetterSound = new LetterSound();
+//
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        mLetterSound.doInBackground();
+//    }
+//
+//    @Override
+//    public void onPause() {
+//        mLetterSound.stop();
+//        mLetterSound.cancel(true);
+//        super.onPause();
+//    }
+//
+//    @Override
+//    public void onStop() {
+//        mLetterSound.stop();
+//        mLetterSound.cancel(true);
+//        super.onStop();
+//    }
+//
+//    @Override
+//    public void onDestroy() {
+//        mLetterSound.stop();
+//        mLetterSound.cancel(true);
+//        super.onDestroy();
+//    }
 
 	public static CharacterIntroDialogFragment newInstance(GameStructure gameStructure, Progress progress, int gameOrder, int levelOrder, int characterIndex){
 		CharacterIntroDialogFragment fragment = new CharacterIntroDialogFragment();
@@ -73,6 +113,9 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 			levelOrder = getArguments().getInt(LEVEL_ORDER_PARAM);
 			characterIndex = getArguments().getInt(CHARACTER_INDEX_PARAM);
 		}
+
+		//TODO Calcular el nombre del recurso de sonido en base al character index y el lenguaje
+        mLetterSound = MediaPlayer.create(getActivity(), R.raw.a_es);
 	}
 
 	@Override
@@ -96,6 +139,8 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 	        ((Button)d.getButton(Dialog.BUTTON_POSITIVE)).setVisibility(View.INVISIBLE);
 	        ((Button)d.getButton(Dialog.BUTTON_NEGATIVE)).setVisibility(View.INVISIBLE);
 	    }
+
+        mLetterSound.start();
 	}
 
 	@Override
@@ -107,8 +152,6 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 //		String gameName = gameStructure.findGameByOrder(gameOrder).getName();
 //		String levelName = gameStructure.findLevelByOrder(levelOrder).getName();
 //		titleText.setText(String.format("%s ( %s )",gameName,levelName));
-
-        prepareSoundResources();
 
 		ImageView alphaFriendImage = (ImageView)view.findViewById(R.id.alphafriendImage);
 		String character = gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex];
@@ -170,6 +213,15 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 		drawingView.hint();
 	}
 
+    @Override
+    public void onStop(){
+        super.onStop();
+        if (mLetterSound !=null){
+            mLetterSound.release();
+            mLetterSound = null;
+        }
+    }
+
 	public GameStructure getGameStructure() {
 		return gameStructure;
 	}
@@ -210,16 +262,4 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 		this.characterIndex = characterIndex;
 	}
 
-	void prepareSoundResources(){
-		soundPool = new SoundPool(MAX_SOUND_POOL_STREAMS, AudioManager.STREAM_MUSIC, DEFAULT_SOUND_POOL_QUALITY);
-		LetterSoundId = soundPool.load(this.getContext(), R.raw.a_es, DEFAULT_SOUND_POOL_PRIORITY);
-		soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-			@Override
-			public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
-				if (status == 0){
-                    soundPool.play(LetterSoundId, SOUND_POOL_VOLUME, SOUND_POOL_VOLUME, DEFAULT_SOUND_POOL_PRIORITY, SOUND_POOL_NO_LOOP, DEFAULT_SOUND_POOL_RATE);
-				}
-			}
-		});
-	}
 }

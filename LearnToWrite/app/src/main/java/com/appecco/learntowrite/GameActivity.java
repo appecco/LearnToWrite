@@ -15,7 +15,6 @@ import com.appecco.utils.Settings;
 import com.appecco.utils.StorageOperations;
 
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -60,7 +59,6 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
 
     private InterstitialAd mInterstitialAd;
 
-    private MediaPlayer mp;
     private SoundPool soundPool;
     private int goodSoundId;
     private int badSoundId;
@@ -193,10 +191,6 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     @Override
     protected void onStop(){
         super.onStop();
-//        if (mp !=null){
-//            mp.release();
-//            mp = null;
-//        }
         soundPool.release();
         soundPool = null;
     }
@@ -301,7 +295,10 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     private void PrepareInterstitialAd() {
         //Inicializar Interstitial Ads
         mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        //Ad Unit de Prueba
+        //mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        //Ad Unit de Learn To Write: Cursive
+        mInterstitialAd.setAdUnitId("ca-app-pub-1507251474990125/7111273261");
 
         //Precargar un Ad
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
@@ -310,10 +307,10 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     private void ShowInterstitialAd() {
         if (mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
-
-            //Una vez mostrado el Ad preparemos el siguiente
-            PrepareInterstitialAd();
         }
+
+        //Ya sea que se haya podido mostrar un Ad o no hay que preparar nuevamente ya que si no habia un Ad en esta oportunidad queremos que prepare un para el siguiente intento
+        PrepareInterstitialAd();
     }
 
     @Override
