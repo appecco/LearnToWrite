@@ -3,7 +3,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center_horizontal|center_vertical"
-        android:contentDescription="Test">
+        android:clickable="true">
 
         <Button
             android:id="@+id/categoryImageButton"
