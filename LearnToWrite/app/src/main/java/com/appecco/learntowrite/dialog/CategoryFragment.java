@@ -10,9 +10,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.DialogFragment;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -79,18 +81,24 @@ public class CategoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view =  inflater.inflate(R.layout.fragment_category, container, false);
+        final View view =  inflater.inflate(R.layout.fragment_category, container, false);
 
         String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
         String levelTag = gameStructure.findLevelByOrder(levelOrder).getLevelTag();
 
-        Button button = (Button)view.findViewById(R.id.categoryImageButton);
+        final Button button = (Button)view.findViewById(R.id.categoryImageButton);
         String imageResourceName = String.format("%s_%s",gameTag.toLowerCase(), levelTag.toLowerCase());
         Resources contextResources = getActivity().getResources();
         int imageResourceId = contextResources.getIdentifier(imageResourceName, "drawable", getActivity().getPackageName());
         if (imageResourceId != 0) {
             button.setBackground(getContext().getResources().getDrawable(imageResourceId));
         }
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        button.getLayoutParams().width = displayMetrics.widthPixels/4;
+        button.getLayoutParams().height = displayMetrics.widthPixels*5/24;
 
         // TODO: Crear íconos específicos para cada categoría (combinación de juego y nivel)
         button.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +114,7 @@ public class CategoryFragment extends Fragment {
 
         return view;
     }
+
 
     public int getGameOrder() {
         return gameOrder;

@@ -7,12 +7,15 @@ import com.appecco.learntowrite.model.Progress;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.util.ArrayMap;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,11 +97,6 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 	Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.level_menu_layout, container, false);
 
-//		TextView titleText = (TextView) view.findViewById(R.id.levelDialogText);
-//		String gameName = gameStructure.findGameByOrder(gameOrder).getName();
-//		String levelName = gameStructure.findLevelByOrder(levelOrder).getName();
-//		titleText.setText(String.format("%s ( %s )",gameName,levelName));
-
 		loadCharacterButtons(view);
 
 		ImageButton cancelButton = (ImageButton)view.findViewById(R.id.cancelButton);
@@ -121,8 +119,6 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 	}
 
 	private void loadCharacterButtons(View view) {
-//		final Typeface customFont = Typeface.createFromAsset(getContext().getAssets(), "fonts/dnealiancursive.ttf");
-
 		String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
 		String levelTag = gameStructure.findLevelByOrder(levelOrder).getLevelTag();
 		String[] characters = gameStructure.findGameByOrder(gameOrder).getCharacters();
@@ -131,38 +127,43 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 		LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.levelButtonsLayout);
 		linearLayout.removeAllViewsInLayout();
 
-		Button btn;
+		DisplayMetrics displayMetrics = new DisplayMetrics();
+		getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+		int buttonWidth = displayMetrics.widthPixels / (BUTTONS_PER_ROW+1);
+		int buttonHeight = (displayMetrics.heightPixels - 85) / 6;
+
+		Button button;
 		Map<Integer, Drawable> levelStars = new ArrayMap<>();
-		levelStars.put(-1,getResources().getDrawable(R.drawable.microstars0));
-		levelStars.put(0,getResources().getDrawable(R.drawable.microstars0));
-		levelStars.put(1,getResources().getDrawable(R.drawable.microstars1));
-		levelStars.put(2,getResources().getDrawable(R.drawable.microstars2));
-		levelStars.put(3,getResources().getDrawable(R.drawable.microstars3));
+		levelStars.put(-1,resize(getResources().getDrawable(R.drawable.microstars0),buttonWidth*8/10, buttonHeight*3/10));
+		levelStars.put(0,resize(getResources().getDrawable(R.drawable.microstars0),buttonWidth*8/10, buttonHeight*3/10));
+		levelStars.put(1,resize(getResources().getDrawable(R.drawable.microstars1),buttonWidth*8/10, buttonHeight*3/10));
+		levelStars.put(2,resize(getResources().getDrawable(R.drawable.microstars2),buttonWidth*8/10, buttonHeight*3/10));
+		levelStars.put(3,resize(getResources().getDrawable(R.drawable.microstars3),buttonWidth*8/10, buttonHeight*3/10));
 
 		for (int i = 0; i < Math.ceil((double)characters.length/(double)BUTTONS_PER_ROW); i++) {
-			LinearLayout layout_row = new LinearLayout(view.getContext());
-			layout_row.setLayoutParams(new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT));
-			layout_row.setGravity(Gravity.CENTER);
+			LinearLayout buttonRow = new LinearLayout(view.getContext());
+			buttonRow.setLayoutParams(new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT));
+			buttonRow.setGravity(Gravity.CENTER);
 
 			for (int j = 0; j < BUTTONS_PER_ROW; j++) {
 				if ((i * BUTTONS_PER_ROW) + j < characters.length){
-					btn = new Button(getActivity());
-					btn.setLayoutParams(new android.widget.LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-					btn.setAllCaps(false);
-					btn.setBackground(getResources().getDrawable(R.drawable.level_button));
-					btn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, levelStars.get(scores[(i * BUTTONS_PER_ROW) + j]) );
-					btn.setText(characters[(i * BUTTONS_PER_ROW) + j]);
-					btn.setTextColor(Color.YELLOW);
-					//btn.setTypeface(customFont);
-					//btn.setWidth(50);
-					btn.setTextSize(16);
+					button = new Button(getActivity());
+					button.setLayoutParams(new android.widget.LinearLayout.LayoutParams(buttonWidth, buttonHeight));
+					button.setAllCaps(false);
+					button.setBackground(getResources().getDrawable(R.drawable.level_button));
+					button.setCompoundDrawablesWithIntrinsicBounds(null, null, null, levelStars.get(scores[(i * BUTTONS_PER_ROW) + j]) );
+					button.setText(characters[(i * BUTTONS_PER_ROW) + j]);
+					button.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+					button.setTextColor(Color.YELLOW);
+					button.setPadding(0,buttonHeight/11,0,buttonHeight/10);
+					button.setTextSize(14 + buttonHeight / 32);
 					if (scores[(i * BUTTONS_PER_ROW) + j] == -1){
-						btn.setEnabled(false);
-						btn.setAlpha(0.5f);
+						button.setEnabled(false);
+						button.setAlpha(0.5f);
 					}
 
-					btn.setTag((i * BUTTONS_PER_ROW) + j);
-					btn.setOnClickListener(new OnClickListener(){
+					button.setTag((i * BUTTONS_PER_ROW) + j);
+					button.setOnClickListener(new OnClickListener(){
 
 						@Override
 						public void onClick(View view) {
@@ -174,11 +175,17 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 						}
 
 					});
-					layout_row.addView(btn);
+					buttonRow.addView(button);
 				}
 			}
-			linearLayout.addView(layout_row);
+			linearLayout.addView(buttonRow);
 		}
+	}
+
+	private Drawable resize(Drawable image, int width, int height) {
+		Bitmap b = ((BitmapDrawable)image).getBitmap();
+		Bitmap bitmapResized = Bitmap.createScaledBitmap(b, width, height, true);
+		return new BitmapDrawable(getResources(), bitmapResized);
 	}
 
 	@Override

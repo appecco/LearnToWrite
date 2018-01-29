@@ -9,33 +9,24 @@
     android:clickable="true"
     tools:context="com.appecco.learntowrite.dialog.CategoryMenuDialogFragment">
 
-    <LinearLayout
-        android:id="@+id/linlaySpace1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="horizontal" >
-
-    </LinearLayout>
-
     <android.support.v4.view.ViewPager
         android:id="@+id/categoryPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_gravity="center"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="8sp"
         android:clipToPadding="false"
         android:gravity="center"
-        android:paddingLeft="36dp"
-        android:paddingRight="36dp">
+        android:paddingLeft="36sp"
+        android:paddingRight="36sp">
 
     </android.support.v4.view.ViewPager>
 
     <ImageButton
         android:id="@+id/cancelButton"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="75sp"
+        android:layout_height="75sp"
         android:background="@null"
         android:contentDescription="@string/cancel_button"
         android:scaleType="fitCenter"
