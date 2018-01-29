@@ -112,22 +112,24 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     }
 
     void prepareSoundResources(){
-        soundPool = new SoundPool(MAX_SOUND_POOL_STREAMS, AudioManager.STREAM_MUSIC, DEFAULT_SOUND_POOL_QUALITY);
-        goodSoundId = soundPool.load(this, R.raw.good,DEFAULT_SOUND_POOL_PRIORITY);
-        badSoundId = soundPool.load(this, R.raw.bad,DEFAULT_SOUND_POOL_PRIORITY);
-        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-            @Override
-            public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
-                if (status == 0){
-                    if (soundId == goodSoundId){
-                        goodSoundLoaded = true;
-                    }
-                    if (soundId == badSoundId){
-                        badSoundLoaded = true;
+        if (Settings.isSoundEnabled(GameActivity.this)) {
+            soundPool = new SoundPool(MAX_SOUND_POOL_STREAMS, AudioManager.STREAM_MUSIC, DEFAULT_SOUND_POOL_QUALITY);
+            goodSoundId = soundPool.load(this, R.raw.good, DEFAULT_SOUND_POOL_PRIORITY);
+            badSoundId = soundPool.load(this, R.raw.bad, DEFAULT_SOUND_POOL_PRIORITY);
+            soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                @Override
+                public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
+                    if (status == 0) {
+                        if (soundId == goodSoundId) {
+                            goodSoundLoaded = true;
+                        }
+                        if (soundId == badSoundId) {
+                            badSoundLoaded = true;
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     void setupLevel(){
@@ -191,8 +193,10 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     @Override
     protected void onStop(){
         super.onStop();
-        soundPool.release();
-        soundPool = null;
+        if (soundPool != null) {
+            soundPool.release();
+            soundPool = null;
+        }
     }
 
     void processChallengeCompleted(){
