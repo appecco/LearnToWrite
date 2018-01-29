@@ -70,7 +70,14 @@ public class DrawingView extends View implements OnTouchListener {
 	private double CENTER_WIDTH;
 	private double CENTER_HEIGHT;
 
-	private Rect bounds = new Rect();
+    //Colores default para los fonts
+    final int characterOutlineColor = Color.BLUE;
+    final int characterFillColor = Color.YELLOW;
+
+    //Ancho y Alto del View para calculos de posiciones y proporciones
+    int height, width;
+
+    private Rect bounds = new Rect();
 	private Rect anim_bounds = new Rect();
 
 	private GameActivity activity;
@@ -200,6 +207,10 @@ public class DrawingView extends View implements OnTouchListener {
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
 
+        //Obtener ancho y alto del View
+        height = getHeight();
+        width = getWidth();
+
         //Preparar el Bitmap de fondo (Mutable y Scaled)
         backgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background2);
         backgroundBitmap = Bitmap.createScaledBitmap(backgroundBitmap,w,h,true);
@@ -220,50 +231,47 @@ public class DrawingView extends View implements OnTouchListener {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-        final int characterOutlineColor = Color.BLUE;
-        final int characterFillColor = Color.YELLOW;
-
-        int height = getHeight();
-		int width = getWidth();
-
-		fontPaint.setColor(characterFillColor);
-		fontPaint.setStyle(Paint.Style.FILL);
-		fontPaint.getTextPath(Character.toString(currentChar), 0, 1, (int) CENTER_WIDTH, (int) CENTER_HEIGHT, fontPath);
-
+		//Si el transpBitmap esta en Null entonces es la primera vez que se hace OnDraw o venimos de un reset o un hint, se debe repintar todos los itmes del canvas
 		if (transpBitmap == null) {
+		    //Pintemos el fondo original
+            drawCanvas.drawBitmap(backgroundBitmap, 0, 0, null);
+
+            //Pintemos el font segun el nivel de dificultad
+            if (contourType.equals("full")) {
+                fontPaint.setColor(characterOutlineColor);
+                fontPaint.setStyle(Paint.Style.STROKE);
+                drawCanvas.drawPath(fontPath, fontPaint);
+
+                fontPaint.setColor(characterFillColor);
+                fontPaint.setStyle(Paint.Style.FILL);
+                drawCanvas.drawPath(fontPath, fontPaint);
+            }
+            else if (contourType.equals("medium")){
+                fontPaint.setColor(Color.argb(50,0,0,255));
+                fontPaint.setStyle(Paint.Style.STROKE);
+                fontPaint.setPathEffect(dashEffect);
+                fontPaint.setStrokeWidth((int)(STROKE_WIDTH/2));
+                drawCanvas.drawPath(fontPath, fontPaint);
+            }
+            else{
+                fontPaint.setColor(Color.argb(90,255,255,200));
+                fontPaint.setStyle(Paint.Style.FILL);
+                drawCanvas.drawPath(fontPath, fontPaint);
+            }
+
+            //Preparemos el bitmap del fondo con transparencia en el path de la letra, para poder mostrar el Hint sin que se salga del trazo
 			transpBitmap = Bitmap.createBitmap(width, height, Config.ARGB_8888);
 			hintCanvas.setBitmap(transpBitmap);
             hintCanvas.drawBitmap(backgroundBitmap, 0, 0, null);
 
+            //Pintar el trazo de la letra
 			fontPaint.setColor(characterOutlineColor);
 			fontPaint.setStyle(Paint.Style.STROKE);
-
 			hintCanvas.drawPath(fontPath, fontPaint);
+
+			//Pintar el interior de la letra con transparencia
 			hintCanvas.drawPath(fontPath, animPaint);
 		}
-
-		//Elijamos como se pinta el font segun el nivel de dificultad
-		if (contourType.equals("full")) {
-            fontPaint.setColor(characterOutlineColor);
-            fontPaint.setStyle(Paint.Style.STROKE);
-            drawCanvas.drawPath(fontPath, fontPaint);
-
-            fontPaint.setColor(characterFillColor);
-            fontPaint.setStyle(Paint.Style.FILL);
-            drawCanvas.drawPath(fontPath, fontPaint);
-        }
-        else if (contourType.equals("medium")){
-            fontPaint.setColor(Color.argb(50,0,0,255));
-            fontPaint.setStyle(Paint.Style.STROKE);
-            fontPaint.setPathEffect(dashEffect);
-            fontPaint.setStrokeWidth((int)(STROKE_WIDTH/2));
-            drawCanvas.drawPath(fontPath, fontPaint);
-        }
-        else{
-			fontPaint.setColor(Color.argb(90,255,255,200));
-			fontPaint.setStyle(Paint.Style.FILL);
-			drawCanvas.drawPath(fontPath, fontPaint);
-        }
 
 		for (Path p : paths) {
 			if (animating) {
@@ -272,6 +280,7 @@ public class DrawingView extends View implements OnTouchListener {
 				drawCanvas.drawPath(p, mPaint);
 				drawCanvas.drawBitmap(transpBitmap, 0, 0, null);
     		} else {
+			    //No se esta animando, solo pintar el nuevo path dibujado
 				drawCanvas.drawPath(p, mPaint);
 			}
 		}
@@ -300,8 +309,6 @@ public class DrawingView extends View implements OnTouchListener {
             cursor.setBounds((int)mX , (int)mY, (int)(mX + (150 / PROP_TOTAL)), (int)(mY + (150 / PROP_TOTAL)));
             cursor.draw(canvas);
         }
-
-		//TODO Dependiendo del nivel hay que hacer que se dibujen puntos a lo largo del Path como guia para el dibujo
 	}
 
 	@Override
@@ -574,6 +581,7 @@ public class DrawingView extends View implements OnTouchListener {
 	public void reset() {
 		//veamos que no estemos animando
 		if (!animating) {
+		    //Resetiemos los paths
 			paths.clear();
 			mPath = new Path();
 			paths.add(mPath);
@@ -594,6 +602,7 @@ public class DrawingView extends View implements OnTouchListener {
             if (backgroundBitmap != null) {
                 canvasBitmap = backgroundBitmap.copy(Bitmap.Config.ARGB_8888, true);
                 drawCanvas = new Canvas(canvasBitmap);
+                transpBitmap = null;
             }
 
             invalidate();
@@ -775,16 +784,9 @@ public class DrawingView extends View implements OnTouchListener {
 		animating = false;
 		load();
 		reset();
-//  Los hints solo se mostrarán a petición del usuario y en el fragmento anterior, no de forma automática al iniciar un caracter
-//		if (showHints && !SAVE_ENABLED){
-//			hint();
-//		}
 	}
 
 	private void initWindowProportions(){
-        int height = getHeight();
-        int width = getWidth();
-
         //Calcular la proporcionalidad en cada eje y obtener un promedio para ajustar segun esto el tamaño del font, no podemos ajustar independiente debido a que el dibujo del font se basa en una proporcionalidad unica para su textsize
         PROP_TOTAL = ((REFERENCE_WIDTH / width) + (REFERENCE_HEIGHT / height)) / 2;
 
@@ -807,6 +809,12 @@ public class DrawingView extends View implements OnTouchListener {
         //Calcular los valores de centrado en cada eje, largo del eje entre 2 mas el centro de la letra
         CENTER_WIDTH = (width / 2) - Math.abs(((bounds.left - bounds.right)/2));
         CENTER_HEIGHT = (height / 2) + Math.abs(((bounds.top - bounds.bottom)/2)) - bounds.bottom;
+
+        //Obtener el path de la letra elegida
+        fontPaint.setColor(characterFillColor);
+        fontPaint.setStyle(Paint.Style.FILL);
+        fontPaint.getTextPath(Character.toString(currentChar), 0, 1, (int) CENTER_WIDTH, (int) CENTER_HEIGHT, fontPath);
+
     }
 
 	public String getMode() {
