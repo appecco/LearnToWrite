@@ -40,8 +40,18 @@ public class Progress implements Serializable {
 
         boolean levelFinished = true;
 
-        // establecer el nuevo score si es mayor que el anterior
+        // Obtener los scores
         scores = findGameByTag(gameTag).findLevelByTag(levelTag).getScores();
+
+        //Verifiquemos que no se guarde un score invalido para el caracter actual aunque este haya estado mal antes (Score solo puede ser de -1 a 3)
+        if (scores[characterIndex] < -1) {
+            scores[characterIndex] = -1;
+        }
+        else if (scores[characterIndex] > 3) {
+            scores[characterIndex] = 0;
+        }
+
+        // establecer el nuevo score si es mayor que el anterior
         scores[characterIndex] = (score>scores[characterIndex])?score:scores[characterIndex];
 
         // si se pasó el caracter, desbloquear el siguiente caracter o el siguiente nivel según corresponda
