@@ -151,7 +151,15 @@ public class DrawingFragment extends Fragment {
 //
 //            @Override
 //            public void onClick(View arg0) {
-//                character++;
+//                if (character == 'z'){
+//                    character = 'ñ';
+//                }
+//                else if (character == 'Z'){
+//                    character = 'Ñ';
+//                }
+//                else {
+//                    character++;
+//                }
 //                startChallenge();
 //            }
 //        });
