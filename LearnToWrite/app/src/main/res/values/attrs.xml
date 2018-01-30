@@ -2,5 +2,6 @@
 <resources>
     <declare-styleable name="DrawingView">
         <attr name="mode" format="string" />
+        <attr name="backgroundImage" format="reference" />
     </declare-styleable>
 </resources>

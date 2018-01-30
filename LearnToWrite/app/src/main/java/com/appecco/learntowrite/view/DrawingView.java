@@ -36,6 +36,7 @@ import org.w3c.dom.Attr;
 
 import com.appecco.learntowrite.GameActivity;
 import com.appecco.learntowrite.R;
+import com.appecco.learntowrite.dialog.GameDialogsEventsListener;
 import com.appecco.utils.StorageOperations;
 
 public class DrawingView extends View implements OnTouchListener {
@@ -83,6 +84,7 @@ public class DrawingView extends View implements OnTouchListener {
 	private GameActivity activity;
 
 	private String mode = MODE_DRAW;
+	private int backgroundImage;
 
 	private Bitmap transpBitmap;
 	private Bitmap canvasBitmap;
@@ -110,6 +112,8 @@ public class DrawingView extends View implements OnTouchListener {
 	private String contourType;
 	private boolean showBeginningMark;
 	private boolean showEndingMark;
+
+	private GameDialogsEventsListener gameDialogsEventsListener;
 
 	private final Drawable star = getResources().getDrawable(R.drawable.star);
     private final Drawable empty_star = getResources().getDrawable(R.drawable.empty_star);
@@ -140,6 +144,8 @@ public class DrawingView extends View implements OnTouchListener {
 		if (modeValue != null){
 			this.mode = modeValue;
 		}
+		int backgroundImageValue = attrsArray.getResourceId(R.styleable.DrawingView_backgroundImage,R.drawable.background2);
+		this.backgroundImage = backgroundImageValue;
 		attrsArray.recycle();
 	}
 
@@ -212,7 +218,7 @@ public class DrawingView extends View implements OnTouchListener {
         width = getWidth();
 
         //Preparar el Bitmap de fondo (Mutable y Scaled)
-        backgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background2);
+		backgroundBitmap = BitmapFactory.decodeResource(getResources(), backgroundImage);
         backgroundBitmap = Bitmap.createScaledBitmap(backgroundBitmap,w,h,true);
 
         //Copiar a canvasBitmap el background ya scaled y luego dibujarlo en el drawCanvas
@@ -668,6 +674,9 @@ public class DrawingView extends View implements OnTouchListener {
 						public void run() {
 							animating = false;
 							reset();
+							if (gameDialogsEventsListener != null) {
+								gameDialogsEventsListener.onStartCharacterSelected();
+							}
 						}
 					}, animDelay * 30);
 
@@ -678,6 +687,7 @@ public class DrawingView extends View implements OnTouchListener {
 				Toast.makeText(getContext(), "Hint for " + Character.toString(currentChar) + " is not available.", Toast.LENGTH_SHORT).show();
 			}
 		}
+
 	}
 
 	public void load() {
@@ -823,5 +833,13 @@ public class DrawingView extends View implements OnTouchListener {
 
 	public void setMode(String mode) {
 		this.mode = mode;
+	}
+
+	public GameDialogsEventsListener getGameDialogsEventsListener() {
+		return gameDialogsEventsListener;
+	}
+
+	public void setGameDialogsEventsListener(GameDialogsEventsListener gameDialogsEventsListener) {
+		this.gameDialogsEventsListener = gameDialogsEventsListener;
 	}
 }
