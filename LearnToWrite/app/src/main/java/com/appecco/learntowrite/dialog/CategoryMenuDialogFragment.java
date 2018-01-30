@@ -84,8 +84,7 @@ public class CategoryMenuDialogFragment extends DialogFragment {
     }
 
     public void loadCategoryButtons(){
-        View view = getView();
-        ViewPager viewPager = (ViewPager)view.findViewById(R.id.categoryPager);
+        ViewPager viewPager = (ViewPager)getView().findViewById(R.id.categoryPager);
         PagerAdapter pagerAdapter = viewPager.getAdapter();
         pagerAdapter.notifyDataSetChanged();
     }
@@ -98,6 +97,20 @@ public class CategoryMenuDialogFragment extends DialogFragment {
         } else {
             throw new RuntimeException(context.toString() + " must implement CategoryMenuDialogListener");
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        ViewPager viewPager = (ViewPager)getView().findViewById(R.id.categoryPager);
+        viewPager.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ViewPager viewPager = (ViewPager)getView().findViewById(R.id.categoryPager);
+                viewPager.setCurrentItem(progress.getCurrentCategoryIndex(),true);
+
+            }
+        },1250);
     }
 
     @Override
