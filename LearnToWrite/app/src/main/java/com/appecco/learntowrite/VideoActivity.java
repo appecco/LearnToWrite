@@ -1,10 +1,13 @@
 package com.appecco.learntowrite;
 
 import android.app.Activity;
+import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.widget.VideoView;
 import android.net.Uri;
+
+import com.appecco.utils.Settings;
 
 public class VideoActivity extends Activity {
 
@@ -18,6 +21,17 @@ public class VideoActivity extends Activity {
         videoView = (VideoView) findViewById(R.id.video_view);
         videoView.setMediaController(null);
         videoView.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.intro));
+
+        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                if (Settings.isSoundEnabled(VideoActivity.this)){
+                    mediaPlayer.setVolume(100,100);
+                } else {
+                    mediaPlayer.setVolume(0,0);
+                }
+            }
+        });
 
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override

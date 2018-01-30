@@ -10,7 +10,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
+import com.appecco.utils.Settings;
 import com.google.android.gms.ads.MobileAds;
+
+import java.util.Set;
 
 public class MainActivity extends Activity {
 
@@ -19,15 +22,19 @@ public class MainActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            backGroudPlayer = MediaPlayer.create(MainActivity.this, R.raw.backgroud_sound);
-            backGroudPlayer.setLooping(true);
-            backGroudPlayer.setVolume(100,100);
-            backGroudPlayer.start();
+            if (Settings.isMusicEnabled(MainActivity.this)){
+                backGroudPlayer = MediaPlayer.create(MainActivity.this, R.raw.backgroud_sound);
+                backGroudPlayer.setLooping(true);
+                backGroudPlayer.setVolume(100,100);
+                backGroudPlayer.start();
+            }
             return null;
         }
 
         public void stop(){
-            backGroudPlayer.stop();
+            if (backGroudPlayer != null) {
+                backGroudPlayer.stop();
+            }
         }
     }
 
@@ -38,7 +45,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         //Play Intro Video
-        // TODO: Activar el video de introducción cuando se vaya a liberar la app
          Intent intent = new Intent(MainActivity.this,VideoActivity.class);
          startActivity(intent);
 
@@ -58,7 +64,9 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
 
-                mPlayerClick.start();
+                if (Settings.isSoundEnabled(MainActivity.this)) {
+                    mPlayerClick.start();
+                }
 
                 Intent intent = new Intent(MainActivity.this,GameActivity.class);
                 startActivity(intent);
@@ -69,7 +77,10 @@ public class MainActivity extends Activity {
         btnSettings.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View view) {
-                mPlayerClick.start();
+
+                if (Settings.isSoundEnabled(MainActivity.this)) {
+                    mPlayerClick.start();
+                }
 
                 Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
                 startActivity(intent);

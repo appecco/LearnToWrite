@@ -115,7 +115,9 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 		}
 
 		//TODO Calcular el nombre del recurso de sonido en base al character index y el lenguaje
-        mLetterSound = MediaPlayer.create(getActivity(), R.raw.a_es);
+		if (Settings.isSoundEnabled(getActivity())) {
+			mLetterSound = MediaPlayer.create(getActivity(), R.raw.a_es);
+		}
 	}
 
 	@Override
@@ -140,7 +142,9 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 	        ((Button)d.getButton(Dialog.BUTTON_NEGATIVE)).setVisibility(View.INVISIBLE);
 	    }
 
-        mLetterSound.start();
+	    if (mLetterSound != null) {
+			mLetterSound.start();
+		}
 	}
 
 	@Override
@@ -156,7 +160,8 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 		ImageView alphaFriendImage = (ImageView)view.findViewById(R.id.alphafriendImage);
 		String character = gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex];
 		String currentLanguage = Settings.get(getActivity(),"currentLanguage","es");
-		String alphaResourceName = String.format("alpha_%s_%s",character, currentLanguage);
+		// Se maneja el caso especial de la 'ñ' que no puede incluirse como nombre de un asset
+		String alphaResourceName = String.format("alpha_%s_%s",character, currentLanguage).replace("ñ","n1");
 		Resources contextResources = getActivity().getResources();
 		int alphaResourceId = contextResources.getIdentifier(alphaResourceName, "drawable", getActivity().getPackageName());
 		if (alphaResourceId != 0) {
@@ -173,12 +178,19 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 		drawingView.setShowEndingMark(false);
 		drawingView.setCharacter(gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex].charAt(0));
 
+		drawingView.setGameDialogsEventsListener(gameDialogsEventsListener);
+
 		ImageButton cancelButton = (ImageButton)view.findViewById(R.id.cancelButton);
 		cancelButton.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
 				if (gameDialogsEventsListener != null) {
+
+					// Para evitar que se envíe de nuevo el evento al finalizar el hint en DrawingView
+					DrawingView drawingView = (DrawingView)CharacterIntroDialogFragment.this.getView().findViewById(R.id.hintDrawingView);
+					drawingView.setGameDialogsEventsListener(null);
+
 					gameDialogsEventsListener.onCancelCharacterSelected();
 				}
 			}
@@ -191,6 +203,11 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 			@Override
 			public void onClick(View v) {
 				if (gameDialogsEventsListener != null) {
+
+					// Para evitar que se envíe de nuevo el evento al finalizar el hint en DrawingView
+					DrawingView drawingView = (DrawingView)CharacterIntroDialogFragment.this.getView().findViewById(R.id.hintDrawingView);
+					drawingView.setGameDialogsEventsListener(null);
+
 					gameDialogsEventsListener.onStartCharacterSelected();
 				}
 			}

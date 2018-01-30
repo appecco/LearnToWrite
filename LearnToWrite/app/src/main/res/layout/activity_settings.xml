@@ -17,60 +17,78 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:id="@+id/linlaySpace1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="horizontal" >
-
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/linlayButtons1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="horizontal" >
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight=".5" />
+            android:orientation="horizontal"
+            android:layout_marginTop="64sp"
+            android:paddingTop="16sp"
+            android:paddingBottom="16sp"
+            android:paddingStart="64sp"
+            android:paddingEnd="64sp">
 
             <ImageButton
                 android:id="@+id/btnLanguageSpanish"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/spanish_icon" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight=".2" />
+                android:background="@drawable/spanish_icon"
+                android:scaleType="fitCenter"/>
 
             <ImageButton
                 android:id="@+id/btnLanguageEnglish"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/english_icon" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight=".5" />
+                android:background="@drawable/english_icon"
+                android:layout_marginLeft="16sp"
+                android:scaleType="fitCenter"/>
 
         </LinearLayout>
 
+
         <LinearLayout
-            android:id="@+id/linlaySpace2"
+            android:id="@+id/linlayButtons2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginTop="16sp"
+            android:paddingTop="16sp"
+            android:paddingStart="64sp"
+            android:paddingEnd="64sp"
+            android:paddingBottom="16sp"
             android:orientation="horizontal" >
 
+            <ToggleButton
+                android:id="@+id/tglMusic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Music"
+                android:textOff="Music Off"
+                android:textOn="Music On"/>
+
+            <ToggleButton
+                android:id="@+id/tglSound"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="16sp"
+                android:text="Sound Effects"
+                android:textOff="Sound Off"
+                android:textOn="Sound On"/>
+
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="75sp"
+            android:layout_height="75sp"
+            android:background="@null"
+            android:contentDescription="@string/go_back"
+            android:scaleType="fitCenter"
+            android:src="@drawable/back" />
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

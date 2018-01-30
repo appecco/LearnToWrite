@@ -6,16 +6,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ToggleButton;
 
 import com.appecco.utils.Settings;
 import com.appecco.utils.StorageOperations;
 
 import org.json.JSONObject;
 
+import java.util.Set;
+
 public class SettingsActivity extends Activity {
 
     private ImageButton btnLanguageSpanish;
     private ImageButton btnLanguageEnglish;
+    private ToggleButton tglMusic;
+    private ToggleButton tglSound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,14 +28,20 @@ public class SettingsActivity extends Activity {
 
         setContentView(R.layout.activity_settings);
 
+        ImageButton btnBack = findViewById(R.id.backButton);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         btnLanguageSpanish = findViewById(R.id.btnLanguageSpanish);
         btnLanguageSpanish.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 Settings.set(SettingsActivity.this, Settings.CURRENT_LANGUAGE, "es");
                 updateButtonsStatus();
-                /* TODO: Cuando haya más settings se debería agregar un botón para regresar a la pantalla principal */
-                finish();
             }
         });
 
@@ -40,8 +51,23 @@ public class SettingsActivity extends Activity {
             public void onClick(View view) {
                 Settings.set(SettingsActivity.this, Settings.CURRENT_LANGUAGE, "en");
                 updateButtonsStatus();
-                /* TODO: Cuando haya más settings se debería agregar un botón para regresar a la pantalla principal */
-                finish();
+            }
+        });
+
+        tglMusic = (ToggleButton)findViewById(R.id.tglMusic);
+        tglMusic.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Settings.setMusicEnabled(SettingsActivity.this, tglMusic.isChecked());
+            }
+        });
+
+        tglSound = (ToggleButton)findViewById(R.id.tglSound);
+        tglSound.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Settings.set(SettingsActivity.this, Settings.SOUND_ENABLED, Boolean.toString(tglSound.isChecked()));
+
             }
         });
 
@@ -50,8 +76,18 @@ public class SettingsActivity extends Activity {
 
     void updateButtonsStatus(){
         String currentLanguage;
+        String musicEnabled;
+        String soundEnabled;
+
         currentLanguage = Settings.get(SettingsActivity.this, Settings.CURRENT_LANGUAGE,"es");
         btnLanguageSpanish.setAlpha(("es".equals(currentLanguage))?1.0f:0.5f);
         btnLanguageEnglish.setAlpha(("en".equals(currentLanguage))?1.0f:0.5f);
+
+        musicEnabled = Settings.get(SettingsActivity.this, Settings.MUSIC_ENABLED, Boolean.toString(Boolean.TRUE));
+        tglMusic.setChecked(Boolean.valueOf(musicEnabled));
+
+        soundEnabled = Settings.get(SettingsActivity.this, Settings.SOUND_ENABLED, Boolean.toString(Boolean.TRUE));
+        tglSound.setChecked(Boolean.valueOf(soundEnabled));
+
     }
 }
