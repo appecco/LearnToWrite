@@ -35,6 +35,20 @@ public class Progress implements Serializable {
         return null;
     }
 
+    public int getCurrentCategoryIndex(){
+        int currentCategoryIndex=-1;
+        for (Game game:games){
+            for (Game.Level level:game.getLevels()){
+                if (level.getScores()[0] != -1){
+                    currentCategoryIndex++;
+                } else {
+                    return currentCategoryIndex;
+                }
+            }
+        }
+        return currentCategoryIndex;
+    }
+
     public boolean updateScore(String gameTag, String levelTag, int characterIndex, int score){
         int[] scores;
 

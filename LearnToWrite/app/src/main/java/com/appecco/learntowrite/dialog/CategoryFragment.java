@@ -15,8 +15,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +44,8 @@ public class CategoryFragment extends Fragment {
     private Progress progress;
     private int gameOrder;
     private int levelOrder;
+
+    private Button button;
 
     private GameDialogsEventsListener gameDialogsEventsListener;
 
@@ -86,7 +91,7 @@ public class CategoryFragment extends Fragment {
         String gameTag = gameStructure.findGameByOrder(gameOrder).getGameTag();
         String levelTag = gameStructure.findLevelByOrder(levelOrder).getLevelTag();
 
-        final Button button = (Button)view.findViewById(R.id.categoryImageButton);
+        button = (Button)view.findViewById(R.id.categoryImageButton);
         String imageResourceName = String.format("%s_%s",gameTag.toLowerCase(), levelTag.toLowerCase());
         Resources contextResources = getActivity().getResources();
         int imageResourceId = contextResources.getIdentifier(imageResourceName, "drawable", getActivity().getPackageName());
@@ -115,6 +120,18 @@ public class CategoryFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        button.postDelayed(boxAnimationRunnable,250);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        button.removeCallbacks(boxAnimationRunnable);
+        button = null;
+    }
 
     public int getGameOrder() {
         return gameOrder;
@@ -147,4 +164,15 @@ public class CategoryFragment extends Fragment {
     public void setProgress(Progress progress) {
         this.progress = progress;
     }
+
+    private final Runnable boxAnimationRunnable = new Runnable(){
+
+        @Override
+        public void run() {
+            Animation boxAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.box_animation);
+            Button categoryButton = (Button)getView().findViewById(R.id.categoryImageButton);
+            categoryButton.startAnimation(boxAnimation);
+        }
+    };
+
 }
