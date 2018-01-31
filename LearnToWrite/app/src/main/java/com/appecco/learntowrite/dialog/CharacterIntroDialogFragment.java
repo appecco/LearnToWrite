@@ -160,7 +160,7 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 
 		ImageView alphaFriendImage = (ImageView)view.findViewById(R.id.alphafriendImage);
 		String character = gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex];
-		String currentLanguage = Settings.get(getActivity(),"currentLanguage","es");
+		String currentLanguage = Settings.getCurrentLanguage(getActivity());
 		// Se maneja el caso especial de la 'ñ' que no puede incluirse como nombre de un asset
 		String alphaResourceName = String.format("alpha_%s_%s",character, currentLanguage).replace("ñ","n1");
 		Resources contextResources = getActivity().getResources();

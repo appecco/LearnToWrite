@@ -76,18 +76,13 @@ public class SettingsActivity extends Activity {
 
     void updateButtonsStatus(){
         String currentLanguage;
-        String musicEnabled;
-        String soundEnabled;
 
-        currentLanguage = Settings.get(SettingsActivity.this, Settings.CURRENT_LANGUAGE,"es");
+        currentLanguage = Settings.getCurrentLanguage(SettingsActivity.this);
         btnLanguageSpanish.setAlpha(("es".equals(currentLanguage))?1.0f:0.5f);
         btnLanguageEnglish.setAlpha(("en".equals(currentLanguage))?1.0f:0.5f);
 
-        musicEnabled = Settings.get(SettingsActivity.this, Settings.MUSIC_ENABLED, Boolean.toString(Boolean.TRUE));
-        tglMusic.setChecked(Boolean.valueOf(musicEnabled));
-
-        soundEnabled = Settings.get(SettingsActivity.this, Settings.SOUND_ENABLED, Boolean.toString(Boolean.TRUE));
-        tglSound.setChecked(Boolean.valueOf(soundEnabled));
+        tglMusic.setChecked(Settings.isMusicEnabled(SettingsActivity.this));
+        tglSound.setChecked(Boolean.valueOf(Settings.isSoundEnabled(SettingsActivity.this)));
 
     }
 }

@@ -73,7 +73,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         //Preparar Ad
         PrepareInterstitialAd();
 
-        currentLanguage = Settings.get(this, Settings.CURRENT_LANGUAGE, "es");
+        currentLanguage = Settings.getCurrentLanguage(this);
 
         Gson gson = new Gson();
 
