@@ -167,7 +167,6 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 		if (alphaResourceId != 0) {
 			alphaFriendImage.setImageResource(alphaResourceId);
 		} else {
-			// TODO: Eliminar esta verificación cuando estén todos los alpha friends o dejar una imagen razonable como backup
 			alphaFriendImage.setImageResource(R.drawable.shapes_icon);
 		}
 
