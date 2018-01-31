@@ -132,7 +132,6 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 
 //		TextView messageText = (TextView)view.findViewById(R.id.levelDialogText);
 //		if (levelFinished){
-//			// TODO: Internacionalizar y agregar el nombre del nivel
 //			messageText.setText(R.string.level_finished_congratulations);
 //		} else {
 //			if (score == 0) {
