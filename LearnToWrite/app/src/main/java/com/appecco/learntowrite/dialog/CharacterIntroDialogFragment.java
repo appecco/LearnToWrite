@@ -32,6 +32,7 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 	private static final String CHARACTER_INDEX_PARAM = "characterIndexParam";
 
 	GameDialogsEventsListener gameDialogsEventsListener;
+	boolean fragmentStarting = true;
 
 	private GameStructure gameStructure;
 	private Progress progress;
@@ -229,7 +230,25 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 		drawingView.hint();
 	}
 
-    @Override
+	@Override
+	public void onResume() {
+		super.onResume();
+		DrawingView drawingView = (DrawingView)getView().findViewById(R.id.hintDrawingView);
+		drawingView.setGameDialogsEventsListener(gameDialogsEventsListener);
+		if (!fragmentStarting) {
+			drawingView.hint();
+		}
+		fragmentStarting = false;
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		DrawingView drawingView = (DrawingView)getView().findViewById(R.id.hintDrawingView);
+		drawingView.setGameDialogsEventsListener(null);
+	}
+
+	@Override
     public void onStop(){
         super.onStop();
         if (mLetterSound !=null){
