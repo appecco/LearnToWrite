@@ -5,7 +5,7 @@
     </item>
     <item>
         <shape android:shape="oval" xmlns:android="http://schemas.android.com/apk/res/android">
-            <gradient android:angle="90" android:startColor="#880f0f10" android:centerColor="#880d0d0f" android:endColor="#885d5d5e"/>
+            <gradient android:type="radial" android:gradientRadius="200" android:startColor="#88FFFF10" android:endColor="#00000000"/>
         </shape>
     </item>
 </layer-list>
