@@ -17,6 +17,7 @@ import com.appecco.utils.StorageOperations;
 import android.app.AlertDialog;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -300,8 +301,13 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         characterIntroFragment.setLevelOrder(currentLevelOrder);
         characterIntroFragment.setCharacterIndex(currentCharacterIndex);
 
+        Fragment characterMenuDialogFragment = fragmentManager.findFragmentByTag("CharacterMenuDialogFragment");
+
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        if (characterMenuDialogFragment != null){
+            transaction.hide(characterMenuDialogFragment);
+        }
         transaction.add(android.R.id.content, characterIntroFragment, "CharacterIntroDialogFragment");
         transaction.addToBackStack("CharacterIntroDialogFragment");
         transaction.commit();
@@ -339,9 +345,11 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     @Override
     public void onCategorySelected(int gameOrder, int levelOrder) {
         FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment categoryMenuDialogFragment = fragmentManager.findFragmentByTag("CategoryMenuDialogFragment");
         CharacterMenuDialogFragment fragment = CharacterMenuDialogFragment.newInstance(gameStructure,progress, gameOrder, levelOrder);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.hide(categoryMenuDialogFragment);
         transaction.add(android.R.id.content, fragment,"CharacterMenuDialogFragment");
         transaction.addToBackStack("CharacterMenuDialogFragment");
         transaction.commit();

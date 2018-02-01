@@ -8,6 +8,7 @@
     android:background="@drawable/background"
     android:clickable="true">
 
+
     <LinearLayout
         android:id="@+id/levelButtonsLayout"
         android:layout_width="match_parent"
