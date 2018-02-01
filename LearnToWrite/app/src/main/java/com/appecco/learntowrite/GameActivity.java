@@ -14,6 +14,7 @@ import com.appecco.learntowrite.model.Progress;
 import com.appecco.utils.Settings;
 import com.appecco.utils.StorageOperations;
 
+import android.app.AlertDialog;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.support.v4.app.FragmentTransaction;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.AdRequest;
 import com.google.gson.Gson;
+import com.tjeannin.apprate.AppRate;
 
 public class GameActivity extends AppCompatActivity implements GameEventsListener, GameDialogsEventsListener {
 
@@ -211,6 +213,16 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         if (currentCharacterIndex % charactersBeforeAd == 0){
             //Mostremos el Ad
             ShowInterstitialAd();
+        } else {
+            new AppRate(this)
+                    .setShowIfAppHasCrashed(false)
+                    .setMinDaysUntilPrompt(5)
+                    .setMinLaunchesUntilPrompt(3)
+                    .init();
+
+//      Usar esta alternativa solo para pruebas, mostraría el diálogo SIEMPRE
+//            new AppRate(this)
+//                    .init();
         }
 
         String gameTag = gameStructure.findGameByOrder(currentGameOrder).getGameTag();

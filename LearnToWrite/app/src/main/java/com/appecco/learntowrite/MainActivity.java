@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 
 import com.appecco.utils.Settings;
 import com.google.android.gms.ads.MobileAds;
+import com.tjeannin.apprate.ExceptionHandler;
 
 import java.util.Set;
 
@@ -43,6 +44,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Manejador de excepciones que registra si la App ha finalizado abruptamente alguna vez para no mostrar el diálogo solicitando calificación
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(Thread.getDefaultUncaughtExceptionHandler(),this));
 
         //Play Intro Video
          Intent intent = new Intent(MainActivity.this,VideoActivity.class);
