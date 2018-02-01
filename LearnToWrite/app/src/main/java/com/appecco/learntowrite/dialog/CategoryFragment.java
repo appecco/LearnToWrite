@@ -48,6 +48,7 @@ public class CategoryFragment extends Fragment {
     private Button button;
 
     private GameDialogsEventsListener gameDialogsEventsListener;
+    private Runnable boxAnimationRunnable;
 
     public static CategoryFragment newInstance (GameStructure gameStructure, Progress progress, int gameOrder, int levelOrder){
         CategoryFragment fragment = new CategoryFragment();
@@ -123,6 +124,15 @@ public class CategoryFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        boxAnimationRunnable = new Runnable(){
+
+            @Override
+            public void run() {
+                Animation boxAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.box_animation);
+                Button categoryButton = (Button)getView().findViewById(R.id.categoryImageButton);
+                categoryButton.startAnimation(boxAnimation);
+            }
+        };
         button.postDelayed(boxAnimationRunnable,250);
     }
 
@@ -164,15 +174,5 @@ public class CategoryFragment extends Fragment {
     public void setProgress(Progress progress) {
         this.progress = progress;
     }
-
-    private final Runnable boxAnimationRunnable = new Runnable(){
-
-        @Override
-        public void run() {
-            Animation boxAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.box_animation);
-            Button categoryButton = (Button)getView().findViewById(R.id.categoryImageButton);
-            categoryButton.startAnimation(boxAnimation);
-        }
-    };
 
 }
