@@ -12,12 +12,16 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.support.v4.app.DialogFragment;
 
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
+import com.appecco.learntowrite.view.FixedSpeedScroller;
+
+import java.lang.reflect.Field;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,6 +72,18 @@ public class CategoryMenuDialogFragment extends DialogFragment {
         CategoriesPagerAdapter categoriesAdapter = new CategoriesPagerAdapter(getChildFragmentManager(), gameStructure, progress);
         ViewPager viewPager = (ViewPager)view.findViewById(R.id.categoryPager);
         viewPager.setAdapter(categoriesAdapter);
+
+        try {
+            Field mScroller;
+            mScroller = ViewPager.class.getDeclaredField("mScroller");
+            mScroller.setAccessible(true);
+            FixedSpeedScroller scroller = new FixedSpeedScroller(viewPager.getContext(), new DecelerateInterpolator());
+            scroller.setFixedDuration(2000);
+            mScroller.set(viewPager, scroller);
+        } catch (NoSuchFieldException e) {
+        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
+        }
 
         ImageButton cancelButton = (ImageButton)view.findViewById(R.id.cancelButton);
         cancelButton.setOnClickListener(new View.OnClickListener(){

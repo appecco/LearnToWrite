@@ -3,6 +3,7 @@ package com.appecco.learntowrite.dialog;
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
+import com.plattysoft.leonids.ParticleSystem;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,6 +28,8 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 	private static final String CHARACTER_INDEX_PARAM = "characterIndexParam";
 	private static final String SCORE_PARAM = "scoreParam";
 	private static final String LEVEL_FINISHED_PARAM = "levelFinishedParam";
+	private static final long PARTICLES_TIME_TO_LIVE = 2000;
+	private static final int MAX_PARTICLES = 40;
 
 	Activity activity;
 	String messageText;
@@ -90,10 +94,10 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 
 		int scoreImages[] = {R.drawable.stars0,R.drawable.stars1,R.drawable.stars2,R.drawable.stars3};
 
-		ImageView imageScore = (ImageView)view.findViewById(R.id.imageScore);
+		final ImageView imageScore = (ImageView)view.findViewById(R.id.imageScore);
 		imageScore.setImageResource(scoreImages[score]);
 
-		ImageButton cancelButton = (ImageButton)view.findViewById(R.id.cancelButton);
+		final ImageButton cancelButton = (ImageButton)view.findViewById(R.id.cancelButton);
 		cancelButton.setOnClickListener(new View.OnClickListener(){
 
 			@Override
@@ -104,7 +108,7 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 			}
 		});
 
-		ImageButton retryLevelButton = (ImageButton)view.findViewById(R.id.retryLevelButton);
+		final ImageButton retryLevelButton = (ImageButton)view.findViewById(R.id.retryLevelButton);
 		retryLevelButton.setOnClickListener(new View.OnClickListener(){
 
 			@Override
@@ -115,42 +119,44 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 			}
 		});
 
-		ImageButton nextLevelButton = (ImageButton)view.findViewById(R.id.nextLevelButton);
+		final ImageButton nextLevelButton = (ImageButton)view.findViewById(R.id.nextLevelButton);
 		nextLevelButton.setOnClickListener(new View.OnClickListener(){
 
 			@Override
 			public void onClick(View view) {
 				if (gameDialogsEventsListener != null){
-					gameDialogsEventsListener.onNextCharacterSelected();
+					if (levelFinished) {
+						gameDialogsEventsListener.onNextLevelSelected();
+					} else {
+						gameDialogsEventsListener.onNextCharacterSelected();
+					}
 				}
 			}
 		});
-		if (score == 0 || levelFinished){
+		if (score == 0){
 			nextLevelButton.setAlpha(0.5f);
 			nextLevelButton.setEnabled(false);
 		}
 
-//		TextView messageText = (TextView)view.findViewById(R.id.levelDialogText);
-//		if (levelFinished){
-//			messageText.setText(R.string.level_finished_congratulations);
-//		} else {
-//			if (score == 0) {
-//				messageText.setText(
-//						String.format("Your score on %s is %d. You should try this again!",
-//								gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex],
-//								score));
-//			} else if (score > 0 && score < 3) {
-//				messageText.setText(
-//						String.format("Your score on %s is %d. That's good but can be better!",
-//								gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex],
-//								score));
-//			} else if (score == 3){
-//				messageText.setText(
-//						String.format("Your have passed %s with flying colors. Great Job!",
-//								gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex]));
-//			}
-//		}
-
+		if (score > 0) {
+			imageScore.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					new ParticleSystem(getActivity(), MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
+							.setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
+							.setStartTime(10)
+							.oneShot(cancelButton, MAX_PARTICLES, new DecelerateInterpolator());
+					new ParticleSystem(getActivity(), MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
+							.setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
+							.setStartTime(10)
+							.oneShot(retryLevelButton, MAX_PARTICLES, new DecelerateInterpolator());
+					new ParticleSystem(getActivity(), MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
+							.setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
+							.setStartTime(10)
+							.oneShot(nextLevelButton, MAX_PARTICLES, new DecelerateInterpolator());
+				}
+			}, 25);
+		}
 		return view;
 	}
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <bitmap android:src="@drawable/greenbutton"/>
+    </item>
+    <item>
+        <shape android:shape="ring" android:innerRadius="43sp" android:thickness="10sp" android:useLevel="false">
+            <solid android:color="@color/colorYelllow"/>
+        </shape>
+    </item>
+</layer-list>

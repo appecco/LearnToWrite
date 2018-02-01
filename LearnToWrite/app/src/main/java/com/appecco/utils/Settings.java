@@ -1,12 +1,6 @@
 package com.appecco.utils;
 
 import android.content.Context;
-
-import com.appecco.learntowrite.MainActivity;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Locale;
 
 public class Settings {
@@ -14,6 +8,11 @@ public class Settings {
     public static final String CURRENT_LANGUAGE="currentLanguage";
     public static final String MUSIC_ENABLED="musicEnabled";
     public static final String SOUND_ENABLED="soundEnabled";
+    public static final String DRAWING_COLOR="drawingColor";
+
+    public enum DrawingColor{
+        COLOR_BLUE, COLOR_RED, COLOR_GREEN
+    }
 
     public static String get(Context context, String name, String defaultValue) {
         String value = StorageOperations.readPreferences(context, name, defaultValue);
@@ -48,4 +47,11 @@ public class Settings {
         set(context, Settings.SOUND_ENABLED, Boolean.toString(soundEnabled));
     }
 
+    public static DrawingColor getDrawingColor(Context context){
+        return DrawingColor.valueOf(get(context, Settings.DRAWING_COLOR, DrawingColor.COLOR_BLUE.toString()));
+    }
+
+    public static void setDrawingColor(Context context, DrawingColor drawingColor){
+        set(context, Settings.DRAWING_COLOR, drawingColor.toString());
+    }
 }

@@ -17,6 +17,7 @@ import com.appecco.utils.StorageOperations;
 import android.app.AlertDialog;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -210,7 +211,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         }
 
         int charactersBeforeAd = 5 - currentLevelOrder;
-        if (currentCharacterIndex % charactersBeforeAd == 0){
+        if ((currentCharacterIndex + 1) % charactersBeforeAd == 0){
             //Mostremos el Ad
             ShowInterstitialAd();
         } else {
@@ -300,8 +301,13 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         characterIntroFragment.setLevelOrder(currentLevelOrder);
         characterIntroFragment.setCharacterIndex(currentCharacterIndex);
 
+        Fragment characterMenuDialogFragment = fragmentManager.findFragmentByTag("CharacterMenuDialogFragment");
+
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        if (characterMenuDialogFragment != null){
+            transaction.hide(characterMenuDialogFragment);
+        }
         transaction.add(android.R.id.content, characterIntroFragment, "CharacterIntroDialogFragment");
         transaction.addToBackStack("CharacterIntroDialogFragment");
         transaction.commit();
@@ -339,9 +345,11 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     @Override
     public void onCategorySelected(int gameOrder, int levelOrder) {
         FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment categoryMenuDialogFragment = fragmentManager.findFragmentByTag("CategoryMenuDialogFragment");
         CharacterMenuDialogFragment fragment = CharacterMenuDialogFragment.newInstance(gameStructure,progress, gameOrder, levelOrder);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.hide(categoryMenuDialogFragment);
         transaction.add(android.R.id.content, fragment,"CharacterMenuDialogFragment");
         transaction.addToBackStack("CharacterMenuDialogFragment");
         transaction.commit();
@@ -386,6 +394,26 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         // Eliminar el fragmento de fin de caracter
         getSupportFragmentManager().popBackStack();
         this.currentCharacterIndex++;
+        //setupLevel();
+        showCharacterIntroDialog();
+    }
+
+    @Override
+    public void onNextLevelSelected() {
+        // Eliminar el fragmento de fin de caracter
+        getSupportFragmentManager().popBackStack();
+        this.currentCharacterIndex=0;
+        if (gameStructure.getLevels().length > currentLevelOrder - 1){
+            currentLevelOrder++;
+        } else {
+            currentLevelOrder = 1;
+            if (gameStructure.getGames().length > currentGameOrder - 1){
+                currentGameOrder++;
+            } else {
+                // El juego ha finalizado, ciclar al primer juego
+                currentGameOrder = 1;
+            }
+        }
         //setupLevel();
         showCharacterIntroDialog();
     }

@@ -15,6 +15,7 @@ import android.widget.ImageView;
 
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.view.DrawingView;
+import com.appecco.utils.Settings;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -82,7 +83,7 @@ public class DrawingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_drawing, container, false);
+        final View view = inflater.inflate(R.layout.fragment_drawing, container, false);
 
         viewDraw = (DrawingView)view.findViewById(R.id.viewDraw);
 
@@ -114,8 +115,8 @@ public class DrawingFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
-                viewDraw.setPenColor(Color.RED);
-
+                Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_RED);
+                setupDrawingColor(view);
             }
 
         });
@@ -125,8 +126,8 @@ public class DrawingFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
-                viewDraw.setPenColor(Color.BLUE);
-
+                Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_BLUE);
+                setupDrawingColor(view);
             }
 
         });
@@ -136,11 +137,13 @@ public class DrawingFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
-                viewDraw.setPenColor(Color.GREEN);
-
+                Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_GREEN);
+                setupDrawingColor(view);
             }
 
         });
+
+        setupDrawingColor(view);
 
         starView = (ImageView)view.findViewById(R.id.animated_star);
 
@@ -182,6 +185,32 @@ public class DrawingFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         starView.removeCallbacks(starAnimationRunnable);
+    }
+
+    private void setupDrawingColor(View view){
+        ImageButton btnRed = (ImageButton)view.findViewById(R.id.btnRed);
+        ImageButton btnBlue = (ImageButton)view.findViewById(R.id.btnBlue);
+        ImageButton btnGreen = (ImageButton)view.findViewById(R.id.btnGreen);
+
+        btnRed.setImageResource(R.drawable.redbutton);
+        btnBlue.setImageResource(R.drawable.bluebutton);
+        btnGreen.setImageResource(R.drawable.greenbutton);
+
+        Settings.DrawingColor drawingColor = Settings.getDrawingColor(getContext());
+
+        switch (drawingColor){
+            case COLOR_RED:
+                viewDraw.setPenColor(Color.RED);
+                btnRed.setImageResource(R.drawable.red_button_selected);
+                break;
+            case COLOR_BLUE:
+                viewDraw.setPenColor(Color.BLUE);
+                btnBlue.setImageResource(R.drawable.blue_button_selected);
+                break;
+            case COLOR_GREEN:
+                viewDraw.setPenColor(Color.argb(0xFF,0x00,0x66,0x00));
+                btnGreen.setImageResource(R.drawable.green_button_selected);
+        }
     }
 
     public boolean isShowHints() {
