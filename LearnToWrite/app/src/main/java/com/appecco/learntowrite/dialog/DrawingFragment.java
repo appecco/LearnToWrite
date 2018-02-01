@@ -1,6 +1,7 @@
 package com.appecco.learntowrite.dialog;
 
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -39,6 +40,8 @@ public class DrawingFragment extends Fragment {
 
     private DrawingView viewDraw;
     private ImageView starView;
+
+    GameDialogsEventsListener gameDialogsEventsListener;
 
     public DrawingFragment() {
         // Required empty public constructor
@@ -80,6 +83,16 @@ public class DrawingFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            gameDialogsEventsListener = (GameDialogsEventsListener) context;
+        } catch (ClassCastException e) {
+            throw new RuntimeException(context.toString()+ " must implement LevelDialogListener");
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -92,7 +105,10 @@ public class DrawingFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
-                viewDraw.reset();
+                if (gameDialogsEventsListener != null){
+                    gameDialogsEventsListener.onRetryCharacterSelected();
+                }
+                //viewDraw.reset();
                 //EditText txtGesture = (EditText)findViewById(R.id.txtGesture);
                 //txtGesture.setText("");
             }
