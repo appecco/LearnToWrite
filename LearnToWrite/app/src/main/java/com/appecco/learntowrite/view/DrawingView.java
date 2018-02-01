@@ -249,8 +249,14 @@ public class DrawingView extends View implements OnTouchListener {
             initBitmaps(true);
         }
 
+//	    DEBUG PARA FPS
+//		long tbmp = System.currentTimeMillis();
+
         //Pintemos el fondo ya preparado en canvasBitmap
         canvas.drawBitmap(canvasBitmap, 0, 0, null);
+
+//	    DEBUG PARA FPS
+//		long cdb = System.currentTimeMillis();
 
         //Pintemos el Path que se ha dibujado
 		for (Path p : paths) {
@@ -265,6 +271,9 @@ public class DrawingView extends View implements OnTouchListener {
                 canvas.drawPath(p, mPaint);
 			}
 		}
+
+//	    DEBUG PARA FPS
+//		long ppath = System.currentTimeMillis();
 
         //Agreguemos las 3 estrellas segun el score del nivel se decide si empty o filled
         if (MODE_DRAW.equals(mode) && level_score != null) {
@@ -282,6 +291,9 @@ public class DrawingView extends View implements OnTouchListener {
 			}
 		}
 
+//	    DEBUG PARA FPS
+//		long pstar = System.currentTimeMillis();
+
         //Pintemos el cursor (pointing_hand) si se esta animando
         if (animating){
             Drawable cursor = getResources().getDrawable(R.drawable.pointing_hand);
@@ -291,7 +303,12 @@ public class DrawingView extends View implements OnTouchListener {
 
 //        DEBUG PARA FPS
 //		System.out.println("FPS:" + fps);
-//
+//		System.out.println("transpBitmap:" + (tbmp - now));
+//		System.out.println("canvas.drawBitmap:" + (cdb - tbmp));
+//		System.out.println("canvas.drawPath:" + (ppath - cdb));
+//		System.out.println("star.draw:" + (pstar - ppath));
+
+
 //		ifps++;
 //		if(now > (mLastTime + 1000)) {
 //			mLastTime = now;
