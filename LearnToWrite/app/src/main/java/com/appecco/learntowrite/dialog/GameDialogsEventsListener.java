@@ -14,5 +14,6 @@ public interface GameDialogsEventsListener {
     void onStartCharacterSelected();
     void onRetryCharacterSelected();
     void onNextCharacterSelected();
+    void onNextLevelSelected();
     void onFinishedCharacterDialogCancelPressed();
 }

@@ -125,11 +125,15 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 			@Override
 			public void onClick(View view) {
 				if (gameDialogsEventsListener != null){
-					gameDialogsEventsListener.onNextCharacterSelected();
+					if (levelFinished) {
+						gameDialogsEventsListener.onNextLevelSelected();
+					} else {
+						gameDialogsEventsListener.onNextCharacterSelected();
+					}
 				}
 			}
 		});
-		if (score == 0 || levelFinished){
+		if (score == 0){
 			nextLevelButton.setAlpha(0.5f);
 			nextLevelButton.setEnabled(false);
 		}

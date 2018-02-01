@@ -210,7 +210,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         }
 
         int charactersBeforeAd = 5 - currentLevelOrder;
-        if (currentCharacterIndex % charactersBeforeAd == 0){
+        if ((currentCharacterIndex + 1) % charactersBeforeAd == 0){
             //Mostremos el Ad
             ShowInterstitialAd();
         } else {
@@ -386,6 +386,26 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         // Eliminar el fragmento de fin de caracter
         getSupportFragmentManager().popBackStack();
         this.currentCharacterIndex++;
+        //setupLevel();
+        showCharacterIntroDialog();
+    }
+
+    @Override
+    public void onNextLevelSelected() {
+        // Eliminar el fragmento de fin de caracter
+        getSupportFragmentManager().popBackStack();
+        this.currentCharacterIndex=0;
+        if (gameStructure.getLevels().length > currentLevelOrder - 1){
+            currentLevelOrder++;
+        } else {
+            currentLevelOrder = 1;
+            if (gameStructure.getGames().length > currentGameOrder - 1){
+                currentGameOrder++;
+            } else {
+                // El juego ha finalizado, ciclar al primer juego
+                currentGameOrder = 1;
+            }
+        }
         //setupLevel();
         showCharacterIntroDialog();
     }
