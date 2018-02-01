@@ -128,9 +128,11 @@ public class CategoryFragment extends Fragment {
 
             @Override
             public void run() {
-                Animation boxAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.box_animation);
-                Button categoryButton = (Button)getView().findViewById(R.id.categoryImageButton);
-                categoryButton.startAnimation(boxAnimation);
+                if (getContext() != null) {
+                    Animation boxAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.box_animation);
+                    Button categoryButton = (Button) getView().findViewById(R.id.categoryImageButton);
+                    categoryButton.startAnimation(boxAnimation);
+                }
             }
         };
         button.postDelayed(boxAnimationRunnable,250);
