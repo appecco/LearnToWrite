@@ -108,8 +108,6 @@ public class MainActivity extends Activity {
         mBackgroundSound.stop();
         mBackgroundSound.cancel(true);
 
-        LoadedResources.getInstance().releaseResources();
-
         super.onStop();
     }
 
