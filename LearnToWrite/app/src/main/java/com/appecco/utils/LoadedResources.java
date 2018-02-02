@@ -55,10 +55,10 @@ public class LoadedResources implements SettingChangedListener {
         int soundStatus;
         if (soundEnabled){
             try{
-                soundPoolId = (int)loadedSounds.get(resourceId);
-                soundStatus = (int)soundsStatus.get(soundPoolId);
+                soundPoolId = loadedSounds.get(resourceId);
+                soundStatus = soundsStatus.get(soundPoolId);
                 if (soundStatus == 0){
-                    soundPool.play(resourceId, leftVolume, rightVolume, priority, loop, rate);
+                    soundPool.play(soundPoolId, leftVolume, rightVolume, priority, loop, rate);
                 }
             }
             catch (Exception e){
