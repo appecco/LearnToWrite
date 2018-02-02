@@ -43,6 +43,8 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 
     private MediaPlayer mLetterSound;
 
+	private String character, currentLanguage;
+
 //    public class LetterSound extends AsyncTask<Void, Void, Void> {
 //        MediaPlayer backGroudPlayer;
 //
@@ -117,8 +119,15 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 		}
 
 		//TODO Calcular el nombre del recurso de sonido en base al character index y el lenguaje
-		if (Settings.isSoundEnabled(getActivity())) {
-			mLetterSound = MediaPlayer.create(getActivity(), R.raw.a_es);
+        character = gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex];
+        currentLanguage = Settings.getCurrentLanguage(getActivity());
+        if (Settings.isSoundEnabled(getActivity())) {
+            Resources res = this.getContext().getResources();
+            // Se maneja el caso especial de la 'ñ' que no puede incluirse como nombre de un asset
+            int soundId = res.getIdentifier(String.format("%s_%s",character, currentLanguage).replace("ñ","n1"), "raw", this.getContext().getPackageName());
+            if (soundId != 0){
+                mLetterSound = MediaPlayer.create(getActivity(), soundId);
+            }
 		}
 	}
 
@@ -160,10 +169,8 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 //		titleText.setText(String.format("%s ( %s )",gameName,levelName));
 
 		ImageView alphaFriendImage = (ImageView)view.findViewById(R.id.alphafriendImage);
-		String character = gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex];
-		String currentLanguage = Settings.getCurrentLanguage(getActivity());
 		// Se maneja el caso especial de la 'ñ' que no puede incluirse como nombre de un asset
-		String alphaResourceName = String.format("alpha_%s_%s",character, currentLanguage).replace("ñ","n1");
+		String alphaResourceName = String.format("alpha_%s_%s", character, currentLanguage).replace("ñ","n1");
 		Resources contextResources = getActivity().getResources();
 		int alphaResourceId = contextResources.getIdentifier(alphaResourceName, "drawable", getActivity().getPackageName());
 		if (alphaResourceId != 0) {
