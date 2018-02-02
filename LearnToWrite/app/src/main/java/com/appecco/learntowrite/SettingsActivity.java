@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ToggleButton;
 
+import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;
 import com.appecco.utils.StorageOperations;
 
@@ -32,6 +33,7 @@ public class SettingsActivity extends Activity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                LoadedResources.getInstance().playSound(R.raw.button_click);
                 finish();
             }
         });
@@ -40,7 +42,8 @@ public class SettingsActivity extends Activity {
         btnLanguageSpanish.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Settings.set(SettingsActivity.this, Settings.CURRENT_LANGUAGE, "es");
+                LoadedResources.getInstance().playSound(R.raw.button_click);
+                Settings.setCurrentLanguage(SettingsActivity.this, "es");
                 updateButtonsStatus();
             }
         });
@@ -49,7 +52,8 @@ public class SettingsActivity extends Activity {
         btnLanguageEnglish.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Settings.set(SettingsActivity.this, Settings.CURRENT_LANGUAGE, "en");
+                LoadedResources.getInstance().playSound(R.raw.button_click);
+                Settings.setCurrentLanguage(SettingsActivity.this, "en");
                 updateButtonsStatus();
             }
         });
@@ -58,6 +62,7 @@ public class SettingsActivity extends Activity {
         tglMusic.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                LoadedResources.getInstance().playSound(R.raw.button_click);
                 Settings.setMusicEnabled(SettingsActivity.this, tglMusic.isChecked());
             }
         });
@@ -66,8 +71,8 @@ public class SettingsActivity extends Activity {
         tglSound.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Settings.set(SettingsActivity.this, Settings.SOUND_ENABLED, Boolean.toString(tglSound.isChecked()));
-
+                Settings.setSoundEnabled(SettingsActivity.this, tglSound.isChecked());
+                LoadedResources.getInstance().playSound(R.raw.button_click);
             }
         });
 

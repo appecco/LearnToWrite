@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
+import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;
 import com.google.android.gms.ads.MobileAds;
 import com.tjeannin.apprate.ExceptionHandler;
@@ -52,8 +53,6 @@ public class MainActivity extends Activity {
          Intent intent = new Intent(MainActivity.this,VideoActivity.class);
          startActivity(intent);
 
-        final MediaPlayer mPlayerClick = MediaPlayer.create(this, R.raw.button_click);
-
         setContentView(R.layout.activity_main);
 
         //Inicializar ADS
@@ -63,14 +62,14 @@ public class MainActivity extends Activity {
         //LearnToWrite Id
         MobileAds.initialize(this, "ca-app-pub-1507251474990125~6376776099");
 
+        LoadedResources.getInstance().loadResources(this);
+
         ImageButton btnNewGameCursive = (ImageButton)findViewById(R.id.btnNewGameCursive);
         btnNewGameCursive.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View view) {
 
-                if (Settings.isSoundEnabled(MainActivity.this)) {
-                    mPlayerClick.start();
-                }
+                LoadedResources.getInstance().playSound(R.raw.button_click);
 
                 Intent intent = new Intent(MainActivity.this,GameActivity.class);
                 startActivity(intent);
@@ -82,9 +81,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
 
-                if (Settings.isSoundEnabled(MainActivity.this)) {
-                    mPlayerClick.start();
-                }
+                LoadedResources.getInstance().playSound(R.raw.button_click);
 
                 Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
                 startActivity(intent);
@@ -110,6 +107,9 @@ public class MainActivity extends Activity {
     protected void onStop() {
         mBackgroundSound.stop();
         mBackgroundSound.cancel(true);
+
+        LoadedResources.getInstance().releaseResources();
+
         super.onStop();
     }
 

@@ -3,6 +3,7 @@ package com.appecco.learntowrite.dialog;
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
+import com.appecco.utils.LoadedResources;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -104,6 +105,7 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 
 			@Override
 			public void onClick(View v) {
+				LoadedResources.getInstance().playSound(R.raw.button_click);
 				if (gameDialogsEventsListener != null) {
 					gameDialogsEventsListener.onCharacterDialogCancelPressed();
 				}
@@ -169,6 +171,8 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 						public void onClick(View view) {
 							int characterIndex;
 							characterIndex = (int)((Button)view).getTag();
+
+							LoadedResources.getInstance().playSound(R.raw.button_click);
 
 							gameDialogsEventsListener.onCharacterSelected(gameOrder, levelOrder, characterIndex);
 

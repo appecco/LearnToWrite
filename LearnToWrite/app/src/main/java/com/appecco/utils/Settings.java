@@ -1,7 +1,10 @@
 package com.appecco.utils;
 
 import android.content.Context;
+
+import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Set;
 
 public class Settings {
 
@@ -10,8 +13,16 @@ public class Settings {
     public static final String SOUND_ENABLED="soundEnabled";
     public static final String DRAWING_COLOR="drawingColor";
 
+    private static Settings instance = null;
+
+    private ArrayList<SettingChangedListener> settingChangeListeners = new ArrayList<SettingChangedListener>();
+
     public enum DrawingColor{
         COLOR_BLUE, COLOR_RED, COLOR_GREEN
+    }
+
+    private Settings(){
+
     }
 
     public static String get(Context context, String name, String defaultValue) {
@@ -21,6 +32,7 @@ public class Settings {
 
     public static void set(Context context, String name, String value){
         StorageOperations.storePreferences(context, name, value);
+        getInstance().fireChangedSetting(name, value);
     }
 
     public static String getCurrentLanguage(Context context){
@@ -53,5 +65,26 @@ public class Settings {
 
     public static void setDrawingColor(Context context, DrawingColor drawingColor){
         set(context, Settings.DRAWING_COLOR, drawingColor.toString());
+    }
+
+    private void fireChangedSetting(String setting, String newValue){
+        for (SettingChangedListener listener: settingChangeListeners){
+            listener.onSettingChanged(setting, newValue);
+        }
+    }
+
+    public void addSettingChangedListener(SettingChangedListener listener){
+        settingChangeListeners.add(listener);
+    }
+
+    public void removeSettingChangedListener(SettingChangedListener listener){
+        settingChangeListeners.remove(listener);
+    }
+
+    public static synchronized Settings getInstance(){
+        if (instance == null){
+            instance = new Settings();
+        }
+        return instance;
     }
 }

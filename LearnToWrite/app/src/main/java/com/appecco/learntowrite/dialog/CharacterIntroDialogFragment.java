@@ -21,6 +21,7 @@ import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
 import com.appecco.learntowrite.view.DrawingView;
+import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;
 
 public class CharacterIntroDialogFragment extends DialogFragment {
@@ -185,6 +186,7 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 
 			@Override
 			public void onClick(View v) {
+				LoadedResources.getInstance().playSound(R.raw.button_click);
 				if (gameDialogsEventsListener != null) {
 
 					// Para evitar que se envíe de nuevo el evento al finalizar el hint en DrawingView
@@ -202,6 +204,7 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 
 			@Override
 			public void onClick(View v) {
+				LoadedResources.getInstance().playSound(R.raw.button_click);
 				if (gameDialogsEventsListener != null) {
 
 					// Para evitar que se envíe de nuevo el evento al finalizar el hint en DrawingView

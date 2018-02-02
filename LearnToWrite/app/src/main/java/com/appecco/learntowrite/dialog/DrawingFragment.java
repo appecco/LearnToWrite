@@ -1,6 +1,7 @@
 package com.appecco.learntowrite.dialog;
 
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.view.DrawingView;
+import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;
 
 /**
@@ -39,6 +41,8 @@ public class DrawingFragment extends Fragment {
 
     private DrawingView viewDraw;
     private ImageView starView;
+
+    GameDialogsEventsListener gameDialogsEventsListener;
 
     public DrawingFragment() {
         // Required empty public constructor
@@ -80,6 +84,16 @@ public class DrawingFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            gameDialogsEventsListener = (GameDialogsEventsListener) context;
+        } catch (ClassCastException e) {
+            throw new RuntimeException(context.toString()+ " must implement LevelDialogListener");
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -92,7 +106,11 @@ public class DrawingFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
-                viewDraw.reset();
+                LoadedResources.getInstance().playSound(R.raw.button_click);
+                if (gameDialogsEventsListener != null){
+                    gameDialogsEventsListener.onRetryCharacterSelected();
+                }
+                //viewDraw.reset();
                 //EditText txtGesture = (EditText)findViewById(R.id.txtGesture);
                 //txtGesture.setText("");
             }
@@ -104,6 +122,7 @@ public class DrawingFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
+                LoadedResources.getInstance().playSound(R.raw.button_click);
                 viewDraw.hint();
 
             }
@@ -115,6 +134,7 @@ public class DrawingFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
+                LoadedResources.getInstance().playSound(R.raw.button_click);
                 Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_RED);
                 setupDrawingColor(view);
             }
@@ -126,6 +146,7 @@ public class DrawingFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
+                LoadedResources.getInstance().playSound(R.raw.button_click);
                 Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_BLUE);
                 setupDrawingColor(view);
             }
@@ -137,6 +158,7 @@ public class DrawingFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
+                LoadedResources.getInstance().playSound(R.raw.button_click);
                 Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_GREEN);
                 setupDrawingColor(view);
             }
@@ -200,15 +222,16 @@ public class DrawingFragment extends Fragment {
 
         switch (drawingColor){
             case COLOR_RED:
+                viewDraw.setPenColor(Color.argb(0xFF,0xFD,0x00,0x06));
                 viewDraw.setPenColor(Color.RED);
                 btnRed.setImageResource(R.drawable.red_button_selected);
                 break;
             case COLOR_BLUE:
-                viewDraw.setPenColor(Color.BLUE);
+                viewDraw.setPenColor(Color.argb(0xFF,0x17,0x29,0xB0));
                 btnBlue.setImageResource(R.drawable.blue_button_selected);
                 break;
             case COLOR_GREEN:
-                viewDraw.setPenColor(Color.argb(0xFF,0x00,0x66,0x00));
+                viewDraw.setPenColor(Color.argb(0xFF,0x0A,0xCF,0x00));
                 btnGreen.setImageResource(R.drawable.green_button_selected);
         }
     }

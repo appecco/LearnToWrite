@@ -38,7 +38,7 @@
             android:background="@null"
             android:contentDescription="Cancel"
             android:scaleType="fitCenter"
-            android:src="@drawable/back" />
+            android:src="@drawable/back_button" />
 
         <ImageButton
             android:id="@+id/retryLevelButton"
@@ -48,7 +48,7 @@
             android:background="@null"
             android:contentDescription="Retry Level"
             android:scaleType="fitCenter"
-            android:src="@drawable/restart" />
+            android:src="@drawable/restart_button" />
 
         <ImageButton
             android:id="@+id/nextLevelButton"
@@ -58,7 +58,7 @@
             android:background="@null"
             android:contentDescription="Play Next Level"
             android:scaleType="fitCenter"
-            android:src="@drawable/forward" />
+            android:src="@drawable/forward_button" />
 
     </LinearLayout>
 

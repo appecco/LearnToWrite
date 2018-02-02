@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
+import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;
 
 import org.json.JSONException;
@@ -106,10 +107,10 @@ public class CategoryFragment extends Fragment {
         button.getLayoutParams().width = displayMetrics.widthPixels/4;
         button.getLayoutParams().height = displayMetrics.widthPixels*5/24;
 
-        // TODO: Crear íconos específicos para cada categoría (combinación de juego y nivel)
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                LoadedResources.getInstance().playSound(R.raw.button_click);
                 gameDialogsEventsListener.onCategorySelected(gameOrder, levelOrder);
             }
         });
