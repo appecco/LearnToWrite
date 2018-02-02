@@ -3,6 +3,7 @@ package com.appecco.learntowrite.dialog;
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
+import com.appecco.utils.LoadedResources;
 import com.plattysoft.leonids.ParticleSystem;
 
 import android.app.Activity;
@@ -102,6 +103,7 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 
 			@Override
 			public void onClick(View view) {
+				LoadedResources.getInstance().playSound(R.raw.button_click);
 				if (gameDialogsEventsListener != null){
 					gameDialogsEventsListener.onFinishedCharacterDialogCancelPressed();
 				}
@@ -113,6 +115,7 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 
 			@Override
 			public void onClick(View view) {
+				LoadedResources.getInstance().playSound(R.raw.button_click);
 				if (gameDialogsEventsListener != null){
 					gameDialogsEventsListener.onRetryCharacterSelected();
 				}
@@ -124,6 +127,7 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 
 			@Override
 			public void onClick(View view) {
+				LoadedResources.getInstance().playSound(R.raw.button_click);
 				if (gameDialogsEventsListener != null){
 					if (levelFinished) {
 						gameDialogsEventsListener.onNextLevelSelected();

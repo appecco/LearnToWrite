@@ -20,6 +20,7 @@ import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
 import com.appecco.learntowrite.view.FixedSpeedScroller;
+import com.appecco.utils.LoadedResources;
 
 import java.lang.reflect.Field;
 
@@ -90,6 +91,7 @@ public class CategoryMenuDialogFragment extends DialogFragment {
 
             @Override
             public void onClick(View view) {
+                LoadedResources.getInstance().playSound(R.raw.button_click);
                 if (gameDialogsEventsListener != null) {
                     gameDialogsEventsListener.onCategoryDialogCancelPressed();
                 }

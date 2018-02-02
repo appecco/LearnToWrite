@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.view.DrawingView;
+import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;
 
 /**
@@ -105,6 +106,7 @@ public class DrawingFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
+                LoadedResources.getInstance().playSound(R.raw.button_click);
                 if (gameDialogsEventsListener != null){
                     gameDialogsEventsListener.onRetryCharacterSelected();
                 }
@@ -120,6 +122,7 @@ public class DrawingFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
+                LoadedResources.getInstance().playSound(R.raw.button_click);
                 viewDraw.hint();
 
             }
@@ -131,6 +134,7 @@ public class DrawingFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
+                LoadedResources.getInstance().playSound(R.raw.button_click);
                 Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_RED);
                 setupDrawingColor(view);
             }
@@ -142,6 +146,7 @@ public class DrawingFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
+                LoadedResources.getInstance().playSound(R.raw.button_click);
                 Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_BLUE);
                 setupDrawingColor(view);
             }
@@ -153,6 +158,7 @@ public class DrawingFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
+                LoadedResources.getInstance().playSound(R.raw.button_click);
                 Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_GREEN);
                 setupDrawingColor(view);
             }
@@ -216,15 +222,16 @@ public class DrawingFragment extends Fragment {
 
         switch (drawingColor){
             case COLOR_RED:
+                viewDraw.setPenColor(Color.argb(0xFF,0xFD,0x00,0x06));
                 viewDraw.setPenColor(Color.RED);
                 btnRed.setImageResource(R.drawable.red_button_selected);
                 break;
             case COLOR_BLUE:
-                viewDraw.setPenColor(Color.BLUE);
+                viewDraw.setPenColor(Color.argb(0xFF,0x17,0x29,0xB0));
                 btnBlue.setImageResource(R.drawable.blue_button_selected);
                 break;
             case COLOR_GREEN:
-                viewDraw.setPenColor(Color.argb(0xFF,0x00,0x66,0x00));
+                viewDraw.setPenColor(Color.argb(0xFF,0x0A,0xCF,0x00));
                 btnGreen.setImageResource(R.drawable.green_button_selected);
         }
     }

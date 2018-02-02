@@ -11,6 +11,7 @@ import com.appecco.learntowrite.dialog.GameDialogsEventsListener;
 import com.appecco.learntowrite.dialog.GameEventsListener;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
+import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;
 import com.appecco.utils.StorageOperations;
 
@@ -38,13 +39,6 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     private static final String CURRENT_PROGRESS_KEY = "com.appecco.learntowrite.CURRENT_PROGRESS";
     private static final int ATTEMPTS_COUNT = 3;
 
-    private static final int MAX_SOUND_POOL_STREAMS = 4;
-    private static final int DEFAULT_SOUND_POOL_PRIORITY = 1;
-    private static final int DEFAULT_SOUND_POOL_QUALITY = 0;
-    private static final float DEFAULT_SOUND_POOL_RATE = 1.0f;
-    private static final float SOUND_POOL_VOLUME = 1.0f;
-    private static final int SOUND_POOL_NO_LOOP = 0;
-
     // Game: se refiere al tipo de caracteres que se está enseñando (por ejemplo: Cursivas Mayúsculas)
     // Level: se refiere al nivel de dificultad (por ejemplo: intermediate significa sin hint y con el outline ligeramente transparente
     // Character: se refiere a la letra que se está aprendiendo
@@ -61,12 +55,6 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     private Progress progress = null;
 
     private InterstitialAd mInterstitialAd;
-
-    private SoundPool soundPool;
-    private int goodSoundId;
-    private int badSoundId;
-    private boolean goodSoundLoaded;
-    private boolean badSoundLoaded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,22 +104,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
 
     void prepareSoundResources(){
         if (Settings.isSoundEnabled(GameActivity.this)) {
-            soundPool = new SoundPool(MAX_SOUND_POOL_STREAMS, AudioManager.STREAM_MUSIC, DEFAULT_SOUND_POOL_QUALITY);
-            goodSoundId = soundPool.load(this, R.raw.good, DEFAULT_SOUND_POOL_PRIORITY);
-            badSoundId = soundPool.load(this, R.raw.bad, DEFAULT_SOUND_POOL_PRIORITY);
-            soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-                @Override
-                public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
-                    if (status == 0) {
-                        if (soundId == goodSoundId) {
-                            goodSoundLoaded = true;
-                        }
-                        if (soundId == badSoundId) {
-                            badSoundLoaded = true;
-                        }
-                    }
-                }
-            });
+
         }
     }
 
@@ -170,14 +143,10 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         DrawingFragment drawingFragment = (DrawingFragment) getSupportFragmentManager().findFragmentByTag("DrawingFragment");
         GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
         if (score >= level.getAccuracy()){
-            if (goodSoundLoaded) {
-                soundPool.play(goodSoundId, SOUND_POOL_VOLUME, SOUND_POOL_VOLUME, DEFAULT_SOUND_POOL_PRIORITY, SOUND_POOL_NO_LOOP, DEFAULT_SOUND_POOL_RATE);
-            }
+            LoadedResources.getInstance().playSound(R.raw.good);
             currentCharacterScore[currentAttemptIndex] = true;
         } else {
-            if (badSoundLoaded) {
-                soundPool.play(badSoundId, SOUND_POOL_VOLUME, SOUND_POOL_VOLUME, DEFAULT_SOUND_POOL_PRIORITY, SOUND_POOL_NO_LOOP, DEFAULT_SOUND_POOL_RATE);
-            }
+            LoadedResources.getInstance().playSound(R.raw.bad);
             currentCharacterScore[currentAttemptIndex] = false;
         }
         if (currentAttemptIndex < ATTEMPTS_COUNT - 1){
@@ -190,15 +159,6 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
             // Eliminar DrawingFragment del stack y presentar el diálogo de fin del caracter
             getSupportFragmentManager().popBackStack();
             processChallengeCompleted();
-        }
-    }
-
-    @Override
-    protected void onStop(){
-        super.onStop();
-        if (soundPool != null) {
-            soundPool.release();
-            soundPool = null;
         }
     }
 
