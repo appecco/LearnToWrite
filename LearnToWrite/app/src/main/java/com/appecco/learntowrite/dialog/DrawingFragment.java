@@ -271,9 +271,11 @@ public class DrawingFragment extends Fragment {
 
         @Override
         public void run() {
-            Animation starAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.star_animation);
+//            Animation starAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.star_animation);
             final ImageView animatedStar = (ImageView)getView().findViewById(R.id.animated_star);
             animatedStar.setVisibility(View.VISIBLE);
+
+            Animation starAnimation = LoadedResources.getInstance().getAnimation(R.anim.star_animation);
             starAnimation.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
@@ -290,6 +292,7 @@ public class DrawingFragment extends Fragment {
 
                 }
             });
+
             animatedStar.startAnimation(starAnimation);
         }
     };

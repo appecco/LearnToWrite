@@ -130,9 +130,10 @@ public class CategoryFragment extends Fragment {
             @Override
             public void run() {
                 if (getContext() != null) {
-                    Animation boxAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.box_animation);
+//                    Animation boxAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.box_animation);
                     Button categoryButton = (Button) getView().findViewById(R.id.categoryImageButton);
-                    categoryButton.startAnimation(boxAnimation);
+//                    categoryButton.startAnimation(boxAnimation);
+                    categoryButton.startAnimation(LoadedResources.getInstance().getAnimation(R.anim.box_animation));
                 }
             }
         };

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.util.ArrayMap;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.appecco.learntowrite.R;
 
@@ -20,6 +22,7 @@ public class LoadedResources implements SettingChangedListener {
 
     private static LoadedResources instance = null;
 
+    // Simple sounds
     private boolean soundEnabled;
     private boolean musicEnabled;
     private SoundPool soundPool;
@@ -28,11 +31,20 @@ public class LoadedResources implements SettingChangedListener {
     // soundsStatus: key => soundPoolId, value => loadStatus
     private Map<Integer, Integer> soundsStatus = new ArrayMap<Integer, Integer>();
 
+    // Animations
+    private Map<Integer, Animation> animations = new ArrayMap<Integer, Animation>();
+
     private LoadedResources(){
 
     }
 
     public void loadResources(Context context){
+        // Settings
+        soundEnabled = Settings.isSoundEnabled(context);
+        musicEnabled = Settings.isMusicEnabled(context);
+        Settings.getInstance().addSettingChangedListener(this);
+
+        // Simple sounds
         soundPool = new SoundPool(SOUND_POOL_MAX_STREAMS, AudioManager.STREAM_MUSIC, SOUND_POOL_DEFAULT_QUALITY);
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
@@ -40,14 +52,13 @@ public class LoadedResources implements SettingChangedListener {
                 soundsStatus.put(soundId, status);
             }
         });
-
+        loadSound(context, R.raw.button_click, SOUND_POOL_DEFAULT_PRIORITY);
         loadSound(context, R.raw.good, SOUND_POOL_DEFAULT_PRIORITY);
         loadSound(context, R.raw.bad, SOUND_POOL_DEFAULT_PRIORITY);
-        loadSound(context, R.raw.button_click, SOUND_POOL_DEFAULT_PRIORITY);
 
-        soundEnabled = Settings.isSoundEnabled(context);
-        musicEnabled = Settings.isMusicEnabled(context);
-        Settings.getInstance().addSettingChangedListener(this);
+        // Animations
+        loadAnimation(context, R.anim.box_animation);
+        loadAnimation(context, R.anim.star_animation);
     }
 
     public void playSound(int resourceId, float leftVolume, float rightVolume, int priority, int loop, float rate){
@@ -75,6 +86,15 @@ public class LoadedResources implements SettingChangedListener {
     private void loadSound(Context context, int resourceId, int defaultPriority){
         int soundPoolId = soundPool.load(context, resourceId, defaultPriority);
         loadedSounds.put(resourceId,soundPoolId);
+    }
+
+    public Animation getAnimation(int resourceId){
+        return animations.get(resourceId);
+    }
+
+    private void loadAnimation(Context context, int resourceId){
+        Animation animation = AnimationUtils.loadAnimation(context, resourceId);
+        animations.put(resourceId,animation);
     }
 
     @Override
