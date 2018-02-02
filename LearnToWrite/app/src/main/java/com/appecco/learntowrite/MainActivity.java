@@ -46,6 +46,9 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Iniciar la carga de recursos lo antes posible para evitar que se intenten utilizar antes de que estén disponibles
+        LoadedResources.getInstance().loadResources(this);
+
         // Manejador de excepciones que registra si la App ha finalizado abruptamente alguna vez para no mostrar el diálogo solicitando calificación
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(Thread.getDefaultUncaughtExceptionHandler(),this));
 
@@ -61,8 +64,6 @@ public class MainActivity extends Activity {
 
         //LearnToWrite Id
         MobileAds.initialize(this, "ca-app-pub-1507251474990125~6376776099");
-
-        LoadedResources.getInstance().loadResources(this);
 
         ImageButton btnNewGameCursive = (ImageButton)findViewById(R.id.btnNewGameCursive);
         btnNewGameCursive.setOnClickListener(new OnClickListener(){
