@@ -3,8 +3,10 @@ package com.appecco.learntowrite.dialog;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +15,15 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.view.DrawingView;
 import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;
+
+import java.lang.reflect.Field;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,6 +47,8 @@ public class DrawingFragment extends Fragment {
 
     private DrawingView viewDraw;
     private ImageView starView;
+
+    private boolean colorSelectorExpanded = false;
 
     GameDialogsEventsListener gameDialogsEventsListener;
 
@@ -129,41 +137,53 @@ public class DrawingFragment extends Fragment {
 
         });
 
-        ImageButton btnRed = (ImageButton)view.findViewById(R.id.btnRed);
-        btnRed.setOnClickListener(new View.OnClickListener(){
+        ImageButton btnDrawingColor = (ImageButton)view.findViewById(R.id.btnDrawingColor);
+        btnDrawingColor.setOnClickListener(new View.OnClickListener(){
 
             @Override
-            public void onClick(View arg0) {
+            public void onClick(View view) {
                 LoadedResources.getInstance().playSound(R.raw.button_click);
-                Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_RED);
-                setupDrawingColor(view);
+                toggleExpandableColorSelector();
             }
 
         });
 
-        ImageButton btnBlue = (ImageButton)view.findViewById(R.id.btnBlue);
-        btnBlue.setOnClickListener(new View.OnClickListener(){
 
-            @Override
-            public void onClick(View arg0) {
-                LoadedResources.getInstance().playSound(R.raw.button_click);
-                Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_BLUE);
-                setupDrawingColor(view);
-            }
-
-        });
-
-        ImageButton btnGreen = (ImageButton)view.findViewById(R.id.btnGreen);
-        btnGreen.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View arg0) {
-                LoadedResources.getInstance().playSound(R.raw.button_click);
-                Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_GREEN);
-                setupDrawingColor(view);
-            }
-
-        });
+//        ImageButton btnRed = (ImageButton)view.findViewById(R.id.btnRed);
+//        btnRed.setOnClickListener(new View.OnClickListener(){
+//
+//            @Override
+//            public void onClick(View arg0) {
+//                LoadedResources.getInstance().playSound(R.raw.button_click);
+//                Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_RED);
+//                setupDrawingColor(view);
+//            }
+//
+//        });
+//
+//        ImageButton btnBlue = (ImageButton)view.findViewById(R.id.btnBlue);
+//        btnBlue.setOnClickListener(new View.OnClickListener(){
+//
+//            @Override
+//            public void onClick(View arg0) {
+//                LoadedResources.getInstance().playSound(R.raw.button_click);
+//                Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_BLUE);
+//                setupDrawingColor(view);
+//            }
+//
+//        });
+//
+//        ImageButton btnGreen = (ImageButton)view.findViewById(R.id.btnGreen);
+//        btnGreen.setOnClickListener(new View.OnClickListener(){
+//
+//            @Override
+//            public void onClick(View arg0) {
+//                LoadedResources.getInstance().playSound(R.raw.button_click);
+//                Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_GREEN);
+//                setupDrawingColor(view);
+//            }
+//
+//        });
 
         setupDrawingColor(view);
 
@@ -203,6 +223,15 @@ public class DrawingFragment extends Fragment {
         return view;
     }
 
+    private void toggleExpandableColorSelector() {
+        LinearLayout expandableColorSelector = (LinearLayout) getView().findViewById(R.id.expandableColorSelector);
+
+        colorSelectorExpanded = !colorSelectorExpanded;
+
+        expandableColorSelector.setVisibility(colorSelectorExpanded?View.VISIBLE:View.INVISIBLE);
+        expandableColorSelector.invalidate();
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -210,30 +239,71 @@ public class DrawingFragment extends Fragment {
     }
 
     private void setupDrawingColor(View view){
-        ImageButton btnRed = (ImageButton)view.findViewById(R.id.btnRed);
-        ImageButton btnBlue = (ImageButton)view.findViewById(R.id.btnBlue);
-        ImageButton btnGreen = (ImageButton)view.findViewById(R.id.btnGreen);
+        final ImageButton btnDrawingColorSelector = (ImageButton)view.findViewById(R.id.btnDrawingColor);
+        String drawingColor = Settings.getDrawingColor(getContext());
 
-        btnRed.setImageResource(R.drawable.redbutton);
-        btnBlue.setImageResource(R.drawable.bluebutton);
-        btnGreen.setImageResource(R.drawable.greenbutton);
+        LinearLayout drawingColorSelector = view.findViewById(R.id.expandableColorSelector);
+        ImageButton colorButton;
+        LinearLayout.LayoutParams params;
 
-        Settings.DrawingColor drawingColor = Settings.getDrawingColor(getContext());
+        Drawable.ConstantState circleConstantState = getResources().getDrawable(R.drawable.circle).getConstantState();
+        Drawable circle;
+        try {
+            Field[] fields = Class.forName(getActivity().getPackageName()+".R$color").getDeclaredFields();
+            for(Field field : fields) {
 
-        switch (drawingColor){
-            case COLOR_RED:
-                viewDraw.setPenColor(Color.argb(0xFF,0xFD,0x00,0x06));
-                viewDraw.setPenColor(Color.RED);
-                btnRed.setImageResource(R.drawable.red_button_selected);
-                break;
-            case COLOR_BLUE:
-                viewDraw.setPenColor(Color.argb(0xFF,0x17,0x29,0xB0));
-                btnBlue.setImageResource(R.drawable.blue_button_selected);
-                break;
-            case COLOR_GREEN:
-                viewDraw.setPenColor(Color.argb(0xFF,0x0A,0xCF,0x00));
-                btnGreen.setImageResource(R.drawable.green_button_selected);
+                final String colorName = field.getName();
+                if (colorName.startsWith("drawingColor")) {
+                    int color = getResources().getColor(getResources().getIdentifier(colorName, "color", getActivity().getPackageName()));
+                    circle = circleConstantState.newDrawable();
+                    circle.setBounds(0,0,46,46);
+                    DrawableCompat.setTint(circle, color);
+
+                    if (colorName.equals(drawingColor)) {
+                        DrawableCompat.setTint(btnDrawingColorSelector.getDrawable(), color);
+                    }
+
+                    colorButton = new ImageButton(getContext());
+                    colorButton.setId(View.generateViewId());
+                    colorButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    colorButton.setImageDrawable(circle);
+                    colorButton.setBackgroundResource(0);
+                    colorButton.setPadding(15,0,0,0);
+
+                    colorButton.setTag(color);
+                    colorButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            int color = (Integer) view.getTag();
+                            viewDraw.setPenColor(color);
+                            Settings.setDrawingColor(getContext(), colorName);
+                            DrawableCompat.setTint(btnDrawingColorSelector.getDrawable(), color);
+                            toggleExpandableColorSelector();
+                        }
+                    });
+
+                    params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+                    params.setMargins(0,0,0,0);
+                    drawingColorSelector.addView(colorButton,params);
+                }
+            }
+        } catch (ClassNotFoundException ex){
         }
+
+//        switch (drawingColor){
+//            case COLOR_RED:
+//                btnDrawingColorSelector.setImageResource();
+//                viewDraw.setPenColor(Color.argb(0xFF,0xFD,0x00,0x06));
+//                btnRed.setImageResource(R.drawable.red_button_selected);
+//                break;
+//            case COLOR_BLUE:
+//                viewDraw.setPenColor(Color.argb(0xFF,0x17,0x29,0xB0));
+//                btnBlue.setImageResource(R.drawable.blue_button_selected);
+//                break;
+//            case COLOR_GREEN:
+//                viewDraw.setPenColor(Color.argb(0xFF,0x0A,0xCF,0x00));
+//                btnGreen.setImageResource(R.drawable.green_button_selected);
+//        }
     }
 
     public boolean isShowHints() {

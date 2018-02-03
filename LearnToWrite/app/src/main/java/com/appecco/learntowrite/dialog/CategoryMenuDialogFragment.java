@@ -79,7 +79,7 @@ public class CategoryMenuDialogFragment extends DialogFragment {
             mScroller = ViewPager.class.getDeclaredField("mScroller");
             mScroller.setAccessible(true);
             FixedSpeedScroller scroller = new FixedSpeedScroller(viewPager.getContext(), new DecelerateInterpolator());
-            scroller.setFixedDuration(2000);
+            scroller.setFixedDuration(1000);
             mScroller.set(viewPager, scroller);
         } catch (NoSuchFieldException e) {
         } catch (IllegalArgumentException e) {

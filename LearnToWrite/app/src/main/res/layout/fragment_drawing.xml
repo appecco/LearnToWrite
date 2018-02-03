@@ -125,56 +125,51 @@
             android:layout_height="62sp"
             android:layout_alignParentBottom="true">
 
-            <Space
-                android:id="@+id/space3"
-                android:layout_width="15sp"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true"/>
-
             <ImageButton
-                android:id="@+id/btnRed"
+                android:id="@+id/btnDrawingColor"
                 android:layout_width="46sp"
                 android:layout_height="46sp"
-                android:layout_toEndOf="@+id/space3"
                 android:scaleType="fitCenter"
                 android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="15sp"
                 android:background="@null"
-                android:src="@drawable/redbutton" />
+                android:src="@drawable/circle" />
 
-            <Space
-                android:id="@+id/space4"
-                android:layout_width="10sp"
+            <LinearLayout
+                android:id="@+id/expandableColorSelector"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_toEndOf="@+id/btnRed"
-                android:layout_alignParentTop="true"/>
-
-            <ImageButton
-                android:id="@+id/btnBlue"
-                android:layout_width="46sp"
-                android:layout_height="46sp"
-                android:layout_toEndOf="@+id/space4"
-                android:scaleType="fitCenter"
-                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@id/btnDrawingColor"
+                android:layout_marginBottom="15sp"
+                android:orientation="horizontal"
                 android:background="@null"
-                android:src="@drawable/bluebutton" />
+                android:visibility="invisible">
 
-            <Space
-                android:id="@+id/space5"
-                android:layout_width="10sp"
-                android:layout_height="match_parent"
-                android:layout_toEndOf="@+id/btnBlue"
-                android:layout_alignParentTop="true"/>
+                <!--<ImageButton-->
+                    <!--android:id="@+id/btnBlue"-->
+                    <!--android:layout_width="46sp"-->
+                    <!--android:layout_height="46sp"-->
+                    <!--android:layout_marginLeft="10sp"-->
+                    <!--android:scaleType="fitCenter"-->
+                    <!--android:layout_alignParentTop="true"-->
+                    <!--android:layout_alignParentStart="true"-->
+                    <!--android:background="@null"-->
+                    <!--android:src="@drawable/bluebutton" />-->
 
-            <ImageButton
-                android:id="@+id/btnGreen"
-                android:layout_width="46sp"
-                android:layout_height="46sp"
-                android:layout_toEndOf="@+id/space5"
-                android:scaleType="fitCenter"
-                android:layout_alignParentTop="true"
-                android:background="@null"
-                android:src="@drawable/greenbutton" />
+                <!--<ImageButton-->
+                    <!--android:id="@+id/btnGreen"-->
+                    <!--android:layout_width="46sp"-->
+                    <!--android:layout_height="46sp"-->
+                    <!--android:layout_marginLeft="10sp"-->
+                    <!--android:layout_toEndOf="@+id/btnBlue"-->
+                    <!--android:scaleType="fitCenter"-->
+                    <!--android:layout_alignParentTop="true"-->
+                    <!--android:background="@null"-->
+                    <!--android:src="@drawable/greenbutton" />-->
+
+            </LinearLayout>
+
 
             <!--<Space-->
                 <!--android:id="@+id/space6"-->

@@ -2,6 +2,8 @@ package com.appecco.utils;
 
 import android.content.Context;
 
+import com.appecco.learntowrite.R;
+
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Set;
@@ -16,10 +18,6 @@ public class Settings {
     private static Settings instance = null;
 
     private ArrayList<SettingChangedListener> settingChangeListeners = new ArrayList<SettingChangedListener>();
-
-    public enum DrawingColor{
-        COLOR_BLUE, COLOR_RED, COLOR_GREEN
-    }
 
     private Settings(){
 
@@ -59,12 +57,12 @@ public class Settings {
         set(context, Settings.SOUND_ENABLED, Boolean.toString(soundEnabled));
     }
 
-    public static DrawingColor getDrawingColor(Context context){
-        return DrawingColor.valueOf(get(context, Settings.DRAWING_COLOR, DrawingColor.COLOR_BLUE.toString()));
+    public static String getDrawingColor(Context context){
+        return get(context, Settings.DRAWING_COLOR, "drawingColorBlue");
     }
 
-    public static void setDrawingColor(Context context, DrawingColor drawingColor){
-        set(context, Settings.DRAWING_COLOR, drawingColor.toString());
+    public static void setDrawingColor(Context context, String drawingColor){
+        set(context, Settings.DRAWING_COLOR, drawingColor);
     }
 
     private void fireChangedSetting(String setting, String newValue){

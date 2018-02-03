@@ -7,4 +7,10 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorYelllow">#DDDD11</color>
     <color name="colorWhite">#FFFFFF</color>
+
+    <color name="drawingColorBlue">#FF1729B0</color>
+    <color name="drawingColorRed">#FFFD0006</color>
+    <color name="drawingColorGreen">#FF0ACF00</color>
+    <color name="drawingColorYellow">#FFFFF800</color>
+    <color name="drawingColorPurple">#FFFA06EE</color>
 </resources>
