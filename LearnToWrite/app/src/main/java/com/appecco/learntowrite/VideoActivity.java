@@ -1,7 +1,6 @@
 package com.appecco.learntowrite;
 
 import android.app.Activity;
-import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.widget.VideoView;
@@ -30,6 +29,8 @@ public class VideoActivity extends Activity {
                 } else {
                     mediaPlayer.setVolume(0,0);
                 }
+
+                videoView.start();
             }
         });
 
@@ -39,8 +40,6 @@ public class VideoActivity extends Activity {
                 finish();
             }
         });
-
-        videoView.start();
     }
 
     @Override
