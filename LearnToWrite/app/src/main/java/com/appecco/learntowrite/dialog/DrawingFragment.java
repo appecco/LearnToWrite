@@ -1,6 +1,9 @@
 package com.appecco.learntowrite.dialog;
 
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -10,6 +13,7 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -49,6 +53,7 @@ public class DrawingFragment extends Fragment {
     private ImageView starView;
 
     private boolean colorSelectorExpanded = false;
+    private int colorSelectorWidth;
 
     GameDialogsEventsListener gameDialogsEventsListener;
 
@@ -148,42 +153,16 @@ public class DrawingFragment extends Fragment {
 
         });
 
+        final LinearLayout expandableColorSelector = (LinearLayout) view.findViewById(R.id.expandableColorSelector);
 
-//        ImageButton btnRed = (ImageButton)view.findViewById(R.id.btnRed);
-//        btnRed.setOnClickListener(new View.OnClickListener(){
-//
-//            @Override
-//            public void onClick(View arg0) {
-//                LoadedResources.getInstance().playSound(R.raw.button_click);
-//                Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_RED);
-//                setupDrawingColor(view);
-//            }
-//
-//        });
-//
-//        ImageButton btnBlue = (ImageButton)view.findViewById(R.id.btnBlue);
-//        btnBlue.setOnClickListener(new View.OnClickListener(){
-//
-//            @Override
-//            public void onClick(View arg0) {
-//                LoadedResources.getInstance().playSound(R.raw.button_click);
-//                Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_BLUE);
-//                setupDrawingColor(view);
-//            }
-//
-//        });
-//
-//        ImageButton btnGreen = (ImageButton)view.findViewById(R.id.btnGreen);
-//        btnGreen.setOnClickListener(new View.OnClickListener(){
-//
-//            @Override
-//            public void onClick(View arg0) {
-//                LoadedResources.getInstance().playSound(R.raw.button_click);
-//                Settings.setDrawingColor(getContext(), Settings.DrawingColor.COLOR_GREEN);
-//                setupDrawingColor(view);
-//            }
-//
-//        });
+        expandableColorSelector.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                expandableColorSelector.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                colorSelectorWidth = expandableColorSelector.getWidth();
+            }
+        });
+
 
         setupDrawingColor(view);
 
@@ -224,12 +203,33 @@ public class DrawingFragment extends Fragment {
     }
 
     private void toggleExpandableColorSelector() {
-        LinearLayout expandableColorSelector = (LinearLayout) getView().findViewById(R.id.expandableColorSelector);
+        final LinearLayout expandableColorSelector = (LinearLayout) getView().findViewById(R.id.expandableColorSelector);
+        ValueAnimator animator;
 
         colorSelectorExpanded = !colorSelectorExpanded;
 
-        expandableColorSelector.setVisibility(colorSelectorExpanded?View.VISIBLE:View.INVISIBLE);
-        expandableColorSelector.invalidate();
+        animator = ValueAnimator.ofInt(colorSelectorExpanded?0:colorSelectorWidth,colorSelectorExpanded?colorSelectorWidth:0);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                ViewGroup.LayoutParams layoutParams = expandableColorSelector
+                        .getLayoutParams();
+                layoutParams.width = (int)valueAnimator.getAnimatedValue();
+                expandableColorSelector.setLayoutParams(layoutParams);
+            }
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                // Para colocar el estado apropiado de visibilidad cuando la animación termina
+                expandableColorSelector.setVisibility(colorSelectorExpanded?View.VISIBLE:View.INVISIBLE);
+            }
+        });
+
+        expandableColorSelector.setVisibility(View.VISIBLE);
+
+        animator.start();
     }
 
     @Override
@@ -289,21 +289,6 @@ public class DrawingFragment extends Fragment {
             }
         } catch (ClassNotFoundException ex){
         }
-
-//        switch (drawingColor){
-//            case COLOR_RED:
-//                btnDrawingColorSelector.setImageResource();
-//                viewDraw.setPenColor(Color.argb(0xFF,0xFD,0x00,0x06));
-//                btnRed.setImageResource(R.drawable.red_button_selected);
-//                break;
-//            case COLOR_BLUE:
-//                viewDraw.setPenColor(Color.argb(0xFF,0x17,0x29,0xB0));
-//                btnBlue.setImageResource(R.drawable.blue_button_selected);
-//                break;
-//            case COLOR_GREEN:
-//                viewDraw.setPenColor(Color.argb(0xFF,0x0A,0xCF,0x00));
-//                btnGreen.setImageResource(R.drawable.green_button_selected);
-//        }
     }
 
     public boolean isShowHints() {
@@ -341,7 +326,6 @@ public class DrawingFragment extends Fragment {
 
         @Override
         public void run() {
-//            Animation starAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.star_animation);
             final ImageView animatedStar = (ImageView)getView().findViewById(R.id.animated_star);
             animatedStar.setVisibility(View.VISIBLE);
 

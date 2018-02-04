@@ -121,6 +121,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/colorSelector"
             android:layout_width="match_parent"
             android:layout_height="62sp"
             android:layout_alignParentBottom="true">
@@ -138,12 +139,12 @@
 
             <LinearLayout
                 android:id="@+id/expandableColorSelector"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_toEndOf="@id/btnDrawingColor"
                 android:layout_marginBottom="15sp"
                 android:orientation="horizontal"
-                android:background="@null"
+                android:background="@drawable/color_selector"
                 android:visibility="invisible">
 
                 <!--<ImageButton-->
