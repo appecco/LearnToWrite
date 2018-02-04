@@ -90,6 +90,17 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         progress = gson.fromJson(progressData,Progress.class);
         progress.setGameStructure(gameStructure);
 
+        // Este código solo se debe usar en tiempo de depuración para desbloquear todos los niveles
+//        int scores[];
+//        for (Progress.Game game: progress.getGames()){
+//            for (Progress.Game.Level level: game.getLevels()){
+//                scores = level.getScores();
+//                for (int i=0; i<scores.length;i++){
+//                    scores[i] = 3;
+//                }
+//            }
+//        }
+
         prepareSoundResources();
 
         showCategoryMenuDialog();
@@ -363,11 +374,11 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         // Eliminar el fragmento de fin de caracter
         getSupportFragmentManager().popBackStack();
         this.currentCharacterIndex=0;
-        if (gameStructure.getLevels().length > currentLevelOrder - 1){
+        if (gameStructure.getLevels().length > currentLevelOrder){
             currentLevelOrder++;
         } else {
             currentLevelOrder = 1;
-            if (gameStructure.getGames().length > currentGameOrder - 1){
+            if (gameStructure.getGames().length > currentGameOrder){
                 currentGameOrder++;
             } else {
                 // El juego ha finalizado, ciclar al primer juego
