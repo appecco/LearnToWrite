@@ -5,7 +5,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,12 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.view.DrawingView;
@@ -164,7 +160,7 @@ public class DrawingFragment extends Fragment {
         });
 
 
-        setupDrawingColor(view);
+        setupColorSelector(view);
 
         starView = (ImageView)view.findViewById(R.id.animated_star);
 
@@ -238,7 +234,7 @@ public class DrawingFragment extends Fragment {
         starView.removeCallbacks(starAnimationRunnable);
     }
 
-    private void setupDrawingColor(View view){
+    private void setupColorSelector(View view){
         final ImageButton btnDrawingColorSelector = (ImageButton)view.findViewById(R.id.btnDrawingColor);
         String drawingColor = Settings.getDrawingColor(getContext());
 
@@ -261,6 +257,7 @@ public class DrawingFragment extends Fragment {
 
                     if (colorName.equals(drawingColor)) {
                         DrawableCompat.setTint(btnDrawingColorSelector.getDrawable(), color);
+                        viewDraw.setPenColor(color);
                     }
 
                     colorButton = new ImageButton(getContext());
