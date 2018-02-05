@@ -227,14 +227,18 @@ public class DrawingView extends View implements OnTouchListener {
         //Preparar los calculos de proporciones y centrado de la pantalla
 		initWindowProportions();
 
-		if (MODE_DRAW.equals(mode)) {
+        if (MODE_DRAW.equals(mode)) {
 			activity.readyForChallenge();
 		}
 
 		//Preparar los bitmaps para el dibujado
         initBitmaps(true);
 
-		if (MODE_HINT.equals(mode)) {
+        //Hagamos reset y quitenmos la animacion para evitar que quede haciendo un hint
+        animating = false;
+        reset();
+
+        if (MODE_HINT.equals(mode)) {
 			activity.readyForHint();
 		}
 	}
@@ -837,13 +841,6 @@ public class DrawingView extends View implements OnTouchListener {
         canvasBitmap = backgroundBitmap.copy(Config.RGB_565, true);
         drawCanvas = new Canvas(canvasBitmap);
 
-
-        //canvasBitmap = backgroundBitmap.copy(Bitmap.Config.RGB_565, false);
-//        canvasBitmap = Bitmap.createBitmap(width, height, Config.RGB_565);
-//        drawCanvas = new Canvas(canvasBitmap);
-//
-//        //Pintemos el fondo original
-//        drawCanvas.drawBitmap(backgroundBitmap, 0, 0, null);
 
         //Pintemos el font segun el nivel de dificultad
         if (contourType.equals("full")) {
