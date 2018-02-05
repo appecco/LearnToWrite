@@ -79,7 +79,7 @@
                 "contour":"full",
                 "beginningMark": false,
                 "endingMark": false,
-                "accuracy": 65
+                "accuracy": 62
             },
             {
                 "name": "Intermedio",
@@ -89,7 +89,7 @@
                 "contour":"medium",
                 "beginningMark": false,
                 "endingMark": false,
-                "accuracy": 67
+                "accuracy": 65
             },
             {
                 "name": "Avanzado",
@@ -99,7 +99,7 @@
                 "contour":"none",
                 "beginningMark": true,
                 "endingMark": true,
-                "accuracy": 70
+                "accuracy": 68
             }
     ]
 }
