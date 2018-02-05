@@ -5,60 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
+    android:focusable="true"
     tools:context="com.appecco.learntowrite.dialog.DrawingFragment">
-    <!--android:background="#41c4f4"-->
-
-    <!--<LinearLayout-->
-        <!--android:layout_width="52sp"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:orientation="vertical" >-->
-
-        <!--<ImageButton-->
-            <!--android:id="@+id/btnHint"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="46sp"-->
-            <!--android:scaleType="fitCenter"-->
-            <!--android:src="@drawable/hint" />-->
-
-        <!--<ImageButton-->
-            <!--android:id="@+id/btnRetry"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="46sp"-->
-            <!--android:scaleType="fitCenter"-->
-            <!--android:src="@drawable/restart_flat" />-->
-
-        <!--<Space-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_weight="1" />-->
-
-        <!--<ImageButton-->
-            <!--android:id="@+id/btnRed"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="46sp"-->
-            <!--android:scaleType="fitCenter"-->
-            <!--android:src="@drawable/redbutton" />-->
-
-        <!--<ImageButton-->
-            <!--android:id="@+id/btnBlue"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="46sp"-->
-            <!--android:scaleType="fitCenter"-->
-            <!--android:src="@drawable/bluebutton" />-->
-
-        <!--<ImageButton-->
-            <!--android:id="@+id/btnGreen"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="46sp"-->
-            <!--android:scaleType="fitCenter"-->
-            <!--android:src="@drawable/greenbutton" />-->
-
-        <!--<Space-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_weight="1" />-->
-
-    <!--</LinearLayout>-->
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -66,6 +14,7 @@
 
         <ImageView
             android:id="@+id/whiteboard_border"
+            android:contentDescription="@string/drawing_border"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
@@ -93,6 +42,7 @@
 
             <ImageButton
                 android:id="@+id/btnRetry"
+                android:contentDescription="@string/retry_button"
                 android:layout_width="46sp"
                 android:layout_height="46sp"
                 android:layout_toStartOf="@+id/space1"
@@ -110,6 +60,7 @@
 
             <ImageButton
                 android:id="@+id/btnHint"
+                android:contentDescription="@string/hint_button"
                 android:layout_width="46sp"
                 android:layout_height="46sp"
                 android:layout_toStartOf="@+id/space2"
@@ -128,12 +79,13 @@
 
             <ImageButton
                 android:id="@+id/btnDrawingColor"
+                android:contentDescription="@string/drawing_color_picker"
                 android:layout_width="46sp"
                 android:layout_height="46sp"
                 android:scaleType="fitCenter"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
-                android:layout_marginLeft="15sp"
+                android:layout_marginStart="15sp"
                 android:background="@null"
                 android:src="@drawable/circle" />
 
@@ -146,37 +98,13 @@
                 android:orientation="horizontal"
                 android:background="@drawable/color_selector"
                 android:visibility="invisible">
-
-                <!--<ImageButton-->
-                    <!--android:id="@+id/btnBlue"-->
-                    <!--android:layout_width="46sp"-->
-                    <!--android:layout_height="46sp"-->
-                    <!--android:layout_marginLeft="10sp"-->
-                    <!--android:scaleType="fitCenter"-->
-                    <!--android:layout_alignParentTop="true"-->
-                    <!--android:layout_alignParentStart="true"-->
-                    <!--android:background="@null"-->
-                    <!--android:src="@drawable/bluebutton" />-->
-
-                <!--<ImageButton-->
-                    <!--android:id="@+id/btnGreen"-->
-                    <!--android:layout_width="46sp"-->
-                    <!--android:layout_height="46sp"-->
-                    <!--android:layout_marginLeft="10sp"-->
-                    <!--android:layout_toEndOf="@+id/btnBlue"-->
-                    <!--android:scaleType="fitCenter"-->
-                    <!--android:layout_alignParentTop="true"-->
-                    <!--android:background="@null"-->
-                    <!--android:src="@drawable/greenbutton" />-->
-
             </LinearLayout>
-
 
             <!--<Space-->
                 <!--android:id="@+id/space6"-->
                 <!--android:layout_width="240sp"-->
                 <!--android:layout_height="match_parent"-->
-                <!--android:layout_toEndOf="@+id/btnGreen"-->
+                <!--android:layout_toEndOf="@+id/expandableColorSelector"-->
                 <!--android:layout_alignParentTop="true"/>-->
 
             <!--<Button-->

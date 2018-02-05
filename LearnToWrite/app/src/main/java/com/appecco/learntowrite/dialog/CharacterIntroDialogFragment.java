@@ -124,7 +124,12 @@ public class CharacterIntroDialogFragment extends DialogFragment {
         if (Settings.isSoundEnabled(getActivity())) {
             Resources res = this.getContext().getResources();
             // Se maneja el caso especial de la 'ñ' que no puede incluirse como nombre de un asset
-            int soundId = res.getIdentifier(String.format("%s_%s",character.toLowerCase(), currentLanguage).replace("ñ","n1"), "raw", this.getContext().getPackageName());
+			// Se maneja el caso especial de los numeros ya que el nombre del asset no puede empezar con un numero
+			String fileName = String.format("%s_%s",character.toLowerCase(), currentLanguage).replace("ñ","n1");
+			if (character.matches("\\b\\d")){
+				fileName = "num" + fileName;
+			}
+			int soundId = res.getIdentifier(fileName, "raw", this.getContext().getPackageName());
             if (soundId != 0){
                 mLetterSound = MediaPlayer.create(getActivity(), soundId);
             }
