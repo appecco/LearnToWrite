@@ -118,7 +118,6 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 			characterIndex = getArguments().getInt(CHARACTER_INDEX_PARAM);
 		}
 
-		//TODO Calcular el nombre del recurso de sonido en base al character index y el lenguaje
         character = gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex];
         currentLanguage = Settings.getCurrentLanguage(getActivity());
         if (Settings.isSoundEnabled(getActivity())) {

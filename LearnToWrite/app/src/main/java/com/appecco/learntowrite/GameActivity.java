@@ -210,6 +210,28 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         showCharacterFinishedDialog(scoreValue, levelFinished);
     }
 
+    public void showCategoryMenuDialog(){
+        FragmentManager fragmentManager;
+        CategoryMenuDialogFragment categoryFragment = CategoryMenuDialogFragment.newInstance(gameStructure,progress);
+        fragmentManager = getSupportFragmentManager();
+
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        transaction.add(android.R.id.content, categoryFragment,"CategoryMenuDialogFragment");
+        //transaction.addToBackStack("CategoryMenuFragment");
+        transaction.commit();
+    }
+
+    public void showCharacterIntroDialog(){
+        CharacterIntroDialogFragment characterIntroFragment = CharacterIntroDialogFragment.newInstance(gameStructure,progress, currentGameOrder, currentLevelOrder, currentCharacterIndex);
+        characterIntroFragment.setGameStructure(gameStructure);
+        characterIntroFragment.setProgress(progress);
+        characterIntroFragment.setGameOrder(currentGameOrder);
+        characterIntroFragment.setLevelOrder(currentLevelOrder);
+        characterIntroFragment.setCharacterIndex(currentCharacterIndex);
+        showGameRelatedFragment(characterIntroFragment,"CharacterIntroDialogFragment");
+    }
+
     public void showDrawingFragment(){
         GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
         String character = gameStructure.findGameByOrder(currentGameOrder).getCharacters()[currentCharacterIndex];
@@ -233,81 +255,34 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
 //                    .init();
         }
 
-        BackgroundMusicServiceControl.startBackgroundMusicService(this, R.raw.drawing_background_sound, 50, 50);
-
-        FragmentManager fragmentManager;
         DrawingFragment drawingFragment = DrawingFragment.newInstance(character.charAt(0),level.isHints(),
                 level.getContour(),level.isBeginningMark(),level.isEndingMark());
-        fragmentManager = getSupportFragmentManager();
-
-        Fragment characterMenuDialogFragment = fragmentManager.findFragmentByTag("CharacterMenuDialogFragment");
-
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        if (characterMenuDialogFragment != null && !characterMenuDialogFragment.isHidden()){
-            transaction.hide(characterMenuDialogFragment);
-        }
-        transaction.add(android.R.id.content, drawingFragment,"DrawingFragment");
-        transaction.addToBackStack("DrawingFragment");
-        transaction.commit();
-        fragmentManager.executePendingTransactions();
-    }
-
-    public void showCategoryMenuDialog(){
-        FragmentManager fragmentManager;
-        CategoryMenuDialogFragment categoryFragment = CategoryMenuDialogFragment.newInstance(gameStructure,progress);
-        fragmentManager = getSupportFragmentManager();
-
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(android.R.id.content, categoryFragment,"CategoryMenuDialogFragment");
-        //transaction.addToBackStack("CategoryMenuFragment");
-        transaction.commit();
+        showGameRelatedFragment(drawingFragment,"DrawingFragment");
     }
 
     public void showCharacterFinishedDialog(int score, boolean levelFinished) {
-        FragmentManager fragmentManager;
         CharacterFinishedDialogFragment characterFinishedFragment = CharacterFinishedDialogFragment.newInstance(gameStructure,progress, currentGameOrder, currentLevelOrder, currentCharacterIndex, score, levelFinished);
+        showGameRelatedFragment(characterFinishedFragment,"CharacterFinishedDialogFragment");
+    }
+
+    private void showGameRelatedFragment(Fragment fragment, String tag){
+        FragmentManager fragmentManager;
         fragmentManager = getSupportFragmentManager();
 
         BackgroundMusicServiceControl.startBackgroundMusicService(this, R.raw.drawing_background_sound, 50, 50);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
         Fragment characterMenuDialogFragment = fragmentManager.findFragmentByTag("CharacterMenuDialogFragment");
-
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         if (characterMenuDialogFragment != null && !characterMenuDialogFragment.isHidden()){
             transaction.hide(characterMenuDialogFragment);
         }
-        transaction.add(android.R.id.content, characterFinishedFragment, "CharacterFinishedDialogFragment");
-        transaction.addToBackStack("CharacterFinishedDialogFragment");
+
+        transaction.add(android.R.id.content, fragment, tag);
+        transaction.addToBackStack(tag);
         transaction.commit();
-    }
-
-    public void showCharacterIntroDialog(){
-        FragmentManager fragmentManager;
-        CharacterIntroDialogFragment characterIntroFragment = CharacterIntroDialogFragment.newInstance(gameStructure,progress, currentGameOrder, currentLevelOrder, currentCharacterIndex);
-        fragmentManager = getSupportFragmentManager();
-
-        BackgroundMusicServiceControl.startBackgroundMusicService(this, R.raw.drawing_background_sound, 50, 50);
-
-        characterIntroFragment.setGameStructure(gameStructure);
-        characterIntroFragment.setProgress(progress);
-        characterIntroFragment.setGameOrder(currentGameOrder);
-        characterIntroFragment.setLevelOrder(currentLevelOrder);
-        characterIntroFragment.setCharacterIndex(currentCharacterIndex);
-
-        Fragment characterMenuDialogFragment = fragmentManager.findFragmentByTag("CharacterMenuDialogFragment");
-
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        if (characterMenuDialogFragment != null){
-            transaction.hide(characterMenuDialogFragment);
-        }
-        transaction.add(android.R.id.content, characterIntroFragment, "CharacterIntroDialogFragment");
-        transaction.addToBackStack("CharacterIntroDialogFragment");
-        transaction.commit();
+        fragmentManager.executePendingTransactions();
     }
 
     private void PrepareInterstitialAd() {
