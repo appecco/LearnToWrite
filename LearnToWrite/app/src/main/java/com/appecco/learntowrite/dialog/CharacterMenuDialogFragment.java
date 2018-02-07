@@ -3,6 +3,8 @@ package com.appecco.learntowrite.dialog;
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
+import com.appecco.learntowrite.service.BackgroundMusicService;
+import com.appecco.learntowrite.service.BackgroundMusicServiceControl;
 import com.appecco.utils.LoadedResources;
 
 import android.app.AlertDialog;
@@ -10,7 +12,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.DialogFragment;
@@ -115,6 +116,14 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 
 		return view;
 	}
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden){
+            BackgroundMusicServiceControl.startBackgroundMusicService(getContext(), R.raw.backgroud_sound, 50, 50);
+        }
+    }
 
 	public void loadCharacterButtons(){
 		loadCharacterButtons(getView());

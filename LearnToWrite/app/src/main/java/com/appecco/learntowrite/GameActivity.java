@@ -11,11 +11,14 @@ import com.appecco.learntowrite.dialog.GameDialogsEventsListener;
 import com.appecco.learntowrite.dialog.GameEventsListener;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
+import com.appecco.learntowrite.service.BackgroundMusicService;
+import com.appecco.learntowrite.service.BackgroundMusicServiceControl;
 import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;
 import com.appecco.utils.StorageOperations;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.support.v4.app.Fragment;
@@ -55,6 +58,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     private Progress progress = null;
 
     private InterstitialAd mInterstitialAd;
+    private int counterToAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,7 +172,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
             setupChallenge();
         } else {
             // Eliminar DrawingFragment del stack y presentar el diálogo de fin del caracter
-            getSupportFragmentManager().popBackStack();
+            getSupportFragmentManager().popBackStackImmediate();
             processChallengeCompleted();
         }
     }
@@ -179,22 +183,6 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
             if (currentCharacterScore[i] != null && currentCharacterScore[i]){
                 scoreValue++;
             }
-        }
-
-        int charactersBeforeAd = 5 - currentLevelOrder;
-        if ((currentCharacterIndex + 1) % charactersBeforeAd == 0){
-            //Mostremos el Ad
-            ShowInterstitialAd();
-        } else {
-            new AppRate(this)
-                    .setShowIfAppHasCrashed(false)
-                    .setMinDaysUntilPrompt(5)
-                    .setMinLaunchesUntilPrompt(3)
-                    .init();
-
-//      Usar esta alternativa solo para pruebas, mostraría el diálogo SIEMPRE
-//            new AppRate(this)
-//                    .init();
         }
 
         String gameTag = gameStructure.findGameByOrder(currentGameOrder).getGameTag();
@@ -209,6 +197,8 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
 
         CharacterMenuDialogFragment characterMenuDialogFragment = (CharacterMenuDialogFragment) getSupportFragmentManager().findFragmentByTag("CharacterMenuDialogFragment");
         if (characterMenuDialogFragment != null){
+            characterMenuDialogFragment.setGameOrder(currentGameOrder);
+            characterMenuDialogFragment.setLevelOrder(currentLevelOrder);
             characterMenuDialogFragment.loadCharacterButtons();
         }
 
@@ -224,13 +214,39 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
         String character = gameStructure.findGameByOrder(currentGameOrder).getCharacters()[currentCharacterIndex];
 
+        int charactersBeforeAd = 5 - currentLevelOrder;
+        if (counterToAd >= charactersBeforeAd){
+            counterToAd = 0;
+            //Mostremos el Ad
+            ShowInterstitialAd();
+        } else {
+            counterToAd++;
+
+            new AppRate(this)
+                    .setShowIfAppHasCrashed(false)
+                    .setMinDaysUntilPrompt(5)
+                    .setMinLaunchesUntilPrompt(3)
+                    .init();
+
+//      Usar esta alternativa solo para pruebas, mostraría el diálogo SIEMPRE
+//            new AppRate(this)
+//                    .init();
+        }
+
+        BackgroundMusicServiceControl.startBackgroundMusicService(this, R.raw.drawing_background_sound, 50, 50);
+
         FragmentManager fragmentManager;
         DrawingFragment drawingFragment = DrawingFragment.newInstance(character.charAt(0),level.isHints(),
                 level.getContour(),level.isBeginningMark(),level.isEndingMark());
         fragmentManager = getSupportFragmentManager();
 
+        Fragment characterMenuDialogFragment = fragmentManager.findFragmentByTag("CharacterMenuDialogFragment");
+
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        if (characterMenuDialogFragment != null && !characterMenuDialogFragment.isHidden()){
+            transaction.hide(characterMenuDialogFragment);
+        }
         transaction.add(android.R.id.content, drawingFragment,"DrawingFragment");
         transaction.addToBackStack("DrawingFragment");
         transaction.commit();
@@ -254,8 +270,16 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         CharacterFinishedDialogFragment characterFinishedFragment = CharacterFinishedDialogFragment.newInstance(gameStructure,progress, currentGameOrder, currentLevelOrder, currentCharacterIndex, score, levelFinished);
         fragmentManager = getSupportFragmentManager();
 
+        BackgroundMusicServiceControl.startBackgroundMusicService(this, R.raw.drawing_background_sound, 50, 50);
+
         FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        Fragment characterMenuDialogFragment = fragmentManager.findFragmentByTag("CharacterMenuDialogFragment");
+
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        if (characterMenuDialogFragment != null && !characterMenuDialogFragment.isHidden()){
+            transaction.hide(characterMenuDialogFragment);
+        }
         transaction.add(android.R.id.content, characterFinishedFragment, "CharacterFinishedDialogFragment");
         transaction.addToBackStack("CharacterFinishedDialogFragment");
         transaction.commit();
@@ -265,6 +289,8 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         FragmentManager fragmentManager;
         CharacterIntroDialogFragment characterIntroFragment = CharacterIntroDialogFragment.newInstance(gameStructure,progress, currentGameOrder, currentLevelOrder, currentCharacterIndex);
         fragmentManager = getSupportFragmentManager();
+
+        BackgroundMusicServiceControl.startBackgroundMusicService(this, R.raw.drawing_background_sound, 50, 50);
 
         characterIntroFragment.setGameStructure(gameStructure);
         characterIntroFragment.setProgress(progress);
@@ -283,7 +309,6 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         transaction.addToBackStack("CharacterIntroDialogFragment");
         transaction.commit();
     }
-
 
     private void PrepareInterstitialAd() {
         //Inicializar Interstitial Ads
@@ -308,8 +333,6 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
 
     @Override
     public void onCategoryDialogCancelPressed() {
-        // Limpiar el stack eliminando el CategoryMenuDialogFragment
-        // getSupportFragmentManager().popBackStack();
         finish();
     }
 
@@ -349,21 +372,21 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     @Override
     public void onStartCharacterSelected() {
         // Eliminar el fragmento de introducción del caracter del stack para que no regrese a él luego de finalizar el caracter
-        getSupportFragmentManager().popBackStack();
+        getSupportFragmentManager().popBackStackImmediate();
         setupLevel();
     }
 
     @Override
     public void onRetryCharacterSelected() {
         // Eliminar el fragmento de fin de caracter
-        getSupportFragmentManager().popBackStack();
+        getSupportFragmentManager().popBackStackImmediate();
         setupLevel();
     }
 
     @Override
     public void onNextCharacterSelected() {
         // Eliminar el fragmento de fin de caracter
-        getSupportFragmentManager().popBackStack();
+        getSupportFragmentManager().popBackStackImmediate();
         this.currentCharacterIndex++;
         //setupLevel();
         showCharacterIntroDialog();
@@ -372,7 +395,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     @Override
     public void onNextLevelSelected() {
         // Eliminar el fragmento de fin de caracter
-        getSupportFragmentManager().popBackStack();
+        getSupportFragmentManager().popBackStackImmediate();
         this.currentCharacterIndex=0;
         if (gameStructure.getLevels().length > currentLevelOrder){
             currentLevelOrder++;
@@ -385,6 +408,19 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
                 currentGameOrder = 1;
             }
         }
+
+        CharacterMenuDialogFragment characterMenuDialogFragment = (CharacterMenuDialogFragment) getSupportFragmentManager().findFragmentByTag("CharacterMenuDialogFragment");
+        if (characterMenuDialogFragment != null){
+            characterMenuDialogFragment.setGameOrder(currentGameOrder);
+            characterMenuDialogFragment.setLevelOrder(currentLevelOrder);
+            characterMenuDialogFragment.loadCharacterButtons();
+        }
+
+        CategoryMenuDialogFragment categoryMenuDialogFragment = (CategoryMenuDialogFragment) getSupportFragmentManager().findFragmentByTag("CategoryMenuDialogFragment");
+        if (categoryMenuDialogFragment != null){
+            categoryMenuDialogFragment.loadCategoryButtons();
+        }
+
         //setupLevel();
         showCharacterIntroDialog();
     }
