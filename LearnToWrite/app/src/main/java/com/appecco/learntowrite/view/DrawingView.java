@@ -78,6 +78,9 @@ public class DrawingView extends View implements OnTouchListener {
     //Ancho y Alto del View para calculos de posiciones y proporciones
     int height, width;
 
+    //Handler y Runnable de la animacion
+    private Handler animHandler = new Handler();
+
     private Rect bounds = new Rect();
 	private Rect anim_bounds = new Rect();
 
@@ -234,8 +237,11 @@ public class DrawingView extends View implements OnTouchListener {
 		//Preparar los bitmaps para el dibujado
         initBitmaps(true);
 
-        //Hagamos reset y quitenmos la animacion para evitar que quede haciendo un hint
+        //Detengamos la animacion, quitemos las llamadas que estan en cola y hagamos reset
         animating = false;
+        if (animHandler != null){
+            animHandler.removeCallbacksAndMessages(null);
+        }
         reset();
 
         if (MODE_HINT.equals(mode)) {
@@ -626,7 +632,6 @@ public class DrawingView extends View implements OnTouchListener {
 			JSONObject point;
 			if (animPaths != null) {
 				try {
-					Handler animHandler = new Handler();
 					long animDelay = 0;
 
 					for (int i = 0; i < animPaths.length(); i++) {
