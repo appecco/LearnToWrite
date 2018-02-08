@@ -32,7 +32,10 @@ public class BackgroundMusicService extends Service implements Foreground.Listen
     @Override
     public void onCreate(){
         super.onCreate();
-        Foreground.get().addListener(this);
+        try {
+            Foreground.get().addListener(this);
+        } catch (IllegalStateException ex){
+        }
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {

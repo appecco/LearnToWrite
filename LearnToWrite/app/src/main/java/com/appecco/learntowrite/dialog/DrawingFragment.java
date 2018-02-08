@@ -5,10 +5,16 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.appecco.learntowrite.R;
+import com.appecco.learntowrite.model.Rewards;
 import com.appecco.learntowrite.view.DrawingView;
 import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;
@@ -36,6 +43,7 @@ public class DrawingFragment extends Fragment {
     private static final String CONTOUR_TYPE_PARAM = "contourTypeParam";
     private static final String BEGINNING_MARK_PARAM = "beginningMarkParam";
     private static final String ENDING_MARK_PARAM = "endingMarkParam";
+    private static final String REWARDS_PARAM = "rewardsParam";
 
     private char character;
     private boolean showHints;
@@ -44,6 +52,8 @@ public class DrawingFragment extends Fragment {
     private boolean endingMark;
 
     private Boolean[] score;
+
+    private Rewards rewards;
 
     private DrawingView viewDraw;
     private ImageView starView;
@@ -68,7 +78,7 @@ public class DrawingFragment extends Fragment {
      * @param endingMark Should a mark indicate where to end drawing the character?
      * @return A new instance of fragment DrawingFragment.
      */
-    public static DrawingFragment newInstance(char character, boolean showHints, String contourType, boolean beginningMark, boolean endingMark) {
+    public static DrawingFragment newInstance(char character, boolean showHints, String contourType, boolean beginningMark, boolean endingMark, Rewards rewards) {
         DrawingFragment fragment = new DrawingFragment();
         Bundle args = new Bundle();
         args.putChar(CHARACTER_PARAM,character);
@@ -76,6 +86,7 @@ public class DrawingFragment extends Fragment {
         args.putString(CONTOUR_TYPE_PARAM,contourType);
         args.putBoolean(BEGINNING_MARK_PARAM,beginningMark);
         args.putBoolean(ENDING_MARK_PARAM,endingMark);
+        args.putSerializable(REWARDS_PARAM, rewards);
         fragment.setArguments(args);
         return fragment;
     }
@@ -89,6 +100,7 @@ public class DrawingFragment extends Fragment {
             contourType = getArguments().getString(CONTOUR_TYPE_PARAM);
             beginningMark = getArguments().getBoolean(BEGINNING_MARK_PARAM);
             endingMark = getArguments().getBoolean(ENDING_MARK_PARAM);
+            rewards = (Rewards)getArguments().getSerializable(REWARDS_PARAM);
         }
     }
 
@@ -239,11 +251,11 @@ public class DrawingFragment extends Fragment {
         String drawingColor = Settings.getDrawingColor(getContext());
 
         LinearLayout drawingColorSelector = view.findViewById(R.id.expandableColorSelector);
-        ImageButton colorButton;
         LinearLayout.LayoutParams params;
 
         Drawable.ConstantState circleConstantState = getResources().getDrawable(R.drawable.circle).getConstantState();
         Drawable circle;
+        ImageButton colorButton;
         try {
             Field[] fields = Class.forName(getActivity().getPackageName()+".R$color").getDeclaredFields();
             for(Field field : fields) {
@@ -256,7 +268,8 @@ public class DrawingFragment extends Fragment {
                     DrawableCompat.setTint(circle, color);
 
                     if (colorName.equals(drawingColor)) {
-                        DrawableCompat.setTint(btnDrawingColorSelector.getDrawable(), color);
+                        //DrawableCompat.setTint(btnDrawingColorSelector.getDrawable(), color);
+                        btnDrawingColorSelector.setImageDrawable(circle);
                         viewDraw.setPenColor(color);
                     }
 
@@ -274,7 +287,8 @@ public class DrawingFragment extends Fragment {
                             int color = (Integer) view.getTag();
                             viewDraw.setPenColor(color);
                             Settings.setDrawingColor(getContext(), colorName);
-                            DrawableCompat.setTint(btnDrawingColorSelector.getDrawable(), color);
+                            // DrawableCompat.setTint(btnDrawingColorSelector.getDrawable(), color);
+                            btnDrawingColorSelector.setImageDrawable(((ImageButton)view).getDrawable());
                             toggleExpandableColorSelector();
                         }
                     });
@@ -286,6 +300,61 @@ public class DrawingFragment extends Fragment {
             }
         } catch (ClassNotFoundException ex){
         }
+
+        int buttonResourceId;
+        Bitmap buttonBitmap;
+        RoundedBitmapDrawable roundedDrawable;
+        ImageButton textureButton;
+        for (final Rewards.Reward reward: rewards.getRewards()){
+            if ("texture".equals(reward.getType())) {
+                buttonResourceId = getResources().getIdentifier(reward.getResourceName() + "_button", "drawable", getContext().getPackageName());
+                buttonBitmap = BitmapFactory.decodeResource(getResources(), buttonResourceId);
+                roundedDrawable = RoundedBitmapDrawableFactory.create(getResources(), buttonBitmap);
+                roundedDrawable.setCircular(true);
+                roundedDrawable.setBounds(0,0,46,46);
+
+                if (reward.getTag().equals(drawingColor)) {
+                    btnDrawingColorSelector.setImageDrawable(roundedDrawable);
+                    setDrawingViewShader(viewDraw, reward.getResourceName());
+                }
+
+                textureButton = new ImageButton(getContext());
+                textureButton.setId(View.generateViewId());
+                textureButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                textureButton.setImageDrawable(roundedDrawable);
+                textureButton.setBackgroundResource(0);
+                textureButton.setPadding(15,0,0,0);
+                textureButton.setMaxWidth(46);
+
+                textureButton.setTag(reward.getTag());
+                textureButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String textureTag = (String)view.getTag();
+                        Settings.setDrawingColor(getContext(), textureTag);
+
+                        btnDrawingColorSelector.setImageDrawable(((ImageButton)view).getDrawable());
+
+                        setDrawingViewShader(viewDraw, reward.getResourceName());
+
+                        toggleExpandableColorSelector();
+                    }
+                });
+
+                params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+                params.setMargins(0,0,0,0);
+                drawingColorSelector.addView(textureButton,params);
+
+            }
+        }
+    }
+
+    private void setDrawingViewShader(DrawingView view, String resourceName){
+        final int resourceId = getResources().getIdentifier(resourceName, "drawable", this.getContext().getPackageName());
+        Bitmap shaderBitmap = BitmapFactory.decodeResource(getResources(),resourceId);
+        BitmapShader shader = new BitmapShader(shaderBitmap, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+        viewDraw.setShader(shader);
+
     }
 
     public boolean isShowHints() {

@@ -11,6 +11,7 @@ import com.appecco.learntowrite.dialog.GameDialogsEventsListener;
 import com.appecco.learntowrite.dialog.GameEventsListener;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
+import com.appecco.learntowrite.model.Rewards;
 import com.appecco.learntowrite.service.BackgroundMusicService;
 import com.appecco.learntowrite.service.BackgroundMusicServiceControl;
 import com.appecco.utils.LoadedResources;
@@ -56,6 +57,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
 
     private GameStructure gameStructure;
     private Progress progress = null;
+    private Rewards rewards;
 
     private InterstitialAd mInterstitialAd;
     private int counterToAd;
@@ -93,6 +95,20 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         }
         progress = gson.fromJson(progressData,Progress.class);
         progress.setGameStructure(gameStructure);
+
+        String rewardsData = null;
+        boolean rewardUnlocked;
+        try {
+            rewardsData = StorageOperations.loadAssetsString(this, "files/rewards.json");
+        } catch (IOException ex) {
+            Toast.makeText(this, "The rewards definition could not be loaded", Toast.LENGTH_LONG).show();
+            Log.w("GameActivity", "Could not load the rewards definition file. " + ex.getMessage());
+        }
+        rewards = gson.fromJson(rewardsData, Rewards.class);
+        for (Rewards.Reward reward: rewards.getRewards()){
+            rewardUnlocked = Boolean.parseBoolean(StorageOperations.readPreferences(this, reward.getTag(), "false"));
+            reward.setUnlocked(rewardUnlocked);
+        }
 
         // Este código solo se debe usar en tiempo de depuración para desbloquear todos los niveles
 //        int scores[];
@@ -256,7 +272,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         }
 
         DrawingFragment drawingFragment = DrawingFragment.newInstance(character.charAt(0),level.isHints(),
-                level.getContour(),level.isBeginningMark(),level.isEndingMark());
+                level.getContour(),level.isBeginningMark(),level.isEndingMark(), rewards);
         showGameRelatedFragment(drawingFragment,"DrawingFragment");
     }
 

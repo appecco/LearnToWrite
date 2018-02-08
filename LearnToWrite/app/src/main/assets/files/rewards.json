@@ -1,0 +1,22 @@
+{   "_comments":"definición de las características canjeables por estrellas",
+    "rewards":[
+      {
+        "tag":"textureRainbow",
+        "type":"texture",
+        "resourceName":"rainbow",
+        "cost":30
+      },
+      {
+        "tag":"texturePolkaDots",
+        "type":"texture",
+        "resourceName":"polka_dots",
+        "cost":10
+      },
+      {
+        "tag":"backgroundNotebook",
+        "type":"background",
+        "resourceName":"notebook",
+        "cost":20
+      }
+    ]
+}

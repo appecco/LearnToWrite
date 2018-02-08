@@ -12,14 +12,17 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
@@ -591,8 +594,14 @@ public class DrawingView extends View implements OnTouchListener {
 
 	public void setPenColor(int color) {
 		mPaint.setColor(color);
+		mPaint.setShader(null);
 		invalidate();
 	}
+
+	public void setShader(Shader shader){
+	    mPaint.setShader(shader);
+	    invalidate();
+    }
 
 	public void reset() {
 		//veamos que no estemos animando
