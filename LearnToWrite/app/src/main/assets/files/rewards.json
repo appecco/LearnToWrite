@@ -4,19 +4,19 @@
         "tag":"textureRainbow",
         "type":"texture",
         "resourceName":"rainbow",
-        "cost":30
+        "cost":3
       },
       {
         "tag":"texturePolkaDots",
         "type":"texture",
         "resourceName":"polka_dots",
-        "cost":10
+        "cost":30
       },
       {
         "tag":"backgroundNotebook",
         "type":"background",
         "resourceName":"notebook",
-        "cost":20
+        "cost":90
       }
     ]
 }

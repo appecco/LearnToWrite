@@ -105,22 +105,25 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
             Log.w("GameActivity", "Could not load the rewards definition file. " + ex.getMessage());
         }
         rewards = gson.fromJson(rewardsData, Rewards.class);
-        rewards.sortRewards();
-        for (Rewards.Reward reward: rewards.getRewards()){
-            rewardUnlocked = Boolean.parseBoolean(StorageOperations.readPreferences(this, reward.getTag(), "false"));
-            reward.setUnlocked(rewardUnlocked);
-        }
+// Este código solo se debe usar en tiempo de depuración para bloquear todos los premios canjeables
+//        for (Rewards.Reward reward: rewards.getRewards()){
+//            StorageOperations.deletePreferences(this, reward.getTag());
+//        }
+//
 
-        // Este código solo se debe usar en tiempo de depuración para desbloquear todos los niveles
+        rewards.updateStatus(this);
+
+// Este código solo se debe usar en tiempo de depuración para desbloquear todos los niveles
 //        int scores[];
 //        for (Progress.Game game: progress.getGames()){
 //            for (Progress.Game.Level level: game.getLevels()){
 //                scores = level.getScores();
 //                for (int i=0; i<scores.length;i++){
-//                    scores[i] = 3;
+//                    scores[i] = 0;
 //                }
 //            }
 //        }
+//
 
         prepareSoundResources();
 
@@ -205,6 +208,13 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         String gameTag = gameStructure.findGameByOrder(currentGameOrder).getGameTag();
         String levelTag = gameStructure.findLevelByOrder(currentLevelOrder).getLevelTag();
 
+        // Asignar las estrellas ganadas por diferencia contra el score anterior
+        int previousScore = progress.findGameByTag(gameTag).findLevelByTag(levelTag).getScores()[currentCharacterIndex];
+        if (previousScore < scoreValue){
+            rewards.addEarnedStars(this, scoreValue - previousScore);
+        }
+
+        // Actualizar el score luego de haber calculado las estrellas ganadas
         boolean levelFinished = progress.updateScore(gameTag, levelTag, currentCharacterIndex, scoreValue);
 
         String progressData;

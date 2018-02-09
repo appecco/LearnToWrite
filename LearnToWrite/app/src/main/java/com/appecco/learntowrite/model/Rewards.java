@@ -1,10 +1,18 @@
 package com.appecco.learntowrite.model;
 
+import android.content.Context;
+
+import com.appecco.learntowrite.RewardsActivity;
+import com.appecco.utils.StorageOperations;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Comparator;
 
 public class Rewards implements Serializable {
+
+    private final static String EARNED_STARS_KEY = "earnedStarsKey";
+    private final static String SPENT_STARS_KEY = "spentStarsKey";
 
     private Reward[] rewards;
 
@@ -35,6 +43,36 @@ public class Rewards implements Serializable {
                 return Integer.compare(reward1.getCost(), reward2.getCost());
             }
         });
+    }
+
+    public void updateStatus(Context context) {
+        boolean rewardUnlocked;
+        for (Rewards.Reward reward: rewards){
+            rewardUnlocked = Boolean.parseBoolean(StorageOperations.readPreferences(context, reward.getTag(), "false"));
+            reward.setUnlocked(rewardUnlocked);
+        }
+        sortRewards();
+    }
+
+    public int getAvailableStars(Context context){
+        int earnedStars, spentStars;
+        earnedStars = Integer.parseInt(StorageOperations.readPreferences(context, EARNED_STARS_KEY,"0"));
+        spentStars = Integer.parseInt(StorageOperations.readPreferences(context, SPENT_STARS_KEY,"0"));
+        return earnedStars - spentStars;
+    }
+
+    public void addEarnedStars(Context context, int stars){
+        int earnedStars;
+        earnedStars = Integer.parseInt(StorageOperations.readPreferences(context, EARNED_STARS_KEY,"0"));
+        earnedStars += stars;
+        StorageOperations.storePreferences(context, EARNED_STARS_KEY, Integer.toString(earnedStars));
+    }
+
+    public void addSpentStars(Context context, int stars){
+        int spentStars;
+        spentStars = Integer.parseInt(StorageOperations.readPreferences(context, SPENT_STARS_KEY,"0"));
+        spentStars += stars;
+        StorageOperations.storePreferences(context, SPENT_STARS_KEY, Integer.toString(spentStars));
     }
 
     public static class Reward implements Serializable{

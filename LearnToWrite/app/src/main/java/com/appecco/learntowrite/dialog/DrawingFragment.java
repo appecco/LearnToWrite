@@ -327,19 +327,30 @@ public class DrawingFragment extends Fragment {
                 textureButton.setMaxWidth(46);
 
                 textureButton.setTag(reward.getTag());
-                textureButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String textureTag = (String)view.getTag();
-                        Settings.setDrawingColor(getContext(), textureTag);
 
-                        btnDrawingColorSelector.setImageDrawable(((ImageButton)view).getDrawable());
+                if (reward.isUnlocked()) {
+                    textureButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String textureTag = (String) view.getTag();
+                            Settings.setDrawingColor(getContext(), textureTag);
 
-                        setDrawingViewShader(viewDraw, reward.getResourceName());
+                            btnDrawingColorSelector.setImageDrawable(((ImageButton) view).getDrawable());
 
-                        toggleExpandableColorSelector();
-                    }
-                });
+                            setDrawingViewShader(viewDraw, reward.getResourceName());
+
+                            toggleExpandableColorSelector();
+                        }
+                    });
+                } else {
+                    textureButton.setAlpha(0.5f);
+                    textureButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            LoadedResources.getInstance().playSound(R.raw.bad);
+                        }
+                    });
+                }
 
                 params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
                 params.setMargins(0,0,0,0);

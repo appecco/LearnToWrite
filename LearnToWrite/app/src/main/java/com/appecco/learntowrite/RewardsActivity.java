@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.appecco.learntowrite.dialog.CategoriesPagerAdapter;
@@ -20,6 +21,8 @@ import com.appecco.learntowrite.view.FixedSpeedScroller;
 import com.appecco.utils.LoadedResources;
 import com.appecco.utils.StorageOperations;
 import com.google.gson.Gson;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -34,7 +37,6 @@ public class RewardsActivity extends AppCompatActivity implements RewardFragment
         setContentView(R.layout.activity_rewards);
 
         String rewardsData = null;
-        boolean rewardUnlocked;
         try {
             rewardsData = StorageOperations.loadAssetsString(this, "files/rewards.json");
         } catch (IOException ex) {
@@ -43,11 +45,10 @@ public class RewardsActivity extends AppCompatActivity implements RewardFragment
         }
         Gson gson = new Gson();
         rewards = gson.fromJson(rewardsData, Rewards.class);
-        rewards.sortRewards();
-        for (Rewards.Reward reward: rewards.getRewards()){
-            rewardUnlocked = Boolean.parseBoolean(StorageOperations.readPreferences(this, reward.getTag(), "false"));
-            reward.setUnlocked(rewardUnlocked);
-        }
+        rewards.updateStatus(this);
+
+        TextView availableStarsText = (TextView)findViewById(R.id.availableStarsText);
+        availableStarsText.setText(Integer.toString(rewards.getAvailableStars(this)));
 
         RewardsPagerAdapter rewardsPagerAdapter = new RewardsPagerAdapter(getSupportFragmentManager(), rewards);
         ViewPager viewPager = (ViewPager)findViewById(R.id.rewardPager);
@@ -81,9 +82,18 @@ public class RewardsActivity extends AppCompatActivity implements RewardFragment
     @Override
     public void onRewardPurchase(Rewards.Reward reward) {
         // TODO: Agregar un cuadro de diálogo de confirmación
-        // TODO: Verificar que se tenga el número suficiente de estrellas disponibles
-        // TODO: Descontar el número de estrellas disponibles
-        reward.setUnlocked(true);
-        StorageOperations.storePreferences(this, reward.getTag(), "true");
+        if (!reward.isUnlocked() && reward.getCost() <= rewards.getAvailableStars(this)) {
+            rewards.addSpentStars(this, reward.getCost());
+            reward.setUnlocked(true);
+            StorageOperations.storePreferences(this, reward.getTag(), "true");
+
+            LoadedResources.getInstance().playSound(R.raw.good);
+
+            TextView availableStarsText = (TextView)findViewById(R.id.availableStarsText);
+            availableStarsText.setText(Integer.toString(rewards.getAvailableStars(this)));
+
+        } else {
+            LoadedResources.getInstance().playSound(R.raw.bad);
+        }
     }
 }

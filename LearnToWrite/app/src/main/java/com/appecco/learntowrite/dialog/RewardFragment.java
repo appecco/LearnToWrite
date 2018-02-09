@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.model.Rewards;
@@ -64,8 +65,10 @@ public class RewardFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_reward, container, false);
 
+        final Rewards.Reward reward = rewards.findByTag(rewardTag);
+
         Button rewardButton = (Button)view.findViewById(R.id.rewardButton);
-        int resourceId = getResources().getIdentifier(rewards.findByTag(rewardTag).getResourceName(),"drawable", getContext().getPackageName());
+        int resourceId = getResources().getIdentifier(reward.getResourceName(),"drawable", getContext().getPackageName());
         if (resourceId != 0) {
             rewardButton.setBackground(getResources().getDrawable(resourceId));
         }
@@ -74,10 +77,13 @@ public class RewardFragment extends Fragment {
             public void onClick(View view) {
                 if (rewardPurchaseListener != null) {
                     LoadedResources.getInstance().playSound(R.raw.button_click);
-                    rewardPurchaseListener.onRewardPurchase(rewards.findByTag(rewardTag));
+                    rewardPurchaseListener.onRewardPurchase(reward);
                 }
             }
         });
+
+        TextView rewardCostText = (TextView)view.findViewById(R.id.rewardCostText);
+        rewardCostText.setText(Integer.toString(reward.getCost()));
 
         return view;
     }

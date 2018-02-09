@@ -15,4 +15,11 @@
         android:paddingBottom="10sp"
         android:scaleType="fitCenter"/>
 
+    <TextView
+        android:id="@+id/rewardCostText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:drawableLeft="@drawable/microstars3"/>
+
 </LinearLayout>

@@ -46,7 +46,14 @@ public class StorageOperations {
         editor.commit();
         */
 	}
-	
+
+	public static void deletePreferences(Context context, String key){
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		prefs.edit()
+			 .remove(key)
+			 .commit();
+	}
+
 	/*
 	 * Usage: readDataFromPreferencesFile(context, "scores", "score");
 	 */
