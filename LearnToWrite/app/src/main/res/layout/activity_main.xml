@@ -92,6 +92,12 @@
            android:layout_height="38sp"
            android:background="@drawable/settings" />
 
-    </LinearLayout>
+       <ImageButton
+           android:id="@+id/btnRewards"
+           android:layout_width="38sp"
+           android:layout_height="38sp"
+           android:background="@drawable/settings" />
+
+   </LinearLayout>
 
 </LinearLayout>

@@ -95,6 +95,18 @@ public class MainActivity extends Activity {
             }
         });
 
+        ImageButton btnRewards = (ImageButton)findViewById(R.id.btnRewards);
+        btnRewards.setOnClickListener(new OnClickListener(){
+            @Override
+            public void onClick(View view) {
+
+                LoadedResources.getInstance().playSound(R.raw.button_click);
+
+                Intent intent = new Intent(MainActivity.this,RewardsActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override

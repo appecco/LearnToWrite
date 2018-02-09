@@ -105,6 +105,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
             Log.w("GameActivity", "Could not load the rewards definition file. " + ex.getMessage());
         }
         rewards = gson.fromJson(rewardsData, Rewards.class);
+        rewards.sortRewards();
         for (Rewards.Reward reward: rewards.getRewards()){
             rewardUnlocked = Boolean.parseBoolean(StorageOperations.readPreferences(this, reward.getTag(), "false"));
             reward.setUnlocked(rewardUnlocked);
