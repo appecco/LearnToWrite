@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Learn To Write</string>
+    <string name="action_settings">Configuración</string>
+    <string name="new_game">Nuevo Juego</string>
+    <string name="settings">Configuración</string>
+    <string name="credits">Créditos</string>
+    <string name="rate">Califica el Juego:</string>
+    <string name="advertising">Patrocinadores</string>
+    <string name="title_activity_game">Actividad de Juego</string>
+    <!--<string name="retry">Retry</string>-->
+    <!--<string name="hint">Hint</string>-->
+    <string name="pen_wide">W</string>
+    <string name="pen_medium">M</string>
+    <string name="pen_thin">T</string>
+    <string name="pen_Blue">B</string>
+    <string name="pen_red">R</string>
+    <string name="pen_green">G</string>
+    <string name="pen_blue">B</string>
+    <string name="pen_yellow">Y</string>
+    <string name="pen_orange">O</string>
+    <string name="level_characters">Letras a aprender en este nivel</string>
+    <string name="start_level">Iniciar Nivel</string>
+    <string name="cancel_level">Cancelar Nivel</string>
+    <string name="welcome_to_level">Bienvenido a este Nivel</string>
+    <string name="welcome_to_game">Bienvenido al Juego</string>
+    <string name="cancel_button">Cancelar</string>
+    <string name="level_finished_congratulations">Felicidades, has finalizado este nivel!!</string>
+    <string name="retry_button">Reintentar</string>
+    <string name="hint_button">Indicaciones</string>
+    <string name="drawing_border">Marco de Dibujo</string>
+    <string name="drawing_color_picker">Selector de Color de Dibujo</string>
+    <string name="go_back">Atrás</string>
+    <string name="reward_purchase_confirmation">Quieres gastar %d estrellas en este premio?</string>
+    <string name="yes">Si</string>
+    <string name="no">No</string>
+
+</resources>

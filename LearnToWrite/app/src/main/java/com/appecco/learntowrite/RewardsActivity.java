@@ -1,7 +1,9 @@
 package com.appecco.learntowrite;
 
+import android.content.DialogInterface;
 import android.support.v4.view.LayoutInflaterFactory;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -80,18 +82,34 @@ public class RewardsActivity extends AppCompatActivity implements RewardFragment
 
 
     @Override
-    public void onRewardPurchase(Rewards.Reward reward) {
-        // TODO: Agregar un cuadro de diálogo de confirmación
+    public void onRewardPurchase(Rewards.Reward rewardToPurchase) {
+        final Rewards.Reward reward = rewardToPurchase;
         if (!reward.isUnlocked() && reward.getCost() <= rewards.getAvailableStars(this)) {
-            rewards.addSpentStars(this, reward.getCost());
-            reward.setUnlocked(true);
-            StorageOperations.storePreferences(this, reward.getTag(), "true");
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.app_name)
+                    .setIcon(R.drawable.hint)
+                    .setMessage(String.format(getResources().getString(R.string.reward_purchase_confirmation),reward.getCost()))
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
 
-            LoadedResources.getInstance().playSound(R.raw.good);
+                            rewards.addSpentStars(RewardsActivity.this, reward.getCost());
+                            reward.setUnlocked(true);
+                            StorageOperations.storePreferences(RewardsActivity.this, reward.getTag(), "true");
 
-            TextView availableStarsText = (TextView)findViewById(R.id.availableStarsText);
-            availableStarsText.setText(Integer.toString(rewards.getAvailableStars(this)));
+                            LoadedResources.getInstance().playSound(R.raw.good);
 
+                            TextView availableStarsText = (TextView)findViewById(R.id.availableStarsText);
+                            availableStarsText.setText(Integer.toString(rewards.getAvailableStars(RewardsActivity.this)));
+                        }
+                    })
+                    .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            // Nada que hacer
+                        }
+                    })
+                    .show();
         } else {
             LoadedResources.getInstance().playSound(R.raw.bad);
         }

@@ -369,7 +369,7 @@ public class DrawingView extends View implements OnTouchListener {
 
 		if (!animating) {
 			if (Math.abs(dx) + Math.abs(dy) > GESTURE_TOLERANCE) {
-			    //Solamente queremos un caracter del trazo sin touch asi calculemos el caracter del gesto completo y guardemos uno solo caracter para todo
+			    //Solamente queremos un caracter del trazo sin touch asi calculemos el caracter del gesto completo y guardemos uno solo caracter que represente el trazo completo
 				gestureChar = getGestureChar(dx, dy, GESTURE_TYPE_MOVE);
                 currentGesture.append(gestureChar);
 			}

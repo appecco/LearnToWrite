@@ -32,8 +32,7 @@
     <string name="drawing_border">DrawingBoard Frame</string>
     <string name="drawing_color_picker">DrawingBoard Color Picker</string>
     <string name="go_back">Go Back</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <string name="reward_purchase_confirmation">Do you want to spend %d stars in this reward?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
