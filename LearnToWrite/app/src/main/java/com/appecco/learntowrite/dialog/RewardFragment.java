@@ -1,6 +1,7 @@
 package com.appecco.learntowrite.dialog;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -11,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.appecco.learntowrite.R;
@@ -63,6 +66,11 @@ public class RewardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        int availableStars;
+        int rewardCost;
+        Drawable greenCheckDrawable = getResources().getDrawable(R.drawable.green_check);
+        greenCheckDrawable.setBounds(0,0,40,40);
+
         View view = inflater.inflate(R.layout.fragment_reward, container, false);
 
         final Rewards.Reward reward = rewards.findByTag(rewardTag);
@@ -82,8 +90,28 @@ public class RewardFragment extends Fragment {
             }
         });
 
+        rewardCost = reward.getCost();
+        availableStars = rewards.getAvailableStars(getContext());
+
         TextView rewardCostText = (TextView)view.findViewById(R.id.rewardCostText);
-        rewardCostText.setText(Integer.toString(reward.getCost()));
+
+        if (reward.isUnlocked()) {
+            rewardCostText.setCompoundDrawables(greenCheckDrawable,null,null,null);
+        } else {
+            rewardCostText.setText(Integer.toString(rewardCost));
+            if (rewardCost <= availableStars){
+                rewardCostText.setTextColor(getResources().getColor(R.color.colorBlack));
+            } else {
+                rewardCostText.setTextColor(getResources().getColor(R.color.colorRed));
+            }
+        }
+
+        ImageView rewardTypeIcon = (ImageView)view.findViewById(R.id.rewardTypeIcon);
+        if ("texture".equals(reward.getType())){
+            rewardTypeIcon.setImageResource(R.drawable.pencil);
+        } else {
+            rewardTypeIcon.setImageResource(R.drawable.landscape);
+        }
 
         return view;
     }

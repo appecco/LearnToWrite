@@ -7,6 +7,18 @@
     android:background="@drawable/background"
     android:clickable="true">
 
+    <TextView
+        android:id="@+id/availableStarsText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8sp"
+        android:layout_marginTop="12sp"
+        android:layout_marginLeft="12sp"
+        android:background="@android:color/transparent"
+        android:drawableLeft="@drawable/microstars3"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
     <LinearLayout
         android:id="@+id/linlaySpace1"
         android:layout_width="match_parent"

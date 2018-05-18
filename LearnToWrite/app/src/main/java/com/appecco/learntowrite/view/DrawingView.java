@@ -154,6 +154,7 @@ public class DrawingView extends View implements OnTouchListener {
 			this.mode = modeValue;
 		}
 		int backgroundImageValue = attrsArray.getResourceId(R.styleable.DrawingView_backgroundImage,R.drawable.background2);
+		/* TODO reward-system: seleccionar el background si se obtenido uno como premio */
 		this.backgroundImage = backgroundImageValue;
 		attrsArray.recycle();
 	}
@@ -803,6 +804,19 @@ public class DrawingView extends View implements OnTouchListener {
 	public void setScore(Boolean[] score){
     	this.level_score = score;
 	}
+
+	public void setBackgroundImage(int backgroundImage){
+	    this.backgroundImage = backgroundImage;
+	    // Si la vista se está inicializando no se puede escalear el bitmap aún
+        // sin embargo, onSizeChanged lo hará en el momento correcto.
+        // Sino, preparamos los bitmaps para que se actualice el fondo en el
+        // siguiente redibujado
+        if (getWidth() > 0) {
+            backgroundBitmap = BitmapFactory.decodeResource(getResources(), backgroundImage);
+            backgroundBitmap = Bitmap.createScaledBitmap(backgroundBitmap,getWidth(),getHeight(),false);
+            reset();
+        }
+    }
 
 	public void startChallenge(){
 		transpBitmap = null;

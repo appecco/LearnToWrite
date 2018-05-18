@@ -31,6 +31,7 @@ import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -60,6 +61,9 @@ public class DrawingFragment extends Fragment {
 
     private boolean colorSelectorExpanded = false;
     private int colorSelectorWidth;
+
+    private String backgroundImage;
+    private ArrayList<String> backgroundImages = new ArrayList<String>();
 
     GameDialogsEventsListener gameDialogsEventsListener;
 
@@ -173,6 +177,45 @@ public class DrawingFragment extends Fragment {
 
 
         setupColorSelector(view);
+
+        backgroundImage = "background2"; // The default background
+        backgroundImages.add("background2");
+        for(Rewards.Reward reward: rewards.getRewards()){
+            if ("background".equals(reward.getType()) && reward.isUnlocked()){
+                backgroundImages.add(reward.getResourceName());
+                if (Settings.getBackgroundImage(getContext()).equals(reward.getResourceName())){
+                    backgroundImage = reward.getResourceName();
+                }
+            }
+        }
+
+        final int backgroundResourceId = getResources().getIdentifier(backgroundImage,"drawable",getActivity().getPackageName());
+        viewDraw.setBackgroundImage(backgroundResourceId);
+
+        ImageButton btnSwapBackground = (ImageButton)view.findViewById(R.id.btnSwapBackground);
+        btnSwapBackground.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                int index, resourceId = 0;
+                for (index=0;index<backgroundImages.size();index++){
+                    if (backgroundImages.get(index).equals(backgroundImage)){
+                        index = (index+1)%backgroundImages.size();
+                        backgroundImage = backgroundImages.get(index);
+                        Settings.setBackgroundImage(getContext(), backgroundImage);
+                        break;
+                    }
+                }
+                resourceId = getResources().getIdentifier(backgroundImage,"drawable",getActivity().getPackageName());
+                viewDraw.setBackgroundImage(resourceId);
+            }
+
+        });
+
+        if (backgroundImages.size() == 1){
+            // No hay backgrounds adicionales disponibles, ocultar el botón de cambio
+            btnSwapBackground.setVisibility(View.INVISIBLE);
+        }
 
         starView = (ImageView)view.findViewById(R.id.animated_star);
 

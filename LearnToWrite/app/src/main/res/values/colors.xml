@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="light_cyan">#b3ffff</color>
-    <color name="red">#ffff0000</color>
+    <color name="colorRed">#ffff0000</color>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorYelllow">#DDDD11</color>
-    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorBlue">#FF3759D0</color>
+    <color name="colorBlack">#FF000000</color>
 
+    <!-- No cambiar los nombres, se utilizan dinámicamente y no será reconocido por el compilador -->
     <color name="drawingColorBlue">#FF1729B0</color>
     <color name="drawingColorRed">#FFFD0006</color>
     <color name="drawingColorGreen">#FF0ACF00</color>

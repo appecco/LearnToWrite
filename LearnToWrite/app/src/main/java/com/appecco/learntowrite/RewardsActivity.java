@@ -2,6 +2,7 @@ package com.appecco.learntowrite;
 
 import android.content.DialogInterface;
 import android.support.v4.view.LayoutInflaterFactory;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -50,7 +51,9 @@ public class RewardsActivity extends AppCompatActivity implements RewardFragment
         rewards.updateStatus(this);
 
         TextView availableStarsText = (TextView)findViewById(R.id.availableStarsText);
-        availableStarsText.setText(Integer.toString(rewards.getAvailableStars(this)));
+        availableStarsText.setText(Integer.toString(rewards.getAvailableStars(this)) + "/" + Integer.toString(rewards.getEarnedStars(this)));
+
+        /* TODO reward-system: Mejorar las imágenes de los backgrounds y patrones de dibujado y agregar más opciones */
 
         RewardsPagerAdapter rewardsPagerAdapter = new RewardsPagerAdapter(getSupportFragmentManager(), rewards);
         ViewPager viewPager = (ViewPager)findViewById(R.id.rewardPager);
@@ -80,6 +83,11 @@ public class RewardsActivity extends AppCompatActivity implements RewardFragment
 
     }
 
+    public void loadRewardsButtons(){
+        ViewPager viewPager = (ViewPager)findViewById(R.id.rewardPager);
+        PagerAdapter pagerAdapter = viewPager.getAdapter();
+        pagerAdapter.notifyDataSetChanged();
+    }
 
     @Override
     public void onRewardPurchase(Rewards.Reward rewardToPurchase) {
@@ -101,6 +109,8 @@ public class RewardsActivity extends AppCompatActivity implements RewardFragment
 
                             TextView availableStarsText = (TextView)findViewById(R.id.availableStarsText);
                             availableStarsText.setText(Integer.toString(rewards.getAvailableStars(RewardsActivity.this)));
+
+                            loadRewardsButtons();
                         }
                     })
                     .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {

@@ -84,6 +84,9 @@
         android:id="@+id/linlayButtons3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12sp"
+        android:layout_marginLeft="12sp"
+        android:layout_marginRight="12sp"
         android:orientation="horizontal" >
 
        <ImageButton
@@ -92,11 +95,16 @@
            android:layout_height="38sp"
            android:background="@drawable/settings" />
 
+       <View
+           android:layout_width="0dp"
+           android:layout_height="0dp"
+           android:layout_weight="1" />
+
        <ImageButton
            android:id="@+id/btnRewards"
            android:layout_width="38sp"
            android:layout_height="38sp"
-           android:background="@drawable/settings" />
+           android:background="@drawable/gift" />
 
    </LinearLayout>
 

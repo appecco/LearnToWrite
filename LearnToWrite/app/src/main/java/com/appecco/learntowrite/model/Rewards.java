@@ -61,6 +61,12 @@ public class Rewards implements Serializable {
         return earnedStars - spentStars;
     }
 
+    public int getEarnedStars(Context context){
+        int earnedStars;
+        earnedStars = Integer.parseInt(StorageOperations.readPreferences(context, EARNED_STARS_KEY,"0"));
+        return earnedStars;
+    }
+
     public void addEarnedStars(Context context, int stars){
         int earnedStars;
         earnedStars = Integer.parseInt(StorageOperations.readPreferences(context, EARNED_STARS_KEY,"0"));

@@ -14,6 +14,7 @@ public class Settings {
     public static final String MUSIC_ENABLED="musicEnabled";
     public static final String SOUND_ENABLED="soundEnabled";
     public static final String DRAWING_COLOR="drawingColor";
+    public static final String BACKGROUND_IMAGE="backgroundImage";
 
     private static Settings instance = null;
 
@@ -63,6 +64,14 @@ public class Settings {
 
     public static void setDrawingColor(Context context, String drawingColor){
         set(context, Settings.DRAWING_COLOR, drawingColor);
+    }
+
+    public static String getBackgroundImage(Context context){
+        return get(context, Settings.BACKGROUND_IMAGE, "background2");
+    }
+
+    public static void setBackgroundImage(Context context, String backgroundImage){
+        set(context, Settings.BACKGROUND_IMAGE, backgroundImage);
     }
 
     private void fireChangedSetting(String setting, String newValue){

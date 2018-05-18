@@ -3,6 +3,7 @@ package com.appecco.learntowrite.dialog;
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
+import com.appecco.learntowrite.model.Rewards;
 import com.appecco.utils.LoadedResources;
 import com.plattysoft.leonids.ParticleSystem;
 
@@ -29,6 +30,7 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 	private static final String CHARACTER_INDEX_PARAM = "characterIndexParam";
 	private static final String SCORE_PARAM = "scoreParam";
 	private static final String LEVEL_FINISHED_PARAM = "levelFinishedParam";
+	private static final String REWARDS_PARAM = "rewardsParam";
 	private static final long PARTICLES_TIME_TO_LIVE = 2000;
 	private static final int MAX_PARTICLES = 40;
 
@@ -42,13 +44,14 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 	int characterIndex;
 	int score;
 	boolean levelFinished;
+	Rewards rewards;
 
 	GameDialogsEventsListener gameDialogsEventsListener;
 
 	public static CharacterFinishedDialogFragment newInstance(GameStructure gameStructure, Progress progress,
 															  int gameOrder, int levelOrder,
 															  int characterIndex, int score,
-															  boolean levelFinished){
+															  boolean levelFinished, Rewards rewards){
 		CharacterFinishedDialogFragment fragment = new CharacterFinishedDialogFragment();
 
 		Bundle args = new Bundle();
@@ -59,6 +62,7 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 		args.putInt(CHARACTER_INDEX_PARAM, characterIndex);
 		args.putInt(SCORE_PARAM, score);
 		args.putBoolean(LEVEL_FINISHED_PARAM, levelFinished);
+		args.putSerializable(REWARDS_PARAM, rewards);
 		fragment.setArguments(args);
 
 		return fragment;
@@ -75,6 +79,7 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 			characterIndex = getArguments().getInt(CHARACTER_INDEX_PARAM);
 			score = getArguments().getInt(SCORE_PARAM);
 			levelFinished = getArguments().getBoolean(LEVEL_FINISHED_PARAM);
+			rewards = (Rewards) getArguments().getSerializable(REWARDS_PARAM);
 		}
 	}
 
@@ -141,6 +146,10 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 			nextLevelButton.setAlpha(0.5f);
 			nextLevelButton.setEnabled(false);
 		}
+
+		TextView availableStarsText = (TextView)view.findViewById(R.id.availableStarsText);
+		availableStarsText.setText(Integer.toString(rewards.getAvailableStars(getContext())) + "/" + Integer.toString(rewards.getEarnedStars(getContext())));
+
 
 		if (score > 0) {
 			imageScore.postDelayed(new Runnable() {

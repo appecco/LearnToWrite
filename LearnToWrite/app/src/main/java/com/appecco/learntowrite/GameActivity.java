@@ -288,7 +288,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     }
 
     public void showCharacterFinishedDialog(int score, boolean levelFinished) {
-        CharacterFinishedDialogFragment characterFinishedFragment = CharacterFinishedDialogFragment.newInstance(gameStructure,progress, currentGameOrder, currentLevelOrder, currentCharacterIndex, score, levelFinished);
+        CharacterFinishedDialogFragment characterFinishedFragment = CharacterFinishedDialogFragment.newInstance(gameStructure,progress, currentGameOrder, currentLevelOrder, currentCharacterIndex, score, levelFinished, rewards);
         showGameRelatedFragment(characterFinishedFragment,"CharacterFinishedDialogFragment");
     }
 

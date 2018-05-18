@@ -132,6 +132,30 @@
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="62sp"
+            android:layout_alignParentBottom="true">
+
+            <Space
+                android:id="@+id/space3"
+                android:layout_width="15sp"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"/>
+
+            <ImageButton
+                android:id="@+id/btnSwapBackground"
+                android:contentDescription="@string/retry_button"
+                android:layout_width="46sp"
+                android:layout_height="46sp"
+                android:layout_toStartOf="@+id/space3"
+                android:background="@color/colorBlue"
+                android:scaleType="fitCenter"
+                android:src="@drawable/landscape_reset" />
+
+        </RelativeLayout>
+
     </RelativeLayout>
 
     <ImageView
@@ -143,5 +167,6 @@
         android:layout_alignParentTop="true"
         android:src="@drawable/star"
         android:visibility="invisible" />
+
 
 </RelativeLayout>

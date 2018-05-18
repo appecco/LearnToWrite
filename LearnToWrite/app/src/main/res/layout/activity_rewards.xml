@@ -21,8 +21,12 @@
             android:id="@+id/availableStarsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8sp"
+            android:layout_marginTop="16sp"
+            android:background="@android:color/transparent"
             android:drawableLeft="@drawable/microstars3"
-            android:background="@color/colorWhite"/>
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <android.support.v4.view.ViewPager
             android:id="@+id/rewardPager"
@@ -42,10 +46,11 @@
             android:id="@+id/cancelButton"
             android:layout_width="75sp"
             android:layout_height="75sp"
+            android:layout_marginBottom="16sp"
             android:background="@null"
             android:contentDescription="@string/cancel_button"
             android:scaleType="fitCenter"
-            android:src="@drawable/back_button"/>
+            android:src="@drawable/back_button" />
 
     </LinearLayout>
 
