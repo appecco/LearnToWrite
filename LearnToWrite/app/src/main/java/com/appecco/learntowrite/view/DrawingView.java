@@ -51,8 +51,8 @@ public class DrawingView extends View implements OnTouchListener {
 	private static final int GESTURE_TYPE_DRAW = 1;
 
 	//Tamaño de referencia de pantalla en la que se obtuvieron los Path base
-	private static final double REFERENCE_WIDTH = 1673d;
-	private static final double REFERENCE_HEIGHT = 1080d;
+	private static final double REFERENCE_WIDTH = 1758d;
+	private static final double REFERENCE_HEIGHT = 1028d;
 
 	// Modo de operación de DrawingView
 	private static final String MODE_DRAW = "draw";
@@ -62,6 +62,8 @@ public class DrawingView extends View implements OnTouchListener {
 	private static final float DRAW_TOLERANCE = 4;
 	//Tolerancia base para los gestos (Que tanto se debe mover para tomar un nuevo punto incluyendo proporcionalidad)
 	private static final float GESTURE_TOLERANCE = 20;
+	//Control del residuo de movimiento entre cada iteracion del touch_move
+    private float gesture_residue = 0;
 
 	//Proporcionalidad
 	private double PROP_TOTAL;
@@ -126,6 +128,8 @@ public class DrawingView extends View implements OnTouchListener {
 
 	private long mLastTime = 0;
 	private int fps = 0, ifps = 0;
+
+	private float residue = 0;
 
     public DrawingView(Context context, AttributeSet attrs, int defaultStyle){
     	super(context,attrs,defaultStyle);
@@ -340,6 +344,12 @@ public class DrawingView extends View implements OnTouchListener {
 	private void touch_start(float x, float y) {
 		char gestureChar;
 
+		//Reiniciar el control del residuo del gesto
+        gesture_residue=0;
+
+//		//Debug
+//        residue = 0;
+
 		//Evitar que el gesto incluya el movimiento de 0,0 al X,Y actual
 		if (gX == 0 & gY == 0) {
 			gX = x;
@@ -415,16 +425,22 @@ public class DrawingView extends View implements OnTouchListener {
 			}
 		}
 
-		if (!animating && Math.abs(dx) + Math.abs(dy) > GESTURE_TOLERANCE) {
+		if (!animating && (Math.abs(dx) + Math.abs(dy) + gesture_residue) > GESTURE_TOLERANCE) {
 
-			gX = x;
+            gX = x;
 			gY = y;
 
 			gestureChar = getGestureChar(dx, dy, GESTURE_TYPE_DRAW);
-			for (float s = GESTURE_TOLERANCE; s <= Math.abs(dx) + Math.abs(dy); s += GESTURE_TOLERANCE) {
+			float s=0;
+			for (s = GESTURE_TOLERANCE; s <= (Math.abs(dx) + Math.abs(dy) + gesture_residue); s += GESTURE_TOLERANCE) {
 				currentGesture.append(gestureChar);
 			}
-		}
+
+			gesture_residue = (Math.abs(dx) + Math.abs(dy) + gesture_residue) - (s - GESTURE_TOLERANCE);
+
+//			//Debug
+//            residue += (Math.abs(dx) + Math.abs(dy)) - (s - GESTURE_TOLERANCE);
+        }
 	}
 
 	private void touch_up() {
@@ -441,8 +457,15 @@ public class DrawingView extends View implements OnTouchListener {
                     e.printStackTrace();
                 }
 
+                //Debug
+                //Toast.makeText(getContext(), "Lenght: " + Integer.toString(currentGesture.length()) + " / Residue: " + Integer.toString((int)residue) , Toast.LENGTH_SHORT).show();
+
                 //Calculemos que tan similares son los trazos, si esta habilitado el Save lo mostramos en un Toast sino se lo pasamos al GameActivity
                 similarity = similarity(currentGesture.toString(), targetGesture);
+
+                //Debug
+				//Toast.makeText(getContext(), Integer.toString((int) similarity), Toast.LENGTH_SHORT).show();
+
 				if (SAVE_ENABLED){
 				    Toast.makeText(getContext(), Integer.toString((int) similarity), Toast.LENGTH_SHORT).show();
                 }
@@ -803,6 +826,11 @@ public class DrawingView extends View implements OnTouchListener {
 	}
 
 	private void initWindowProportions(){
+		//Verifiquemos que Width y Height sean mayores a 0 para no preparar nada en base en caso contrario
+        if (width == 0 || height == 0){
+            return;
+        }
+
         //Calcular la proporcionalidad en cada eje y obtener un promedio para ajustar segun esto el tamaño del font, no podemos ajustar independiente debido a que el dibujo del font se basa en una proporcionalidad unica para su textsize
         PROP_TOTAL = ((REFERENCE_WIDTH / width) + (REFERENCE_HEIGHT / height)) / 2;
 
