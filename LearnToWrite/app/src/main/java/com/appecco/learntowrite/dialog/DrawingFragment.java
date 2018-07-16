@@ -5,7 +5,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -236,14 +238,17 @@ public class DrawingFragment extends Fragment {
 
     private void setupColorSelector(View view){
         final ImageButton btnDrawingColorSelector = (ImageButton)view.findViewById(R.id.btnDrawingColor);
+        btnDrawingColorSelector.setImageDrawable(DrawableCompat.wrap(btnDrawingColorSelector.getDrawable()));
         String drawingColor = Settings.getDrawingColor(getContext());
 
         LinearLayout drawingColorSelector = view.findViewById(R.id.expandableColorSelector);
         ImageButton colorButton;
         LinearLayout.LayoutParams params;
 
-        Drawable.ConstantState circleConstantState = getResources().getDrawable(R.drawable.circle).getConstantState();
-        Drawable circle;
+        //Drawable.ConstantState circleConstantState = getResources().getDrawable(R.drawable.circle).getConstantState();
+
+        Drawable circle = getResources().getDrawable(R.drawable.circle);
+        Drawable mutableCircle;
         try {
             Field[] fields = Class.forName(getActivity().getPackageName()+".R$color").getDeclaredFields();
             for(Field field : fields) {
@@ -251,19 +256,22 @@ public class DrawingFragment extends Fragment {
                 final String colorName = field.getName();
                 if (colorName.startsWith("drawingColor")) {
                     int color = getResources().getColor(getResources().getIdentifier(colorName, "color", getActivity().getPackageName()));
-                    circle = circleConstantState.newDrawable();
-                    circle.setBounds(0,0,46,46);
-                    DrawableCompat.setTint(circle, color);
+                    //mutableCircle = DrawableCompat.wrap(circle).mutate();
+                    mutableCircle = DrawableCompat.wrap(circle.getConstantState().newDrawable().mutate());
+                    mutableCircle.setBounds(0,0,46,46);
+                    DrawableCompat.setTint(mutableCircle, color);
+                    mutableCircle.invalidateSelf();
 
                     if (colorName.equals(drawingColor)) {
                         DrawableCompat.setTint(btnDrawingColorSelector.getDrawable(), color);
+                        btnDrawingColorSelector.getDrawable().invalidateSelf();
                         viewDraw.setPenColor(color);
                     }
 
                     colorButton = new ImageButton(getContext());
                     colorButton.setId(View.generateViewId());
                     colorButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                    colorButton.setImageDrawable(circle);
+                    colorButton.setImageDrawable(mutableCircle);
                     colorButton.setBackgroundResource(0);
                     colorButton.setPadding(15,0,0,0);
 
@@ -275,6 +283,7 @@ public class DrawingFragment extends Fragment {
                             viewDraw.setPenColor(color);
                             Settings.setDrawingColor(getContext(), colorName);
                             DrawableCompat.setTint(btnDrawingColorSelector.getDrawable(), color);
+                            btnDrawingColorSelector.getDrawable().invalidateSelf();
                             toggleExpandableColorSelector();
                         }
                     });
