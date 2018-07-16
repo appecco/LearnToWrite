@@ -54,15 +54,10 @@ public class VideoActivity extends Activity {
     public void onResume() {
         super.onResume();
         if (videoView != null){
-            videoView.start();
+            if (!videoView.isPlaying()) {
+                videoView.resume();
+            }
         }
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (videoView != null){
-            videoView = null;
-        };
-    }
 }
