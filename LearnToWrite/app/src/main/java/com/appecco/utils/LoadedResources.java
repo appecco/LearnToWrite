@@ -3,7 +3,8 @@ package com.appecco.utils;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.util.ArrayMap;
+//import android.util.ArrayMap;
+import android.support.v4.util.ArrayMap;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
