@@ -6,8 +6,8 @@ android {
         applicationId "com.appecco.learntowrite"
         minSdkVersion 18
         targetSdkVersion 26
-        versionCode 11
-        versionName "0.84"
+        versionCode 12
+        versionName "0.85"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
