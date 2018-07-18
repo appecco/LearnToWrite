@@ -107,6 +107,10 @@ public class Foreground implements Application.ActivityLifecycleCallbacks {
         return instance;
     }
 
+    public static boolean isInitialized(){
+        return instance != null;
+    }
+
     public boolean isForeground(){
         return foreground;
     }

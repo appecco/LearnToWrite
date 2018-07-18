@@ -32,6 +32,12 @@ public class BackgroundMusicService extends Service implements Foreground.Listen
     @Override
     public void onCreate(){
         super.onCreate();
+
+        //Veamos que la instancia de Foreground este inicializada
+        if (!Foreground.isInitialized()){
+            this.stopSelf();
+            return;
+        }
         Foreground.get().addListener(this);
     }
 
@@ -64,7 +70,7 @@ public class BackgroundMusicService extends Service implements Foreground.Listen
                     break;
             }
         }
-        return Service.START_STICKY;
+        return Service.START_NOT_STICKY;
     }
 
     public void startMusic(int resourceId, int leftVolume, int rightVolume){

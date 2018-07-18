@@ -58,9 +58,12 @@ public class MainActivity extends Activity {
         // Inicializar el verificador de cambios entre foreground y background
         Foreground.init(getApplication());
 
+        //Si ya esta ejecutandose el servicio de la musica hay que pausar
+        BackgroundMusicServiceControl.pauseBackgroundMusic(this);
+
         //Play Intro Video
-         Intent intent = new Intent(MainActivity.this,VideoActivity.class);
-         startActivityForResult(intent,1);
+        Intent intent = new Intent(MainActivity.this,VideoActivity.class);
+        startActivityForResult(intent,1);
 
         setContentView(R.layout.activity_main);
 
@@ -108,34 +111,15 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-//        mBackgroundSound.doInBackground();
         BackgroundMusicServiceControl.resumeBackgroundMusic(this);
     }
 
     @Override
-    protected void onPause() {
-//        mBackgroundSound.stop();
-//        mBackgroundSound.cancel(true);
-
-        super.onPause();
-    }
-
-    @Override
     protected void onStop() {
-//        mBackgroundSound.stop();
-//        mBackgroundSound.cancel(true);
-        // TODO: Agregar un dialogo de salida y liberar los recursos y detener la música al salir
+        // TODO: Agregar un dialogo de salida y liberar los recursos
+        if (Foreground.isInitialized() && !Foreground.get().isForeground()){
+            BackgroundMusicServiceControl.stopBackgroundMusic(this);
+        }
         super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-//        mBackgroundSound.stop();
-//        mBackgroundSound.cancel(true);
-
-//  Aparentemente esto no hace falta porque el servicio va a ser destruido al finalizar la App
-//  la necesidad de detenerlo cuando la App pasa al background la atenderá la clase appecco.util.Foreground
-//        BackgroundMusicServiceControl.stopBackgroundMusic(this);
-        super.onDestroy();
     }
 }
