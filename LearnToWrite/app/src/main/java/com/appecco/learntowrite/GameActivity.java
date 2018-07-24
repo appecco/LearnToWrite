@@ -172,6 +172,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
             setupChallenge();
         } else {
             // Eliminar DrawingFragment del stack y presentar el diálogo de fin del caracter
+            LoadedResources.getInstance().playSound(R.raw.children_cheer_short);
             getSupportFragmentManager().popBackStackImmediate();
             processChallengeCompleted();
         }
