@@ -4,18 +4,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.appecco.utils.Settings;
+
 public class BackgroundMusicServiceControl {
 
     public static void startBackgroundMusicService(Context context, int resourceId, int leftVolume, int rightVolume) {
         Bundle params = new Bundle();
-        params.putInt(BackgroundMusicService.MUSIC_RESOURCE_ID_PARAM, resourceId);
-        params.putInt(BackgroundMusicService.LEFT_VOLUME_PARAM,leftVolume);
-        params.putInt(BackgroundMusicService.RIGHT_VOLUME_PARAM,rightVolume);
-        sendMessage(context, BackgroundMusicService.MUSIC_START_COMMAND, params);
+        if (Settings.isMusicEnabled(context)) {
+            params.putInt(BackgroundMusicService.MUSIC_RESOURCE_ID_PARAM, resourceId);
+            params.putInt(BackgroundMusicService.LEFT_VOLUME_PARAM, leftVolume);
+            params.putInt(BackgroundMusicService.RIGHT_VOLUME_PARAM, rightVolume);
+            sendMessage(context, BackgroundMusicService.MUSIC_START_COMMAND, params);
+        }
     }
 
     public static void resumeBackgroundMusic(Context context){
-        sendMessage(context, BackgroundMusicService.MUSIC_RESUME_COMMAND);
+        if (Settings.isMusicEnabled(context)) {
+            sendMessage(context, BackgroundMusicService.MUSIC_RESUME_COMMAND);
+        }
     }
 
     public static void pauseBackgroundMusic(Context context){
@@ -39,4 +45,5 @@ public class BackgroundMusicServiceControl {
         intent.putExtras(params);
         context.startService(intent);
     }
+
 }
