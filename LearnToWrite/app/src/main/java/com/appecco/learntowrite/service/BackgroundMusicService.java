@@ -3,7 +3,6 @@ package com.appecco.learntowrite.service;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 
@@ -49,25 +48,27 @@ public class BackgroundMusicService extends Service implements Foreground.Listen
         int rightVolume;
         if (bundle != null){
             command = bundle.getString(COMMAND_NAME_PARAM);
-            switch (command){
-                case MUSIC_START_COMMAND:
-                    resourceId = bundle.getInt(MUSIC_RESOURCE_ID_PARAM);
-                    leftVolume = bundle.getInt(LEFT_VOLUME_PARAM);
-                    rightVolume = bundle.getInt(RIGHT_VOLUME_PARAM);
-                    startMusic(resourceId,leftVolume,rightVolume);
-                    break;
-                case MUSIC_PAUSE_COMMAND:
-                    pauseMusic();
-                    break;
-                case MUSIC_RESUME_COMMAND:
-                    resumeMusic();
-                    break;
-                case MUSIC_STOP_COMMAND:
-                    stopMusic();
-                    break;
-                case MEDIA_PLAYER_RELEASE_COMMAND:
-                    releasePlayer();
-                    break;
+            if (command != null) {
+                switch (command){
+                    case MUSIC_START_COMMAND:
+                        resourceId = bundle.getInt(MUSIC_RESOURCE_ID_PARAM);
+                        leftVolume = bundle.getInt(LEFT_VOLUME_PARAM);
+                        rightVolume = bundle.getInt(RIGHT_VOLUME_PARAM);
+                        startMusic(resourceId,leftVolume,rightVolume);
+                        break;
+                    case MUSIC_PAUSE_COMMAND:
+                        pauseMusic();
+                        break;
+                    case MUSIC_RESUME_COMMAND:
+                        resumeMusic();
+                        break;
+                    case MUSIC_STOP_COMMAND:
+                        stopMusic();
+                        break;
+                    case MEDIA_PLAYER_RELEASE_COMMAND:
+                        releasePlayer();
+                        break;
+                }
             }
         }
         return Service.START_NOT_STICKY;

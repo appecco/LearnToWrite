@@ -4,46 +4,17 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
-import android.os.AsyncTask;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
-import com.appecco.learntowrite.service.BackgroundMusicService;
 import com.appecco.learntowrite.service.BackgroundMusicServiceControl;
 import com.appecco.utils.Foreground;
 import com.appecco.utils.LoadedResources;
-import com.appecco.utils.Settings;
 import com.google.android.gms.ads.MobileAds;
 import com.tjeannin.apprate.ExceptionHandler;
 
-import java.util.Set;
-
 public class MainActivity extends Activity {
-
-//    public class BackgroundSound extends AsyncTask<Void, Void, Void> {
-//        MediaPlayer backGroudPlayer;
-//
-//        @Override
-//        protected Void doInBackground(Void... params) {
-//            if (Settings.isMusicEnabled(MainActivity.this)){
-//                backGroudPlayer = MediaPlayer.create(MainActivity.this, R.raw.backgroud_sound);
-//                backGroudPlayer.setLooping(true);
-//                backGroudPlayer.setVolume(100,100);
-//                backGroudPlayer.start();
-//            }
-//            return null;
-//        }
-//
-//        public void stop(){
-//            if (backGroudPlayer != null) {
-//                backGroudPlayer.stop();
-//            }
-//        }
-//    }
-//
-//    BackgroundSound mBackgroundSound = new BackgroundSound();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +45,7 @@ public class MainActivity extends Activity {
         //LearnToWrite Id
         MobileAds.initialize(this, "ca-app-pub-1507251474990125~6376776099");
 
-        ImageButton btnNewGameCursive = (ImageButton)findViewById(R.id.btnNewGameCursive);
+        ImageButton btnNewGameCursive = findViewById(R.id.btnNewGameCursive);
         btnNewGameCursive.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -86,7 +57,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        ImageButton btnSettings = (ImageButton)findViewById(R.id.btnSettings);
+        ImageButton btnSettings = findViewById(R.id.btnSettings);
         btnSettings.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View view) {

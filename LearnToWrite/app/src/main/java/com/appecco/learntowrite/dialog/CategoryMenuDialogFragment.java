@@ -4,9 +4,6 @@ package com.appecco.learntowrite.dialog;
 //import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -24,11 +21,6 @@ import com.appecco.utils.LoadedResources;
 
 import java.lang.reflect.Field;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CategoryMenuDialogFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class CategoryMenuDialogFragment extends DialogFragment {
 
     private static final String GAME_STRUCTURE_PARAM = "gameStructureParam";
@@ -71,7 +63,7 @@ public class CategoryMenuDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_category_menu_dialog, null);
 
         CategoriesPagerAdapter categoriesAdapter = new CategoriesPagerAdapter(getChildFragmentManager(), gameStructure, progress);
-        ViewPager viewPager = (ViewPager)view.findViewById(R.id.categoryPager);
+        ViewPager viewPager = view.findViewById(R.id.categoryPager);
         viewPager.setAdapter(categoriesAdapter);
 
         try {
@@ -82,11 +74,14 @@ public class CategoryMenuDialogFragment extends DialogFragment {
             scroller.setFixedDuration(1000);
             mScroller.set(viewPager, scroller);
         } catch (NoSuchFieldException e) {
+            //Ignorar
         } catch (IllegalArgumentException e) {
+            //Ignorar
         } catch (IllegalAccessException e) {
+            //Ignorar
         }
 
-        ImageButton cancelButton = (ImageButton)view.findViewById(R.id.cancelButton);
+        ImageButton cancelButton = view.findViewById(R.id.cancelButton);
         cancelButton.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -102,9 +97,12 @@ public class CategoryMenuDialogFragment extends DialogFragment {
     }
 
     public void loadCategoryButtons(){
-        ViewPager viewPager = (ViewPager)getView().findViewById(R.id.categoryPager);
-        PagerAdapter pagerAdapter = viewPager.getAdapter();
-        pagerAdapter.notifyDataSetChanged();
+        final View vwView = getView();
+        if (vwView != null){
+            ViewPager viewPager = vwView.findViewById(R.id.categoryPager);
+            PagerAdapter pagerAdapter = viewPager.getAdapter();
+            pagerAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -121,12 +119,12 @@ public class CategoryMenuDialogFragment extends DialogFragment {
     public void onStart() {
         super.onStart();
         if (getView() != null){
-            ViewPager viewPager = (ViewPager)getView().findViewById(R.id.categoryPager);
+            ViewPager viewPager = getView().findViewById(R.id.categoryPager);
             viewPager.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     if (getView() != null){
-                        ViewPager viewPager = (ViewPager)getView().findViewById(R.id.categoryPager);
+                        ViewPager viewPager = getView().findViewById(R.id.categoryPager);
                         viewPager.setCurrentItem(progress.getCurrentCategoryIndex(),true);
                     }
                 }

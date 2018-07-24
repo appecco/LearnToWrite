@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
-//import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -44,54 +43,6 @@ public class CharacterIntroDialogFragment extends DialogFragment {
     private MediaPlayer mLetterSound;
 
 	private String character, currentLanguage;
-
-//    public class LetterSound extends AsyncTask<Void, Void, Void> {
-//        MediaPlayer backGroudPlayer;
-//
-//        @Override
-//        protected Void doInBackground(Void... params) {
-//
-//            backGroudPlayer = MediaPlayer.create(getActivity(), R.raw.a_es);
-//            backGroudPlayer.setLooping(false);
-//            backGroudPlayer.setVolume(100,100);
-//            backGroudPlayer.start();
-//            return null;
-//        }
-//
-//        public void stop(){
-//            backGroudPlayer.stop();
-//        }
-//
-//    }
-//
-//    LetterSound mLetterSound = new LetterSound();
-//
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        mLetterSound.doInBackground();
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        mLetterSound.stop();
-//        mLetterSound.cancel(true);
-//        super.onPause();
-//    }
-//
-//    @Override
-//    public void onStop() {
-//        mLetterSound.stop();
-//        mLetterSound.cancel(true);
-//        super.onStop();
-//    }
-//
-//    @Override
-//    public void onDestroy() {
-//        mLetterSound.stop();
-//        mLetterSound.cancel(true);
-//        super.onDestroy();
-//    }
 
 	public static CharacterIntroDialogFragment newInstance(GameStructure gameStructure, Progress progress, int gameOrder, int levelOrder, int characterIndex){
 		CharacterIntroDialogFragment fragment = new CharacterIntroDialogFragment();
@@ -151,10 +102,10 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 		super.onStart();
 	    AlertDialog d = (AlertDialog) getDialog();
 	    if (d != null) {
-	        ((Button)d.getButton(Dialog.BUTTON_POSITIVE)).setEnabled(false);
-	        ((Button)d.getButton(Dialog.BUTTON_NEGATIVE)).setEnabled(false);
-	        ((Button)d.getButton(Dialog.BUTTON_POSITIVE)).setVisibility(View.INVISIBLE);
-	        ((Button)d.getButton(Dialog.BUTTON_NEGATIVE)).setVisibility(View.INVISIBLE);
+	        (d.getButton(Dialog.BUTTON_POSITIVE)).setEnabled(false);
+	        (d.getButton(Dialog.BUTTON_NEGATIVE)).setEnabled(false);
+	        (d.getButton(Dialog.BUTTON_POSITIVE)).setVisibility(View.INVISIBLE);
+	        (d.getButton(Dialog.BUTTON_NEGATIVE)).setVisibility(View.INVISIBLE);
 	    }
 
 	    if (mLetterSound != null) {
@@ -167,12 +118,7 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 	Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_character_intro_dialog, container, false);
 
-//		TextView titleText = (TextView) view.findViewById(R.id.characterIntroTitle);
-//		String gameName = gameStructure.findGameByOrder(gameOrder).getName();
-//		String levelName = gameStructure.findLevelByOrder(levelOrder).getName();
-//		titleText.setText(String.format("%s ( %s )",gameName,levelName));
-
-		ImageView alphaFriendImage = (ImageView)view.findViewById(R.id.alphafriendImage);
+		ImageView alphaFriendImage = view.findViewById(R.id.alphafriendImage);
 		// Se maneja el caso especial de la 'ñ' que no puede incluirse como nombre de un asset
 		String alphaResourceName = String.format("alpha_%s_%s", character.toLowerCase(), currentLanguage).replace("ñ","n1");
 		Resources contextResources = getActivity().getResources();
@@ -183,7 +129,7 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 			alphaFriendImage.setImageResource(R.drawable.shapes_icon);
 		}
 
-		DrawingView drawingView = (DrawingView)view.findViewById(R.id.hintDrawingView);
+		DrawingView drawingView = view.findViewById(R.id.hintDrawingView);
 		drawingView.setShowHints(true);
 		drawingView.setContourType("full");
 		drawingView.setShowBeginningMark(false);
@@ -192,7 +138,7 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 
 		drawingView.setGameDialogsEventsListener(gameDialogsEventsListener);
 
-		ImageButton cancelButton = (ImageButton)view.findViewById(R.id.cancelButton);
+		ImageButton cancelButton = view.findViewById(R.id.cancelButton);
 		cancelButton.setOnClickListener(new OnClickListener(){
 
 			@Override
@@ -201,8 +147,11 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 				if (gameDialogsEventsListener != null) {
 
 					// Para evitar que se envíe de nuevo el evento al finalizar el hint en DrawingView
-					DrawingView drawingView = (DrawingView)CharacterIntroDialogFragment.this.getView().findViewById(R.id.hintDrawingView);
-					drawingView.setGameDialogsEventsListener(null);
+                    final View vwView = CharacterIntroDialogFragment.this.getView();
+                    if (vwView != null){
+                        DrawingView drawingView = vwView.findViewById(R.id.hintDrawingView);
+                        drawingView.setGameDialogsEventsListener(null);
+                    }
 
 					gameDialogsEventsListener.onCancelCharacterSelected();
 				}
@@ -210,7 +159,7 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 
 		});
 
-		ImageButton startButton = (ImageButton)view.findViewById(R.id.startLevelButton);
+		ImageButton startButton = view.findViewById(R.id.startLevelButton);
 		startButton.setOnClickListener(new OnClickListener(){
 
 			@Override
@@ -219,8 +168,11 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 				if (gameDialogsEventsListener != null) {
 
 					// Para evitar que se envíe de nuevo el evento al finalizar el hint en DrawingView
-					DrawingView drawingView = (DrawingView)CharacterIntroDialogFragment.this.getView().findViewById(R.id.hintDrawingView);
-					drawingView.setGameDialogsEventsListener(null);
+                    final View vwView = CharacterIntroDialogFragment.this.getView();
+                    if (vwView != null){
+                        DrawingView drawingView = vwView.findViewById(R.id.hintDrawingView);
+                        drawingView.setGameDialogsEventsListener(null);
+                    }
 
 					gameDialogsEventsListener.onStartCharacterSelected();
 				}
@@ -239,27 +191,38 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 	}
 
 	public void startHint(){
-		DrawingView drawingView = (DrawingView)getView().findViewById(R.id.hintDrawingView);
-		drawingView.load();
-		drawingView.hint();
+        final View vwView = getView();
+        if (vwView != null){
+            DrawingView drawingView = vwView.findViewById(R.id.hintDrawingView);
+            drawingView.load();
+            drawingView.hint();
+        }
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		DrawingView drawingView = (DrawingView)getView().findViewById(R.id.hintDrawingView);
-		drawingView.setGameDialogsEventsListener(gameDialogsEventsListener);
-		if (!fragmentStarting) {
-			drawingView.hint();
-		}
-		fragmentStarting = false;
+
+        final View vwView = getView();
+        if (vwView != null){
+            DrawingView drawingView = vwView.findViewById(R.id.hintDrawingView);
+            drawingView.setGameDialogsEventsListener(gameDialogsEventsListener);
+            if (!fragmentStarting) {
+                drawingView.hint();
+            }
+            fragmentStarting = false;
+        }
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		DrawingView drawingView = (DrawingView)getView().findViewById(R.id.hintDrawingView);
-		drawingView.setGameDialogsEventsListener(null);
+
+        final View vwView = getView();
+        if (vwView != null){
+            DrawingView drawingView = vwView.findViewById(R.id.hintDrawingView);
+            drawingView.setGameDialogsEventsListener(null);
+        }
 	}
 
 	@Override

@@ -1,8 +1,6 @@
 package com.appecco.learntowrite;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -10,11 +8,6 @@ import android.widget.ToggleButton;
 
 import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;
-import com.appecco.utils.StorageOperations;
-
-import org.json.JSONObject;
-
-import java.util.Set;
 
 public class SettingsActivity extends Activity {
 
@@ -58,7 +51,7 @@ public class SettingsActivity extends Activity {
             }
         });
 
-        tglMusic = (ToggleButton)findViewById(R.id.tglMusic);
+        tglMusic = findViewById(R.id.tglMusic);
         tglMusic.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -67,7 +60,7 @@ public class SettingsActivity extends Activity {
             }
         });
 
-        tglSound = (ToggleButton)findViewById(R.id.tglSound);
+        tglSound = findViewById(R.id.tglSound);
         tglSound.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,7 +80,7 @@ public class SettingsActivity extends Activity {
         btnLanguageEnglish.setAlpha(("en".equals(currentLanguage))?1.0f:0.5f);
 
         tglMusic.setChecked(Settings.isMusicEnabled(SettingsActivity.this));
-        tglSound.setChecked(Boolean.valueOf(Settings.isSoundEnabled(SettingsActivity.this)));
+        tglSound.setChecked(Settings.isSoundEnabled(SettingsActivity.this));
 
     }
 }

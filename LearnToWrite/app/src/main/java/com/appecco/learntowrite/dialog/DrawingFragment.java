@@ -5,9 +5,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -27,11 +25,6 @@ import com.appecco.utils.Settings;
 
 import java.lang.reflect.Field;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link DrawingFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class DrawingFragment extends Fragment {
     private static final String CHARACTER_PARAM = "characterParam";
     private static final String SHOW_HINTS_PARAM = "showHintsParam";
@@ -110,9 +103,9 @@ public class DrawingFragment extends Fragment {
 
         final View view = inflater.inflate(R.layout.fragment_drawing, container, false);
 
-        viewDraw = (DrawingView)view.findViewById(R.id.viewDraw);
+        viewDraw = view.findViewById(R.id.viewDraw);
 
-        ImageButton btnRetry = (ImageButton)view.findViewById(R.id.btnRetry);
+        ImageButton btnRetry = view.findViewById(R.id.btnRetry);
         btnRetry.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -128,7 +121,7 @@ public class DrawingFragment extends Fragment {
 
         });
 
-        ImageButton btnHint = (ImageButton)view.findViewById(R.id.btnHint);
+        ImageButton btnHint = view.findViewById(R.id.btnHint);
         btnHint.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -140,7 +133,7 @@ public class DrawingFragment extends Fragment {
 
         });
 
-        ImageButton btnDrawingColor = (ImageButton)view.findViewById(R.id.btnDrawingColor);
+        ImageButton btnDrawingColor = view.findViewById(R.id.btnDrawingColor);
         btnDrawingColor.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -151,7 +144,7 @@ public class DrawingFragment extends Fragment {
 
         });
 
-        final LinearLayout expandableColorSelector = (LinearLayout) view.findViewById(R.id.expandableColorSelector);
+        final LinearLayout expandableColorSelector = view.findViewById(R.id.expandableColorSelector);
 
         expandableColorSelector.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -164,7 +157,7 @@ public class DrawingFragment extends Fragment {
 
         setupColorSelector(view);
 
-        starView = (ImageView)view.findViewById(R.id.animated_star);
+        starView = view.findViewById(R.id.animated_star);
 
 //        Funcionalidad usada para preparar los hints, NO BORRAR!!!
 
@@ -201,33 +194,36 @@ public class DrawingFragment extends Fragment {
     }
 
     private void toggleExpandableColorSelector() {
-        final LinearLayout expandableColorSelector = (LinearLayout) getView().findViewById(R.id.expandableColorSelector);
-        ValueAnimator animator;
+        final View vwView = getView();
+        if (vwView != null){
+            final LinearLayout expandableColorSelector = vwView.findViewById(R.id.expandableColorSelector);
+            ValueAnimator animator;
 
-        colorSelectorExpanded = !colorSelectorExpanded;
+            colorSelectorExpanded = !colorSelectorExpanded;
 
-        animator = ValueAnimator.ofInt(colorSelectorExpanded?0:colorSelectorWidth,colorSelectorExpanded?colorSelectorWidth:0);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                ViewGroup.LayoutParams layoutParams = expandableColorSelector
-                        .getLayoutParams();
-                layoutParams.width = (int)valueAnimator.getAnimatedValue();
-                expandableColorSelector.setLayoutParams(layoutParams);
-            }
-        });
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                // Para colocar el estado apropiado de visibilidad cuando la animación termina
-                expandableColorSelector.setVisibility(colorSelectorExpanded?View.VISIBLE:View.INVISIBLE);
-            }
-        });
+            animator = ValueAnimator.ofInt(colorSelectorExpanded?0:colorSelectorWidth,colorSelectorExpanded?colorSelectorWidth:0);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    ViewGroup.LayoutParams layoutParams = expandableColorSelector
+                            .getLayoutParams();
+                    layoutParams.width = (int)valueAnimator.getAnimatedValue();
+                    expandableColorSelector.setLayoutParams(layoutParams);
+                }
+            });
+            animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    // Para colocar el estado apropiado de visibilidad cuando la animación termina
+                    expandableColorSelector.setVisibility(colorSelectorExpanded?View.VISIBLE:View.INVISIBLE);
+                }
+            });
 
-        expandableColorSelector.setVisibility(View.VISIBLE);
+            expandableColorSelector.setVisibility(View.VISIBLE);
 
-        animator.start();
+            animator.start();
+        }
     }
 
     @Override
@@ -237,7 +233,7 @@ public class DrawingFragment extends Fragment {
     }
 
     private void setupColorSelector(View view){
-        final ImageButton btnDrawingColorSelector = (ImageButton)view.findViewById(R.id.btnDrawingColor);
+        final ImageButton btnDrawingColorSelector = view.findViewById(R.id.btnDrawingColor);
         btnDrawingColorSelector.setImageDrawable(DrawableCompat.wrap(btnDrawingColorSelector.getDrawable()));
         String drawingColor = Settings.getDrawingColor(getContext());
 
@@ -256,44 +252,48 @@ public class DrawingFragment extends Fragment {
                 final String colorName = field.getName();
                 if (colorName.startsWith("drawingColor")) {
                     int color = getResources().getColor(getResources().getIdentifier(colorName, "color", getActivity().getPackageName()));
-                    //mutableCircle = DrawableCompat.wrap(circle).mutate();
-                    mutableCircle = DrawableCompat.wrap(circle.getConstantState().newDrawable().mutate());
-                    mutableCircle.setBounds(0,0,46,46);
-                    DrawableCompat.setTint(mutableCircle, color);
-                    mutableCircle.invalidateSelf();
 
-                    if (colorName.equals(drawingColor)) {
-                        DrawableCompat.setTint(btnDrawingColorSelector.getDrawable(), color);
-                        btnDrawingColorSelector.getDrawable().invalidateSelf();
-                        viewDraw.setPenColor(color);
-                    }
+                    final Drawable.ConstantState dwConstState = circle.getConstantState();
+                    if (dwConstState != null){
+                        mutableCircle = DrawableCompat.wrap(circle.getConstantState().newDrawable().mutate());
+                        mutableCircle.setBounds(0,0,46,46);
+                        DrawableCompat.setTint(mutableCircle, color);
+                        mutableCircle.invalidateSelf();
 
-                    colorButton = new ImageButton(getContext());
-                    colorButton.setId(View.generateViewId());
-                    colorButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                    colorButton.setImageDrawable(mutableCircle);
-                    colorButton.setBackgroundResource(0);
-                    colorButton.setPadding(15,0,0,0);
-
-                    colorButton.setTag(color);
-                    colorButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            int color = (Integer) view.getTag();
-                            viewDraw.setPenColor(color);
-                            Settings.setDrawingColor(getContext(), colorName);
+                        if (colorName.equals(drawingColor)) {
                             DrawableCompat.setTint(btnDrawingColorSelector.getDrawable(), color);
                             btnDrawingColorSelector.getDrawable().invalidateSelf();
-                            toggleExpandableColorSelector();
+                            viewDraw.setPenColor(color);
                         }
-                    });
 
-                    params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-                    params.setMargins(0,0,0,0);
-                    drawingColorSelector.addView(colorButton,params);
+                        colorButton = new ImageButton(getContext());
+                        colorButton.setId(View.generateViewId());
+                        colorButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        colorButton.setImageDrawable(mutableCircle);
+                        colorButton.setBackgroundResource(0);
+                        colorButton.setPadding(15,0,0,0);
+
+                        colorButton.setTag(color);
+                        colorButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                int color = (Integer) view.getTag();
+                                viewDraw.setPenColor(color);
+                                Settings.setDrawingColor(getContext(), colorName);
+                                DrawableCompat.setTint(btnDrawingColorSelector.getDrawable(), color);
+                                btnDrawingColorSelector.getDrawable().invalidateSelf();
+                                toggleExpandableColorSelector();
+                            }
+                        });
+
+                        params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+                        params.setMargins(0,0,0,0);
+                        drawingColorSelector.addView(colorButton,params);
+                    }
                 }
             }
         } catch (ClassNotFoundException ex){
+            //Ignorar
         }
     }
 
@@ -332,28 +332,31 @@ public class DrawingFragment extends Fragment {
 
         @Override
         public void run() {
-            final ImageView animatedStar = (ImageView)getView().findViewById(R.id.animated_star);
-            animatedStar.setVisibility(View.VISIBLE);
+            final View vwView = getView();
+            if (vwView != null){
+                final ImageView animatedStar = vwView.findViewById(R.id.animated_star);
+                animatedStar.setVisibility(View.VISIBLE);
 
-            Animation starAnimation = LoadedResources.getInstance().getAnimation(R.anim.star_animation);
-            starAnimation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
+                Animation starAnimation = LoadedResources.getInstance().getAnimation(R.anim.star_animation);
+                starAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
 
-                }
+                    }
 
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    animatedStar.setVisibility(View.INVISIBLE);
-                }
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        animatedStar.setVisibility(View.INVISIBLE);
+                    }
 
-                @Override
-                public void onAnimationRepeat(Animation animation) {
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
 
-                }
-            });
+                    }
+                });
 
-            animatedStar.startAnimation(starAnimation);
+                animatedStar.startAnimation(starAnimation);
+            }
         }
     };
 

@@ -10,15 +10,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 public class CharacterFinishedDialogFragment extends DialogFragment {
 
@@ -95,10 +92,10 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 
 		int scoreImages[] = {R.drawable.stars0,R.drawable.stars1,R.drawable.stars2,R.drawable.stars3};
 
-		final ImageView imageScore = (ImageView)view.findViewById(R.id.imageScore);
+		final ImageView imageScore = view.findViewById(R.id.imageScore);
 		imageScore.setImageResource(scoreImages[score]);
 
-		final ImageButton cancelButton = (ImageButton)view.findViewById(R.id.cancelButton);
+		final ImageButton cancelButton = view.findViewById(R.id.cancelButton);
 		cancelButton.setOnClickListener(new View.OnClickListener(){
 
 			@Override
@@ -110,7 +107,7 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 			}
 		});
 
-		final ImageButton retryLevelButton = (ImageButton)view.findViewById(R.id.retryLevelButton);
+		final ImageButton retryLevelButton = view.findViewById(R.id.retryLevelButton);
 		retryLevelButton.setOnClickListener(new View.OnClickListener(){
 
 			@Override
@@ -122,7 +119,7 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 			}
 		});
 
-		final ImageButton nextLevelButton = (ImageButton)view.findViewById(R.id.nextLevelButton);
+		final ImageButton nextLevelButton = view.findViewById(R.id.nextLevelButton);
 		nextLevelButton.setOnClickListener(new View.OnClickListener(){
 
 			@Override

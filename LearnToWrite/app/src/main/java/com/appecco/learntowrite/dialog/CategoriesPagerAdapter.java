@@ -3,21 +3,16 @@ package com.appecco.learntowrite.dialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class CategoriesPagerAdapter extends FragmentStatePagerAdapter {
 
     private GameStructure gameStructure;
     private Progress progress;
 
-    public CategoriesPagerAdapter(FragmentManager fm, GameStructure gameStructure, Progress progress){
+    CategoriesPagerAdapter(FragmentManager fm, GameStructure gameStructure, Progress progress){
         super(fm);
         this.gameStructure = gameStructure;
         this.progress = progress;
@@ -25,9 +20,7 @@ public class CategoriesPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        int pageCount = 0;
-        pageCount = gameStructure.getGames().length * gameStructure.getLevels().length;
-        return pageCount;
+        return gameStructure.getGames().length * gameStructure.getLevels().length;
     }
 
     @Override
@@ -43,10 +36,8 @@ public class CategoriesPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         CategoryFragment fragment;
-        int gameOrder = 0;
-        int levelOrder = 0;
-        gameOrder = position / gameStructure.getLevels().length + 1;
-        levelOrder = position % gameStructure.getLevels().length + 1;
+        int gameOrder = position / gameStructure.getLevels().length + 1;
+        int levelOrder = position % gameStructure.getLevels().length + 1;
         fragment = CategoryFragment.newInstance(gameStructure,progress, gameOrder, levelOrder);
         return fragment;
     }

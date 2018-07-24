@@ -3,7 +3,6 @@ package com.appecco.learntowrite.dialog;
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
-import com.appecco.learntowrite.service.BackgroundMusicService;
 import com.appecco.learntowrite.service.BackgroundMusicServiceControl;
 import com.appecco.utils.LoadedResources;
 
@@ -27,7 +26,6 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.util.Map;
 
@@ -87,10 +85,10 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 		super.onStart();
 	    AlertDialog d = (AlertDialog) getDialog();
 	    if (d != null) {
-	        ((Button)d.getButton(Dialog.BUTTON_POSITIVE)).setEnabled(false);
-	        ((Button)d.getButton(Dialog.BUTTON_NEGATIVE)).setEnabled(false);
-	        ((Button)d.getButton(Dialog.BUTTON_POSITIVE)).setVisibility(View.INVISIBLE);
-	        ((Button)d.getButton(Dialog.BUTTON_NEGATIVE)).setVisibility(View.INVISIBLE);
+	        (d.getButton(Dialog.BUTTON_POSITIVE)).setEnabled(false);
+	        (d.getButton(Dialog.BUTTON_NEGATIVE)).setEnabled(false);
+	        (d.getButton(Dialog.BUTTON_POSITIVE)).setVisibility(View.INVISIBLE);
+	        (d.getButton(Dialog.BUTTON_NEGATIVE)).setVisibility(View.INVISIBLE);
 	    }
 	}
 
@@ -101,7 +99,7 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 
 		loadCharacterButtons(view);
 
-		ImageButton cancelButton = (ImageButton)view.findViewById(R.id.cancelButton);
+		ImageButton cancelButton = view.findViewById(R.id.cancelButton);
 		cancelButton.setOnClickListener(new OnClickListener(){
 
 			@Override
@@ -126,7 +124,10 @@ public class CharacterMenuDialogFragment extends DialogFragment {
     }
 
 	public void loadCharacterButtons(){
-		loadCharacterButtons(getView());
+		final View vwView = getView();
+		if (vwView != null){
+			loadCharacterButtons(vwView);
+		}
 	}
 
 	private void loadCharacterButtons(View view) {
@@ -135,7 +136,7 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 		String[] characters = gameStructure.findGameByOrder(gameOrder).getCharacters();
 		int[] scores = progress.findGameByTag(gameTag).findLevelByTag(levelTag).getScores();
 
-		LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.levelButtonsLayout);
+		LinearLayout linearLayout = view.findViewById(R.id.levelButtonsLayout);
 		linearLayout.removeAllViewsInLayout();
 
 		DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -179,7 +180,7 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 						@Override
 						public void onClick(View view) {
 							int characterIndex;
-							characterIndex = (int)((Button)view).getTag();
+							characterIndex = (int)(view).getTag();
 
 							LoadedResources.getInstance().playSound(R.raw.button_click);
 

@@ -11,16 +11,11 @@ import com.appecco.learntowrite.dialog.GameDialogsEventsListener;
 import com.appecco.learntowrite.dialog.GameEventsListener;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
-import com.appecco.learntowrite.service.BackgroundMusicService;
 import com.appecco.learntowrite.service.BackgroundMusicServiceControl;
 import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;
 import com.appecco.utils.StorageOperations;
 
-import android.app.AlertDialog;
-import android.content.Intent;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -81,8 +76,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         }
         gameStructure = gson.fromJson(gameStructureData, GameStructure.class);
 
-        String progressData = null;
-        progressData = StorageOperations.readPreferences(this, CURRENT_PROGRESS_KEY + currentLanguage, null);
+        String progressData = StorageOperations.readPreferences(this, CURRENT_PROGRESS_KEY + currentLanguage, null);
         if (progressData == null) {
             try {
                 progressData = StorageOperations.loadAssetsString(this, String.format("files/initialProgress_%s.json", currentLanguage));
@@ -118,9 +112,9 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     }
 
     void prepareSoundResources(){
-        if (Settings.isSoundEnabled(GameActivity.this)) {
-
-        }
+//        if (Settings.isSoundEnabled(GameActivity.this)) {
+//
+//        }
     }
 
     void setupLevel(){

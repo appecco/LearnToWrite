@@ -32,7 +32,6 @@ import android.view.View.OnTouchListener;
 import android.widget.Toast;
 
 import org.json.*;
-import org.w3c.dom.Attr;
 
 import com.appecco.learntowrite.GameActivity;
 import com.appecco.learntowrite.R;
@@ -154,8 +153,7 @@ public class DrawingView extends View implements OnTouchListener {
 		if (modeValue != null){
 			this.mode = modeValue;
 		}
-		int backgroundImageValue = attrsArray.getResourceId(R.styleable.DrawingView_backgroundImage,R.drawable.background2);
-		this.backgroundImage = backgroundImageValue;
+		this.backgroundImage = attrsArray.getResourceId(R.styleable.DrawingView_backgroundImage,R.drawable.background2);
 		attrsArray.recycle();
 	}
 
@@ -431,7 +429,7 @@ public class DrawingView extends View implements OnTouchListener {
 			gY = y;
 
 			gestureChar = getGestureChar(dx, dy, GESTURE_TYPE_DRAW);
-			float s=0;
+			float s;
 			for (s = GESTURE_TOLERANCE; s <= (Math.abs(dx) + Math.abs(dy) + gesture_residue); s += GESTURE_TOLERANCE) {
 				currentGesture.append(gestureChar);
 			}
@@ -467,7 +465,7 @@ public class DrawingView extends View implements OnTouchListener {
 				//Toast.makeText(getContext(), Integer.toString((int) similarity), Toast.LENGTH_SHORT).show();
 
 				if (SAVE_ENABLED){
-				    Toast.makeText(getContext(), Integer.toString((int) similarity), Toast.LENGTH_SHORT).show();
+				    Toast.makeText(getContext(), Integer.toString(similarity), Toast.LENGTH_SHORT).show();
                 }
                 else {
                     activity.challengeCompleted(similarity);
@@ -889,7 +887,7 @@ public class DrawingView extends View implements OnTouchListener {
             fontPaint.setColor(Color.argb(50,0,0,255));
             fontPaint.setStyle(Paint.Style.STROKE);
             fontPaint.setPathEffect(dashEffect);
-            fontPaint.setStrokeWidth((int)(STROKE_WIDTH/2));
+            fontPaint.setStrokeWidth((STROKE_WIDTH/2));
             drawCanvas.drawPath(fontPath, fontPaint);
         }
         else{
