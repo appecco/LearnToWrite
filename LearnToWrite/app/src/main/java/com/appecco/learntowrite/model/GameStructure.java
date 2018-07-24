@@ -2,7 +2,6 @@ package com.appecco.learntowrite.model;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by mauricio_peccorini on 12/01/2018.

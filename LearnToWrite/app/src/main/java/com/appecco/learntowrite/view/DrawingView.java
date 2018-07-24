@@ -96,7 +96,7 @@ public class DrawingView extends View implements OnTouchListener {
 	private Canvas hintCanvas, drawCanvas;
 	private Path mPath, fontPath;
 	private Paint mPaint, fontPaint, animPaint;
-	private LinkedList<Path> paths = new LinkedList<Path>();
+	private LinkedList<Path> paths = new LinkedList<>();
 
 	private float mX, mY, gX = 0, gY = 0;
 	private JSONObject json;

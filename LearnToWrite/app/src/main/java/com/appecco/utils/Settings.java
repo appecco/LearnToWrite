@@ -2,11 +2,8 @@ package com.appecco.utils;
 
 import android.content.Context;
 
-import com.appecco.learntowrite.R;
-
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Set;
 
 public class Settings {
 
@@ -17,7 +14,7 @@ public class Settings {
 
     private static Settings instance = null;
 
-    private ArrayList<SettingChangedListener> settingChangeListeners = new ArrayList<SettingChangedListener>();
+    private ArrayList<SettingChangedListener> settingChangeListeners = new ArrayList<>();
 
     private Settings(){
 

@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ToggleButton;
 
-import com.appecco.learntowrite.service.BackgroundMusicService;
 import com.appecco.learntowrite.service.BackgroundMusicServiceControl;
 import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;

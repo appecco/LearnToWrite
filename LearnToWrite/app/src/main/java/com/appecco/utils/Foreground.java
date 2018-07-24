@@ -58,7 +58,7 @@ public class Foreground implements Application.ActivityLifecycleCallbacks {
 
     private boolean foreground = false, paused = true;
     private Handler handler = new Handler();
-    private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
+    private List<Listener> listeners = new CopyOnWriteArrayList<>();
     private Runnable check;
 
     /**

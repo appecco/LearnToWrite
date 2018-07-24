@@ -17,7 +17,7 @@ public class VideoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
 
-        videoView = (VideoView) findViewById(R.id.video_view);
+        videoView = findViewById(R.id.video_view);
         videoView.setMediaController(null);
         videoView.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.intro));
 
