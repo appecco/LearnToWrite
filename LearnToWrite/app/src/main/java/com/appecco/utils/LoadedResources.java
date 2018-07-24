@@ -14,12 +14,12 @@ import java.util.Map;
 
 public class LoadedResources implements SettingChangedListener {
 
-    public static final int SOUND_POOL_MAX_STREAMS = 6;
-    public static final int SOUND_POOL_DEFAULT_PRIORITY = 1;
-    public static final int SOUND_POOL_DEFAULT_QUALITY = 0;
-    public static final float SOUND_POOL_DEFAULT_RATE = 1.0f;
-    public static final float SOUND_POOL_VOLUME = 1.0f;
-    public static final int SOUND_POOL_NO_LOOP = 0;
+    private static final int SOUND_POOL_MAX_STREAMS = 6;
+    private static final int SOUND_POOL_DEFAULT_PRIORITY = 1;
+    private static final int SOUND_POOL_DEFAULT_QUALITY = 0;
+    private static final float SOUND_POOL_DEFAULT_RATE = 1.0f;
+    private static final float SOUND_POOL_VOLUME = 1.0f;
+    private static final int SOUND_POOL_NO_LOOP = 0;
 
     private static LoadedResources instance = null;
 
@@ -28,12 +28,12 @@ public class LoadedResources implements SettingChangedListener {
     private boolean musicEnabled;
     private SoundPool soundPool;
     // loadedSounds: key => resourceId, value => soundPoolId
-    private Map<Integer, Integer> loadedSounds = new ArrayMap<Integer, Integer>();
+    private Map<Integer, Integer> loadedSounds = new ArrayMap<>();
     // soundsStatus: key => soundPoolId, value => loadStatus
-    private Map<Integer, Integer> soundsStatus = new ArrayMap<Integer, Integer>();
+    private Map<Integer, Integer> soundsStatus = new ArrayMap<>();
 
     // Animations
-    private Map<Integer, Animation> animations = new ArrayMap<Integer, Animation>();
+    private Map<Integer, Animation> animations = new ArrayMap<>();
 
     private LoadedResources(){
 
@@ -56,6 +56,7 @@ public class LoadedResources implements SettingChangedListener {
         loadSound(context, R.raw.button_click, SOUND_POOL_DEFAULT_PRIORITY);
         loadSound(context, R.raw.good, SOUND_POOL_DEFAULT_PRIORITY);
         loadSound(context, R.raw.bad, SOUND_POOL_DEFAULT_PRIORITY);
+        loadSound(context, R.raw.children_cheer_short, SOUND_POOL_DEFAULT_PRIORITY);
 
         // Animations
         loadAnimation(context, R.anim.box_animation);
@@ -75,7 +76,7 @@ public class LoadedResources implements SettingChangedListener {
                     }
                 }
             } catch (Exception e){
-
+                //Ignorar
             }
         }
     }
