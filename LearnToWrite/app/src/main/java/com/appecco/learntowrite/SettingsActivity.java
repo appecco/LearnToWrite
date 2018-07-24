@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ToggleButton;
 
+import com.appecco.learntowrite.service.BackgroundMusicService;
+import com.appecco.learntowrite.service.BackgroundMusicServiceControl;
 import com.appecco.utils.LoadedResources;
 import com.appecco.utils.Settings;
 import com.appecco.utils.StorageOperations;
@@ -64,6 +66,11 @@ public class SettingsActivity extends Activity {
             public void onClick(View view) {
                 LoadedResources.getInstance().playSound(R.raw.button_click);
                 Settings.setMusicEnabled(SettingsActivity.this, tglMusic.isChecked());
+                if (tglMusic.isChecked()){
+                    BackgroundMusicServiceControl.startBackgroundMusicService(SettingsActivity.this.getApplicationContext(), R.raw.backgroud_sound, 50, 50);
+                } else {
+                    BackgroundMusicServiceControl.stopBackgroundMusic(SettingsActivity.this.getApplicationContext());
+                }
             }
         });
 
