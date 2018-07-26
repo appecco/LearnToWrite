@@ -20,6 +20,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.logging.Logger;
+
 public class CharacterFinishedDialogFragment extends DialogFragment {
 
 	private static final String GAME_STRUCTURE_PARAM = "gameStructureParam";
@@ -146,18 +148,24 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 			imageScore.postDelayed(new Runnable() {
 				@Override
 				public void run() {
-					new ParticleSystem(getActivity(), MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
-							.setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
-							.setStartTime(10)
-							.oneShot(cancelButton, MAX_PARTICLES, new DecelerateInterpolator());
-					new ParticleSystem(getActivity(), MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
-							.setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
-							.setStartTime(10)
-							.oneShot(retryLevelButton, MAX_PARTICLES, new DecelerateInterpolator());
-					new ParticleSystem(getActivity(), MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
-							.setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
-							.setStartTime(10)
-							.oneShot(nextLevelButton, MAX_PARTICLES, new DecelerateInterpolator());
+					if (getActivity() != null) {
+						try {
+							new ParticleSystem(getActivity(), MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
+									.setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
+									.setStartTime(10)
+									.oneShot(cancelButton, MAX_PARTICLES, new DecelerateInterpolator());
+							new ParticleSystem(getActivity(), MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
+									.setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
+									.setStartTime(10)
+									.oneShot(retryLevelButton, MAX_PARTICLES, new DecelerateInterpolator());
+							new ParticleSystem(getActivity(), MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
+									.setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
+									.setStartTime(10)
+									.oneShot(nextLevelButton, MAX_PARTICLES, new DecelerateInterpolator());
+						} catch (NullPointerException ex){
+							Logger.getLogger(CharacterFinishedDialogFragment.class.getName()).warning("No activity available for fireworks animation. Perhaps the user closed the app");
+						}
+					}
 				}
 			}, 25);
 		}
