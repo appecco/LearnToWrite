@@ -865,7 +865,7 @@ public class DrawingView extends View implements OnTouchListener {
 	    //Preparemos los bitmas de fondo ya con la letra que toca y si se necesita tambien el bitmap con transparencia para el hint
 
         //Verificamos que backgroundBitmap no sea null ya que puede estarse ejecutando un reset delayed cuando ya se cerro el drawingview
-        if (backgroundBitmap == null) {
+        if (backgroundBitmap == null || contourType == null) {
             return;
         }
 
@@ -875,27 +875,29 @@ public class DrawingView extends View implements OnTouchListener {
         drawCanvas = new Canvas(canvasBitmap);
 
 
-        //Pintemos el font segun el nivel de dificultad
-        if (contourType.equals("full")) {
-            fontPaint.setColor(characterOutlineColor);
-            fontPaint.setStyle(Paint.Style.STROKE);
-            drawCanvas.drawPath(fontPath, fontPaint);
+        //Pintemos el font segun el nivel de dificultad, verifiquemos primero que contourType no sea null
+		if (contourType != null){
+            if (contourType.equals("full")) {
+                fontPaint.setColor(characterOutlineColor);
+                fontPaint.setStyle(Paint.Style.STROKE);
+                drawCanvas.drawPath(fontPath, fontPaint);
 
-            fontPaint.setColor(characterFillColor);
-            fontPaint.setStyle(Paint.Style.FILL);
-            drawCanvas.drawPath(fontPath, fontPaint);
-        }
-        else if (contourType.equals("medium")){
-            fontPaint.setColor(Color.argb(50,0,0,255));
-            fontPaint.setStyle(Paint.Style.STROKE);
-            fontPaint.setPathEffect(dashEffect);
-            fontPaint.setStrokeWidth((int)(STROKE_WIDTH/2));
-            drawCanvas.drawPath(fontPath, fontPaint);
-        }
-        else{
-            fontPaint.setColor(Color.argb(90,255,255,200));
-            fontPaint.setStyle(Paint.Style.FILL);
-            drawCanvas.drawPath(fontPath, fontPaint);
+                fontPaint.setColor(characterFillColor);
+                fontPaint.setStyle(Paint.Style.FILL);
+                drawCanvas.drawPath(fontPath, fontPaint);
+            }
+            else if (contourType.equals("medium")){
+                fontPaint.setColor(Color.argb(50,0,0,255));
+                fontPaint.setStyle(Paint.Style.STROKE);
+                fontPaint.setPathEffect(dashEffect);
+                fontPaint.setStrokeWidth((int)(STROKE_WIDTH/2));
+                drawCanvas.drawPath(fontPath, fontPaint);
+            }
+            else{
+                fontPaint.setColor(Color.argb(90,255,255,200));
+                fontPaint.setStyle(Paint.Style.FILL);
+                drawCanvas.drawPath(fontPath, fontPaint);
+            }
         }
 
         //Ya tenemos el canvasBitmap listo, liberemos el drawCanvas
