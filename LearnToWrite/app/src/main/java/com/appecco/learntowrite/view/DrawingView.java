@@ -888,7 +888,7 @@ public class DrawingView extends View implements OnTouchListener {
                 fontPaint.setColor(Color.argb(50,0,0,255));
                 fontPaint.setStyle(Paint.Style.STROKE);
                 fontPaint.setPathEffect(dashEffect);
-                fontPaint.setStrokeWidth((int)(STROKE_WIDTH/2));
+                fontPaint.setStrokeWidth(STROKE_WIDTH / 2);
                 drawCanvas.drawPath(fontPath, fontPaint);
             }
             else{
