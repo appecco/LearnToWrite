@@ -129,6 +129,7 @@ public class StorageOperations {
 	        stream.close();
 	        bAssetOk = true;
 	    } catch (IOException e) {
+	    	//Ignorar
 	    }
 	    return bAssetOk;
 	}

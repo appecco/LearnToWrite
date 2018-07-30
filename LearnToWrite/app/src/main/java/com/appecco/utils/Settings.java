@@ -21,8 +21,7 @@ public class Settings {
     }
 
     public static String get(Context context, String name, String defaultValue) {
-        String value = StorageOperations.readPreferences(context, name, defaultValue);
-        return value;
+        return StorageOperations.readPreferences(context, name, defaultValue);
     }
 
     public static void set(Context context, String name, String value){
