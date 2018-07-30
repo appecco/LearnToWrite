@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.view.animation.Animation;
 
 import com.appecco.learntowrite.R;
 import com.appecco.learntowrite.model.GameStructure;
@@ -112,12 +113,15 @@ public class CategoryFragment extends Fragment {
 
             @Override
             public void run() {
-                if (getContext() != null) {
-                    final View vwView = getView();
-                    if (vwView != null){
-                        Button categoryButton =  vwView.findViewById(R.id.categoryImageButton);
-                        categoryButton.startAnimation(LoadedResources.getInstance().getAnimation(R.anim.box_animation));
+                try {
+                    Animation boxAnimation = LoadedResources.getInstance().getAnimation(R.anim.box_animation);
+                    View fView = getView();
+                    if (boxAnimation != null && fView != null) {
+                        Button categoryButton = fView.findViewById(R.id.categoryImageButton);
+                        categoryButton.startAnimation(boxAnimation);
                     }
+                } catch (Exception e) {
+                    //Ignorar
                 }
             }
         };
