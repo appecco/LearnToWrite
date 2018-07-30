@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import com.appecco.learntowrite.model.GameStructure;
 import com.appecco.learntowrite.model.Progress;
 
-public class CategoriesPagerAdapter extends FragmentStatePagerAdapter {
+class CategoriesPagerAdapter extends FragmentStatePagerAdapter {
 
     private GameStructure gameStructure;
     private Progress progress;

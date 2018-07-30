@@ -37,7 +37,7 @@ public class GameStructure implements Serializable {
         this.levels = levels;
     }
 
-    public Game findGameByTag(String gameTag) {
+    private Game findGameByTag(String gameTag) {
         if (gameTag == null) {
             return null;
         }
@@ -61,11 +61,10 @@ public class GameStructure implements Serializable {
     public Game nextGameByTag(String gameTag) {
         Game currentGame = findGameByTag(gameTag);
         int currentGameOrder = currentGame.getGameOrder();
-        Game nextGame = findGameByOrder(currentGameOrder + 1);
-        return nextGame;
+        return findGameByOrder(currentGameOrder + 1);
     }
 
-    public Level findLevelByTag(String levelTag) {
+    private Level findLevelByTag(String levelTag) {
         if (levelTag == null) {
             return null;
         }
@@ -89,8 +88,7 @@ public class GameStructure implements Serializable {
     public Level nextLevelByTag(String levelTag) {
         Level currentLevel = findLevelByTag(levelTag);
         int currentLevelOrder = currentLevel.getLevelOrder();
-        Level nextLevel = findLevelByOrder(currentLevelOrder + 1);
-        return nextLevel;
+        return findLevelByOrder(currentLevelOrder + 1);
     }
 
     public static class Game implements Serializable {
@@ -116,7 +114,7 @@ public class GameStructure implements Serializable {
             this.gameTag = gameTag;
         }
 
-        public int getGameOrder() {
+        int getGameOrder() {
             return gameOrder;
         }
 
@@ -159,7 +157,7 @@ public class GameStructure implements Serializable {
             this.levelTag = levelTag;
         }
 
-        public int getLevelOrder() {
+        int getLevelOrder() {
             return levelOrder;
         }
 

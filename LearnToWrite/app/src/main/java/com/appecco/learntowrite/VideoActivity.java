@@ -10,7 +10,7 @@ import com.appecco.utils.Settings;
 
 public class VideoActivity extends Activity {
 
-    VideoView videoView;
+    private VideoView videoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

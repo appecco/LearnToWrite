@@ -1,5 +1,6 @@
 package com.appecco.utils;
 
+import android.os.Build;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -19,7 +20,9 @@ public class JSONOperations {
         for (int i=0; i<array.length(); ){
             try {
                 objectList.add(array.getJSONObject(0));
-                array.remove(0);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    array.remove(0);
+                }
             } catch (JSONException ex){
                 Log.v("JSONOperations",ex.getMessage());
             }

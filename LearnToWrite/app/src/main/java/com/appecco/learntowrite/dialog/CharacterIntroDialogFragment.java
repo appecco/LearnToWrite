@@ -30,8 +30,8 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 	private static final String LEVEL_ORDER_PARAM = "levelOrderParam";
 	private static final String CHARACTER_INDEX_PARAM = "characterIndexParam";
 
-	GameDialogsEventsListener gameDialogsEventsListener;
-	boolean fragmentStarting = true;
+	private GameDialogsEventsListener gameDialogsEventsListener;
+	private boolean fragmentStarting = true;
 
 	private GameStructure gameStructure;
 	private Progress progress;
@@ -71,16 +71,19 @@ public class CharacterIntroDialogFragment extends DialogFragment {
         character = gameStructure.findGameByOrder(gameOrder).getCharacters()[characterIndex];
         currentLanguage = Settings.getCurrentLanguage(getActivity());
         if (Settings.isSoundEnabled(getActivity())) {
-            Resources res = this.getContext().getResources();
-            // Se maneja el caso especial de la 'ñ' que no puede incluirse como nombre de un asset
-			// Se maneja el caso especial de los numeros ya que el nombre del asset no puede empezar con un numero
-			String fileName = String.format("%s_%s",character.toLowerCase(), currentLanguage).replace("ñ","n1");
-			if (character.matches("\\b\\d")){
-				fileName = "num" + fileName;
-			}
-			int soundId = res.getIdentifier(fileName, "raw", this.getContext().getPackageName());
-            if (soundId != 0){
-                mLetterSound = MediaPlayer.create(getActivity(), soundId);
+        	Context cntx = this.getContext();
+        	if (cntx != null){
+                Resources res = cntx.getResources();
+                // Se maneja el caso especial de la 'ñ' que no puede incluirse como nombre de un asset
+                // Se maneja el caso especial de los numeros ya que el nombre del asset no puede empezar con un numero
+                String fileName = String.format("%s_%s",character.toLowerCase(), currentLanguage).replace("ñ","n1");
+                if (character.matches("\\b\\d")){
+                    fileName = "num" + fileName;
+                }
+                int soundId = res.getIdentifier(fileName, "raw", this.getContext().getPackageName());
+                if (soundId != 0){
+                    mLetterSound = MediaPlayer.create(getActivity(), soundId);
+                }
             }
 		}
 	}
@@ -120,7 +123,7 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 		ImageView alphaFriendImage = view.findViewById(R.id.alphafriendImage);
 		// Se maneja el caso especial de la 'ñ' que no puede incluirse como nombre de un asset
 		String alphaResourceName = String.format("alpha_%s_%s", character.toLowerCase(), currentLanguage).replace("ñ","n1");
-		Resources contextResources = getActivity().getResources();
+        Resources contextResources = getActivity().getResources();
 		int alphaResourceId = contextResources.getIdentifier(alphaResourceName, "drawable", getActivity().getPackageName());
 		if (alphaResourceId != 0) {
 			alphaFriendImage.setImageResource(alphaResourceId);

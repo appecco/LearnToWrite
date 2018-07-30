@@ -109,7 +109,7 @@ public class Progress implements Serializable {
             this.gameTag = gameTag;
         }
 
-        public Level[] getLevels() {
+        Level[] getLevels() {
             return levels;
         }
 

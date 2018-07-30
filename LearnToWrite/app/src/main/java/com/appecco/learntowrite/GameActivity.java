@@ -47,7 +47,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     private Boolean currentCharacterScore[];
     private int currentAttemptIndex;
 
-    String currentLanguage;
+    private String currentLanguage;
 
     private GameStructure gameStructure;
     private Progress progress = null;
@@ -99,7 +99,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
 //            }
 //        }
 
-        prepareSoundResources();
+//        prepareSoundResources();
 
         showCategoryMenuDialog();
 
@@ -108,16 +108,16 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     @Override
     protected void onRestart() {
         super.onRestart();
-        prepareSoundResources();
+        //prepareSoundResources();
     }
 
-    void prepareSoundResources(){
+//    private void prepareSoundResources(){
 //        if (Settings.isSoundEnabled(GameActivity.this)) {
 //
 //        }
-    }
+//    }
 
-    void setupLevel(){
+    private void setupLevel(){
         currentCharacterScore = new Boolean[3];
         currentAttemptIndex = 0;
 
@@ -129,7 +129,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         setupChallenge();
     }
 
-    void setupChallenge(){
+    private void setupChallenge(){
         DrawingFragment drawingFragment = (DrawingFragment) getSupportFragmentManager().findFragmentByTag("DrawingFragment");
 
         if (currentAttemptIndex > 0){
@@ -172,7 +172,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         }
     }
 
-    void processChallengeCompleted(){
+    private void processChallengeCompleted(){
         int scoreValue = 0;
         for (int i=0; i<ATTEMPTS_COUNT; i++){
             if (currentCharacterScore[i] != null && currentCharacterScore[i]){
@@ -205,7 +205,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         showCharacterFinishedDialog(scoreValue, levelFinished);
     }
 
-    public void showCategoryMenuDialog(){
+    private void showCategoryMenuDialog(){
         FragmentManager fragmentManager;
         CategoryMenuDialogFragment categoryFragment = CategoryMenuDialogFragment.newInstance(gameStructure,progress);
         fragmentManager = getSupportFragmentManager();
@@ -217,7 +217,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         transaction.commit();
     }
 
-    public void showCharacterIntroDialog(){
+    private void showCharacterIntroDialog(){
         CharacterIntroDialogFragment characterIntroFragment = CharacterIntroDialogFragment.newInstance(gameStructure,progress, currentGameOrder, currentLevelOrder, currentCharacterIndex);
         characterIntroFragment.setGameStructure(gameStructure);
         characterIntroFragment.setProgress(progress);
@@ -227,7 +227,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         showGameRelatedFragment(characterIntroFragment,"CharacterIntroDialogFragment");
     }
 
-    public void showDrawingFragment(){
+    private void showDrawingFragment(){
         GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
         String character = gameStructure.findGameByOrder(currentGameOrder).getCharacters()[currentCharacterIndex];
 
@@ -255,7 +255,7 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         showGameRelatedFragment(drawingFragment,"DrawingFragment");
     }
 
-    public void showCharacterFinishedDialog(int score, boolean levelFinished) {
+    private void showCharacterFinishedDialog(int score, boolean levelFinished) {
         CharacterFinishedDialogFragment characterFinishedFragment = CharacterFinishedDialogFragment.newInstance(gameStructure,progress, currentGameOrder, currentLevelOrder, currentCharacterIndex, score, levelFinished);
         showGameRelatedFragment(characterFinishedFragment,"CharacterFinishedDialogFragment");
     }

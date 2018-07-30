@@ -18,9 +18,9 @@ public class BackgroundMusicService extends Service implements Foreground.Listen
     public final static String MUSIC_PAUSE_COMMAND = "musicPauseCommand";
     public final static String MUSIC_RESUME_COMMAND = "musicResumeCommand";
     public final static String MUSIC_STOP_COMMAND = "musicStopCommand";
-    public final static String MEDIA_PLAYER_RELEASE_COMMAND = "mediaPlayerReleaseCommand";
+    private final static String MEDIA_PLAYER_RELEASE_COMMAND = "mediaPlayerReleaseCommand";
 
-    MediaPlayer player;
+    private MediaPlayer player;
     private int currentResourceId = 0;
     private int length = 0;
 
@@ -74,7 +74,7 @@ public class BackgroundMusicService extends Service implements Foreground.Listen
         return Service.START_NOT_STICKY;
     }
 
-    public void startMusic(int resourceId, int leftVolume, int rightVolume){
+    private void startMusic(int resourceId, int leftVolume, int rightVolume){
         // If the service is already playing a different resource, stop it and release the player
         if (currentResourceId != 0 && currentResourceId != resourceId) {
             releasePlayer();
@@ -92,21 +92,21 @@ public class BackgroundMusicService extends Service implements Foreground.Listen
         }
     }
 
-    public void pauseMusic(){
+    private void pauseMusic(){
         if(player != null && player.isPlaying()){
             player.pause();
             length = player.getCurrentPosition();
         }
     }
 
-    public void resumeMusic(){
+    private void resumeMusic(){
         if(player != null && !player.isPlaying()){
             player.seekTo(length);
             player.start();
         }
     }
 
-    public void stopMusic(){
+    private void stopMusic(){
         releasePlayer();
     }
 

@@ -30,17 +30,17 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 	private static final int MAX_PARTICLES = 40;
 
 	Activity activity;
-	String messageText;
+	private String messageText;
 
-	GameStructure gameStructure;
-	Progress progress;
-	int gameOrder;
-	int levelOrder;
-	int characterIndex;
-	int score;
-	boolean levelFinished;
+	private GameStructure gameStructure;
+	private Progress progress;
+	private int gameOrder;
+	private int levelOrder;
+	private int characterIndex;
+	private int score;
+	private boolean levelFinished;
 
-	GameDialogsEventsListener gameDialogsEventsListener;
+	private GameDialogsEventsListener gameDialogsEventsListener;
 
 	public static CharacterFinishedDialogFragment newInstance(GameStructure gameStructure, Progress progress,
 															  int gameOrder, int levelOrder,
@@ -143,18 +143,21 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 			imageScore.postDelayed(new Runnable() {
 				@Override
 				public void run() {
-					new ParticleSystem(getActivity(), MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
-							.setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
-							.setStartTime(10)
-							.oneShot(cancelButton, MAX_PARTICLES, new DecelerateInterpolator());
-					new ParticleSystem(getActivity(), MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
-							.setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
-							.setStartTime(10)
-							.oneShot(retryLevelButton, MAX_PARTICLES, new DecelerateInterpolator());
-					new ParticleSystem(getActivity(), MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
-							.setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
-							.setStartTime(10)
-							.oneShot(nextLevelButton, MAX_PARTICLES, new DecelerateInterpolator());
+					Activity actActivity = getActivity();
+					if (actActivity != null){
+                        new ParticleSystem(actActivity, MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
+                                .setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
+                                .setStartTime(10)
+                                .oneShot(cancelButton, MAX_PARTICLES, new DecelerateInterpolator());
+                        new ParticleSystem(actActivity, MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
+                                .setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
+                                .setStartTime(10)
+                                .oneShot(retryLevelButton, MAX_PARTICLES, new DecelerateInterpolator());
+                        new ParticleSystem(actActivity, MAX_PARTICLES, R.drawable.firework_particle, PARTICLES_TIME_TO_LIVE)
+                                .setSpeedModuleAndAngleRange(0.1f, 0.2f, 225, 315)
+                                .setStartTime(10)
+                                .oneShot(nextLevelButton, MAX_PARTICLES, new DecelerateInterpolator());
+                    }
 				}
 			}, 25);
 		}

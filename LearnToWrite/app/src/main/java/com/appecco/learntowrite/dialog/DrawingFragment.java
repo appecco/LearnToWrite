@@ -46,7 +46,7 @@ public class DrawingFragment extends Fragment {
     private boolean colorSelectorExpanded = false;
     private int colorSelectorWidth;
 
-    GameDialogsEventsListener gameDialogsEventsListener;
+    private GameDialogsEventsListener gameDialogsEventsListener;
 
     public DrawingFragment() {
         // Required empty public constructor

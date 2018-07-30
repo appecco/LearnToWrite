@@ -11,8 +11,10 @@ import java.nio.charset.Charset;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
@@ -94,6 +96,7 @@ public class StorageOperations {
 		return assetValue;
 	}
 
+	@TargetApi(Build.VERSION_CODES.KITKAT)
 	private static JSONObject loadJson(File directory, String filePath) throws IOException {
 		JSONObject json = null;
 		if (Environment.MEDIA_MOUNTED.equals(Environment

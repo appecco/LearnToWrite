@@ -38,7 +38,7 @@ public class CharacterMenuDialogFragment extends DialogFragment {
 
 	private static final int BUTTONS_PER_ROW = 7;
 
-	GameDialogsEventsListener gameDialogsEventsListener;
+	private GameDialogsEventsListener gameDialogsEventsListener;
 
 	private GameStructure gameStructure;
 	private Progress progress;

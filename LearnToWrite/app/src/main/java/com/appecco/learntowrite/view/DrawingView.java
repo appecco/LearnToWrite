@@ -73,11 +73,12 @@ public class DrawingView extends View implements OnTouchListener {
 	private double CENTER_HEIGHT;
 
     //Colores default para los fonts
-    final int characterOutlineColor = Color.BLUE;
-    final int characterFillColor = Color.YELLOW;
+    private final int characterOutlineColor = Color.BLUE;
+    private final int characterFillColor = Color.YELLOW;
 
     //Ancho y Alto del View para calculos de posiciones y proporciones
-    int height, width;
+    private int height;
+    private int width;
 
     //Handler y Runnable de la animacion
     private Handler animHandler = new Handler();
@@ -125,10 +126,10 @@ public class DrawingView extends View implements OnTouchListener {
 
     private final DashPathEffect dashEffect = new DashPathEffect(new float[]{10, 40}, 0);
 
-	private long mLastTime = 0;
-	private int fps = 0, ifps = 0;
+//	private long mLastTime = 0;
+//	private int fps = 0, ifps = 0;
 
-	private float residue = 0;
+//	private float residue = 0;
 
     public DrawingView(Context context, AttributeSet attrs, int defaultStyle){
     	super(context,attrs,defaultStyle);
@@ -615,7 +616,7 @@ public class DrawingView extends View implements OnTouchListener {
 		invalidate();
 	}
 
-	public void reset() {
+	private void reset() {
 		//veamos que no estemos animando
 		if (!animating) {
 		    //Resetiemos los paths
@@ -875,26 +876,28 @@ public class DrawingView extends View implements OnTouchListener {
 
         //Pintemos el font segun el nivel de dificultad, verifiquemos primero que contourType no sea null
 		if (contourType != null){
-            if (contourType.equals("full")) {
-                fontPaint.setColor(characterOutlineColor);
-                fontPaint.setStyle(Paint.Style.STROKE);
-                drawCanvas.drawPath(fontPath, fontPaint);
+            switch (contourType) {
+                case "full":
+                    fontPaint.setColor(characterOutlineColor);
+                    fontPaint.setStyle(Paint.Style.STROKE);
+                    drawCanvas.drawPath(fontPath, fontPaint);
 
-                fontPaint.setColor(characterFillColor);
-                fontPaint.setStyle(Paint.Style.FILL);
-                drawCanvas.drawPath(fontPath, fontPaint);
-            }
-            else if (contourType.equals("medium")){
-                fontPaint.setColor(Color.argb(50,0,0,255));
-                fontPaint.setStyle(Paint.Style.STROKE);
-                fontPaint.setPathEffect(dashEffect);
-                fontPaint.setStrokeWidth(STROKE_WIDTH / 2);
-                drawCanvas.drawPath(fontPath, fontPaint);
-            }
-            else{
-                fontPaint.setColor(Color.argb(90,255,255,200));
-                fontPaint.setStyle(Paint.Style.FILL);
-                drawCanvas.drawPath(fontPath, fontPaint);
+                    fontPaint.setColor(characterFillColor);
+                    fontPaint.setStyle(Paint.Style.FILL);
+                    drawCanvas.drawPath(fontPath, fontPaint);
+                    break;
+                case "medium":
+                    fontPaint.setColor(Color.argb(50, 0, 0, 255));
+                    fontPaint.setStyle(Paint.Style.STROKE);
+                    fontPaint.setPathEffect(dashEffect);
+                    fontPaint.setStrokeWidth(STROKE_WIDTH / 2);
+                    drawCanvas.drawPath(fontPath, fontPaint);
+                    break;
+                default:
+                    fontPaint.setColor(Color.argb(90, 255, 255, 200));
+                    fontPaint.setStyle(Paint.Style.FILL);
+                    drawCanvas.drawPath(fontPath, fontPaint);
+                    break;
             }
         }
 
@@ -937,4 +940,10 @@ public class DrawingView extends View implements OnTouchListener {
 	public void setGameDialogsEventsListener(GameDialogsEventsListener gameDialogsEventsListener) {
 		this.gameDialogsEventsListener = gameDialogsEventsListener;
 	}
+
+    @Override
+    public boolean performClick() {
+        super.performClick();
+        return true;
+    }
 }

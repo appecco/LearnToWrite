@@ -78,7 +78,7 @@ public class SettingsActivity extends Activity {
         updateButtonsStatus();
     }
 
-    void updateButtonsStatus(){
+    private void updateButtonsStatus(){
         String currentLanguage;
 
         currentLanguage = Settings.getCurrentLanguage(SettingsActivity.this);
