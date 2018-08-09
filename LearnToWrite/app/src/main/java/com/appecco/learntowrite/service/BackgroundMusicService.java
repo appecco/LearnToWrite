@@ -127,7 +127,12 @@ public class BackgroundMusicService extends Service implements Foreground.Listen
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Foreground.get().removeListener(this);
+        //Encerrar el llamado a Foreground.get por si hay illegal state exception
+        try{
+            Foreground.get().removeListener(this);
+        } catch (Exception e) {
+            //Ignorar
+        }
         releasePlayer();
     }
 
