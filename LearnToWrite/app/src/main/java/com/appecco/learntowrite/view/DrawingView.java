@@ -267,7 +267,9 @@ public class DrawingView extends View implements OnTouchListener {
 //		long tbmp = System.currentTimeMillis();
 
         //Pintemos el fondo ya preparado en canvasBitmap
-        canvas.drawBitmap(canvasBitmap, 0, 0, null);
+		if (canvasBitmap != null) {
+            canvas.drawBitmap(canvasBitmap, 0, 0, null);
+        }
 
 //	    DEBUG PARA FPS
 //		long cdb = System.currentTimeMillis();
@@ -865,7 +867,7 @@ public class DrawingView extends View implements OnTouchListener {
 	    //Preparemos los bitmas de fondo ya con la letra que toca y si se necesita tambien el bitmap con transparencia para el hint
 
         //Verificamos que backgroundBitmap no sea null ya que puede estarse ejecutando un reset delayed cuando ya se cerro el drawingview
-        if (backgroundBitmap == null || contourType == null) {
+        if (backgroundBitmap == null) {
             return;
         }
 
