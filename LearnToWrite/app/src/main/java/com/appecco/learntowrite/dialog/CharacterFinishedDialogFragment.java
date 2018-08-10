@@ -145,6 +145,7 @@ public class CharacterFinishedDialogFragment extends DialogFragment {
 		}
 
 		if (score > 0) {
+			LoadedResources.getInstance().playSound(R.raw.children_cheer_short);
 			imageScore.postDelayed(new Runnable() {
 				@Override
 				public void run() {

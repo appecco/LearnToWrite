@@ -14,6 +14,7 @@ public class Settings {
     public static final String MUSIC_ENABLED="musicEnabled";
     public static final String SOUND_ENABLED="soundEnabled";
     public static final String DRAWING_COLOR="drawingColor";
+    public static final String DEFAULT_LANGUAGE="en";
 
     private static Settings instance = null;
 
@@ -34,7 +35,12 @@ public class Settings {
     }
 
     public static String getCurrentLanguage(Context context){
-        return get(context, CURRENT_LANGUAGE, Locale.getDefault().getLanguage());
+        String currentLanguage;
+        currentLanguage = get(context, CURRENT_LANGUAGE, Locale.getDefault().getLanguage());
+        if (currentLanguage == null || (!"en".equals(currentLanguage) && !"es".equals(currentLanguage))){
+            currentLanguage = DEFAULT_LANGUAGE;
+        }
+        return currentLanguage;
     }
 
     public static void setCurrentLanguage(Context context, String currentLanguage){
