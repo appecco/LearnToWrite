@@ -336,24 +336,26 @@ public class DrawingFragment extends Fragment {
             animatedStar.setVisibility(View.VISIBLE);
 
             Animation starAnimation = LoadedResources.getInstance().getAnimation(R.anim.star_animation);
-            starAnimation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
+            if (starAnimation != null) {
+                starAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
 
-                }
+                    }
 
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    animatedStar.setVisibility(View.INVISIBLE);
-                }
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        animatedStar.setVisibility(View.INVISIBLE);
+                    }
 
-                @Override
-                public void onAnimationRepeat(Animation animation) {
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
 
-                }
-            });
+                    }
+                });
 
-            animatedStar.startAnimation(starAnimation);
+                animatedStar.startAnimation(starAnimation);
+            }
         }
     };
 
