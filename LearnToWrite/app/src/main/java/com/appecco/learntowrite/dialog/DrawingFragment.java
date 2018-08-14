@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -332,29 +333,33 @@ public class DrawingFragment extends Fragment {
 
         @Override
         public void run() {
-            final ImageView animatedStar = (ImageView)getView().findViewById(R.id.animated_star);
-            animatedStar.setVisibility(View.VISIBLE);
+            try {
+                final ImageView animatedStar = (ImageView) getView().findViewById(R.id.animated_star);
+                animatedStar.setVisibility(View.VISIBLE);
 
-            Animation starAnimation = LoadedResources.getInstance().getAnimation(R.anim.star_animation);
-            if (starAnimation != null) {
-                starAnimation.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
+                Animation starAnimation = LoadedResources.getInstance().getAnimation(R.anim.star_animation);
+                if (starAnimation != null) {
+                    starAnimation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        animatedStar.setVisibility(View.INVISIBLE);
-                    }
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            animatedStar.setVisibility(View.INVISIBLE);
+                        }
 
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
 
-                    }
-                });
+                        }
+                    });
 
-                animatedStar.startAnimation(starAnimation);
+                    animatedStar.startAnimation(starAnimation);
+                }
+            } catch (NullPointerException ex){
+                Log.w("DrawingFragment","An error would have occured when running the star animation", ex);
             }
         }
     };
