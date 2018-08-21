@@ -228,8 +228,7 @@ public class DrawingView extends View implements OnTouchListener {
         width = getWidth();
 
         //Preparar el Bitmap de fondo Scaled
-		backgroundBitmap = BitmapFactory.decodeResource(getResources(), backgroundImage);
-        backgroundBitmap = Bitmap.createScaledBitmap(backgroundBitmap,w,h,false);
+        backgroundBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), backgroundImage),w,h,false);
 
         //Preparar los calculos de proporciones y centrado de la pantalla
 		initWindowProportions();
@@ -239,7 +238,7 @@ public class DrawingView extends View implements OnTouchListener {
 		}
 
 		//Preparar los bitmaps para el dibujado
-        initBitmaps(true);
+        //initBitmaps(true);
 
         //Detengamos la animacion, quitemos las llamadas que estan en cola y hagamos reset
         animating = false;
@@ -258,9 +257,9 @@ public class DrawingView extends View implements OnTouchListener {
 //	    DEBUG PARA FPS
 //		long now = System.currentTimeMillis();
 
-        //Si el transpBitmap esta en Null entonces es la primera vez que se hace OnDraw o venimos de un reset o un hint, se deben volver a preparar los Bitmaps
-        if (transpBitmap == null) {
-            initBitmaps(true);
+        //Si el canvasBitmap esta en Null entonces es la primera vez que se hace OnDraw o venimos de un reset o un hint, se deben volver a preparar los Bitmaps
+        if (canvasBitmap == null) {
+            initBitmaps(animating);
         }
 
 //	    DEBUG PARA FPS
@@ -277,6 +276,11 @@ public class DrawingView extends View implements OnTouchListener {
         //Pintemos el Path que se ha dibujado
 		for (Path p : paths) {
 			if (animating) {
+			    //Si el transpBitmap esta en null es la primera vez que se anima y hay que prepararlo
+                if (transpBitmap == null) {
+                    initBitmaps(true);
+                }
+
 			    //Pintar el hint, ampliar el STROKE para asegurar que cubra el path de la letra
 				mPaint.setStrokeWidth((float) (STROKE_WIDTH_ANIM / PROP_TOTAL));
                 canvas.drawPath(p, mPaint);
@@ -641,7 +645,7 @@ public class DrawingView extends View implements OnTouchListener {
 
             //Reiniciemos el canvas para asegurar que este limpio
             initBitmaps(false);
-            transpBitmap = null;
+            //transpBitmap = null;
             invalidate();
 		}
 	}
@@ -755,7 +759,7 @@ public class DrawingView extends View implements OnTouchListener {
 
 		//Actualicemos las Proporciones y Centro de Dibujo para el nuevo Character
 		initWindowProportions();
-		initBitmaps(true);
+		//initBitmaps(true);
 	}
 
 	public void save() {
