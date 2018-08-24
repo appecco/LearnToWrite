@@ -51,7 +51,20 @@ public class StorageOperations {
 	 * Usage: readDataFromPreferencesFile(context, "scores", "score");
 	 */
 	public static String readPreferences(Context context, String key, String defaultValue) {
+	    //Si no hay contexto retornemos el defaultValue
+	    if (context == null) {
+	        return defaultValue;
+        }
+
+        //Obtengamos las preferencias
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+	    //Si el resultado es null regresemos el defaultValue
+        if (prefs == null){
+            return defaultValue;
+        }
+
+        //Regresemos la preferencia si existia o el defaultValue si no
 		return prefs.getString(key, defaultValue);
 
 		/*
