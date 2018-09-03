@@ -198,7 +198,7 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 			@Override
 			public void onClick(View v) {
 				LoadedResources.getInstance().playSound(R.raw.button_click);
-				if (gameDialogsEventsListener != null) {
+				if (gameDialogsEventsListener != null && CharacterIntroDialogFragment.this.getView() != null) {
 
 					// Para evitar que se envíe de nuevo el evento al finalizar el hint en DrawingView
 					DrawingView drawingView = (DrawingView)CharacterIntroDialogFragment.this.getView().findViewById(R.id.hintDrawingView);
@@ -216,7 +216,7 @@ public class CharacterIntroDialogFragment extends DialogFragment {
 			@Override
 			public void onClick(View v) {
 				LoadedResources.getInstance().playSound(R.raw.button_click);
-				if (gameDialogsEventsListener != null) {
+				if (gameDialogsEventsListener != null && CharacterIntroDialogFragment.this.getView() != null) {
 
 					// Para evitar que se envíe de nuevo el evento al finalizar el hint en DrawingView
 					DrawingView drawingView = (DrawingView)CharacterIntroDialogFragment.this.getView().findViewById(R.id.hintDrawingView);
