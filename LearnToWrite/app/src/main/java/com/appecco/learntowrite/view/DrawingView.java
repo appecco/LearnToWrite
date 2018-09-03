@@ -712,7 +712,7 @@ public class DrawingView extends View implements OnTouchListener {
 								gameDialogsEventsListener.onStartCharacterSelected();
 							}
 						}
-					}, animDelay * 30);
+					}, animDelay * 25 + 250);
 
 				} catch (JSONException e) {
 					e.printStackTrace();
