@@ -234,7 +234,16 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
 
     public void showDrawingFragment(){
         GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
-        String character = gameStructure.findGameByOrder(currentGameOrder).getCharacters()[currentCharacterIndex];
+        GameStructure.Game game = gameStructure.findGameByOrder(currentGameOrder);
+
+        if (level == null || game == null){
+            // The Activity may have been destroyed while asynchronous was scheduled to be executed
+            // to make sure the user loads a clean instance of GameActivity we finish this one and
+            // return to MainActivity
+            finish();
+        }
+
+        String character = game.getCharacters()[currentCharacterIndex];
 
         int charactersBeforeAd = 5 - currentLevelOrder;
         if (counterToAd >= charactersBeforeAd){
