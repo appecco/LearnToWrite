@@ -202,7 +202,12 @@ public class DrawingFragment extends Fragment {
     }
 
     private void toggleExpandableColorSelector() {
-        final LinearLayout expandableColorSelector = (LinearLayout) getView().findViewById(R.id.expandableColorSelector);
+        View view = getView();
+        if (view == null){
+            // Avoid NullPointerException when the activity was closed during an asynchronous task
+            return;
+        }
+        final LinearLayout expandableColorSelector = (LinearLayout) view.findViewById(R.id.expandableColorSelector);
         ValueAnimator animator;
 
         colorSelectorExpanded = !colorSelectorExpanded;
