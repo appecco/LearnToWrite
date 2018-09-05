@@ -82,6 +82,10 @@ public class BackgroundMusicService extends Service implements Foreground.Listen
         // Create the player only if it hasn't been created or was playing another resource
         if (player == null) {
             player = MediaPlayer.create(this, resourceId);
+            if (player == null){
+                // The player could not be created
+                return;
+            }
             player.setLooping(true);
             player.setVolume(leftVolume, rightVolume);
         }
