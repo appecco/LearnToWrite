@@ -37,13 +37,15 @@ public class BackgroundMusicServiceControl {
     }
 
     private static void sendMessage(Context context, String command, Bundle params){
-        Intent intent = new Intent(context, BackgroundMusicService.class);
-        if (params == null){
-            params = new Bundle();
+        if (context != null){
+            Intent intent = new Intent(context, BackgroundMusicService.class);
+            if (params == null){
+                params = new Bundle();
+            }
+            params.putString(BackgroundMusicService.COMMAND_NAME_PARAM, command);
+            intent.putExtras(params);
+            context.startService(intent);
         }
-        params.putString(BackgroundMusicService.COMMAND_NAME_PARAM, command);
-        intent.putExtras(params);
-        context.startService(intent);
     }
 
 }
