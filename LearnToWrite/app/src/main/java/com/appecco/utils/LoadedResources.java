@@ -57,6 +57,11 @@ public class LoadedResources implements SettingChangedListener {
         loadSound(context, R.raw.good, SOUND_POOL_DEFAULT_PRIORITY);
         loadSound(context, R.raw.bad, SOUND_POOL_DEFAULT_PRIORITY);
         loadSound(context, R.raw.children_cheer_short, SOUND_POOL_DEFAULT_PRIORITY);
+        loadSound(context, R.raw.try_again_en, SOUND_POOL_DEFAULT_PRIORITY);
+        loadSound(context, R.raw.great_again_en, SOUND_POOL_DEFAULT_PRIORITY);
+        loadSound(context, R.raw.try_again_es, SOUND_POOL_DEFAULT_PRIORITY);
+        loadSound(context, R.raw.great_again_es, SOUND_POOL_DEFAULT_PRIORITY);
+
 
         // Animations
         loadAnimation(context, R.anim.box_animation);

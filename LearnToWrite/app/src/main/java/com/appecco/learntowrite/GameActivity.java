@@ -155,13 +155,33 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
 
     @Override
     public void challengeCompleted(int score){
+        currentLanguage = Settings.getCurrentLanguage(GameActivity.this);
+
         DrawingFragment drawingFragment = (DrawingFragment) getSupportFragmentManager().findFragmentByTag("DrawingFragment");
         GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
         if (score >= level.getAccuracy()){
             LoadedResources.getInstance().playSound(R.raw.good);
+
+            if (currentAttemptIndex < ATTEMPTS_COUNT - 1){
+                String fileName = String.format("great_again_%s", currentLanguage);
+                int soundId = getResources().getIdentifier(fileName, "raw", this.getPackageName());
+                if (soundId != 0) {
+                    LoadedResources.getInstance().playSound(soundId);
+                }
+            }
+
             currentCharacterScore[currentAttemptIndex] = true;
         } else {
             LoadedResources.getInstance().playSound(R.raw.bad);
+
+            if (currentAttemptIndex < ATTEMPTS_COUNT - 1){
+                String fileName = String.format("try_again_%s", currentLanguage);
+                int soundId = getResources().getIdentifier(fileName, "raw", this.getPackageName());
+                if (soundId != 0) {
+                    LoadedResources.getInstance().playSound(soundId);
+                }
+            }
+
             currentCharacterScore[currentAttemptIndex] = false;
         }
         if (currentAttemptIndex < ATTEMPTS_COUNT - 1){
