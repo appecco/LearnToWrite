@@ -192,7 +192,12 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
             setupChallenge();
         } else {
             // Eliminar DrawingFragment del stack y presentar el diálogo de fin del caracter
-            getSupportFragmentManager().popBackStackImmediate();
+            try {
+                getSupportFragmentManager().popBackStackImmediate();
+            } catch (Exception e){
+                //Ignorar
+            }
+
             processChallengeCompleted();
         }
     }
