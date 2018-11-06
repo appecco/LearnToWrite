@@ -261,14 +261,23 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
         GameStructure.Level level = gameStructure.findLevelByOrder(currentLevelOrder);
         GameStructure.Game game = gameStructure.findGameByOrder(currentGameOrder);
 
-        if (level == null || game == null || game.getCharacters() == null || game.getCharacters()[currentCharacterIndex] == null){
-            // The Activity may have been destroyed while asynchronous was scheduled to be executed
-            // to make sure the user loads a clean instance of GameActivity we finish this one and
-            // return to MainActivity
-            finish();
-        }
+        String character;
+        try {
 
-        String character = game.getCharacters()[currentCharacterIndex];
+            if (level == null || game == null || game.getCharacters() == null){
+                // The Activity may have been destroyed while asynchronous was scheduled to be executed
+                // to make sure the user loads a clean instance of GameActivity we finish this one and
+                // return to MainActivity
+                finish();
+                return;
+            }
+
+            character = game.getCharacters()[currentCharacterIndex];
+        }
+        catch (NullPointerException ex) {
+            finish();
+            return;
+        }
 
         int charactersBeforeAd = 5 - currentLevelOrder;
         if (counterToAd >= charactersBeforeAd){
