@@ -356,15 +356,20 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
 
     @Override
     public void onCategorySelected(int gameOrder, int levelOrder) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment categoryMenuDialogFragment = fragmentManager.findFragmentByTag("CategoryMenuDialogFragment");
-        CharacterMenuDialogFragment fragment = CharacterMenuDialogFragment.newInstance(gameStructure,progress, gameOrder, levelOrder);
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.hide(categoryMenuDialogFragment);
-        transaction.add(android.R.id.content, fragment,"CharacterMenuDialogFragment");
-        transaction.addToBackStack("CharacterMenuDialogFragment");
-        transaction.commit();
+        try {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            Fragment categoryMenuDialogFragment = fragmentManager.findFragmentByTag("CategoryMenuDialogFragment");
+            CharacterMenuDialogFragment fragment = CharacterMenuDialogFragment.newInstance(gameStructure,progress, gameOrder, levelOrder);
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            transaction.hide(categoryMenuDialogFragment);
+            transaction.add(android.R.id.content, fragment,"CharacterMenuDialogFragment");
+            transaction.addToBackStack("CharacterMenuDialogFragment");
+            transaction.commit();
+        }
+        catch (IllegalStateException ex){
+            finish();
+        }
     }
 
     @Override
@@ -390,8 +395,13 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     @Override
     public void onStartCharacterSelected() {
         // Eliminar el fragmento de introducción del caracter del stack para que no regrese a él luego de finalizar el caracter
-        getSupportFragmentManager().popBackStackImmediate();
-        setupLevel();
+        try {
+            getSupportFragmentManager().popBackStackImmediate();
+            setupLevel();
+        }
+        catch (IllegalStateException ex){
+            finish();
+        }
     }
 
     @Override
@@ -446,7 +456,11 @@ public class GameActivity extends AppCompatActivity implements GameEventsListene
     @Override
     public void onFinishedCharacterDialogCancelPressed() {
         // Eliminar el fragmento de fin de caracter
-        getSupportFragmentManager().popBackStack();
-        // finish(); // Solo regresar al menú de caracteres, no hasta MainActivity
+        try {
+            getSupportFragmentManager().popBackStack();
+        }
+        catch (IllegalStateException ex){
+            finish();
+        }
     }
 }
